@@ -40,3 +40,5 @@ Extras/
 *.pptx
 *.pdf
 notes.txt
+.temp/
+supabase/.temp/

@@ -10,7 +10,7 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p ./jsconfig.json",
     "preview": "vite preview",
-    "deploy:functions": "supabase functions deploy --remote=uhcpbhhioaeswxdkglys --no-verify-jwt --use-api"
+    "deploy:functions": "npx supabase functions deploy --remote=uhcpbhhioaeswxdkglys --no-verify-jwt --use-api"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",
