@@ -39,6 +39,8 @@ export function useVersionCheck() {
   const location = useLocation();
 
   useEffect(() => {
+    if (import.meta.env.DEV) return;
+
     const checkVersion = async () => {
       const currentSrc = getCurrentScriptSrc();
       const remoteSrc = await fetchRemoteScriptSrc();
