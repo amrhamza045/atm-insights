@@ -1,6 +1,6 @@
 import { corsHeaders } from '../_shared/cors.ts';
 import {  createClientFromRequest  } from '../_shared/base44Client.ts';
-import { secrets } from 'base44:runtime';
+const secrets = Deno.env;
 import { denyUnlessPermitted } from '../_shared/requirePermission.js';
 import { secretReader } from '../_shared/socialWebhookAuth.js';
 import { loadConnection } from '../_shared/socialLeadStore.js';

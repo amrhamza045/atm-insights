@@ -1,6 +1,6 @@
 import { corsHeaders } from '../_shared/cors.ts';
 import {  createClientFromRequest  } from '../_shared/base44Client.ts';
-import { secrets } from 'base44:runtime';
+const secrets = Deno.env;
 import { secretReader, validTwilioSignature } from '../_shared/socialWebhookAuth.js';
 import { loadConnection, saveMessageLead } from '../_shared/socialLeadStore.js';
 
