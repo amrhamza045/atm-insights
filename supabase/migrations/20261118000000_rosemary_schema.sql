@@ -2267,8 +2267,8 @@ CREATE TABLE IF NOT EXISTS finance_health_analysis (
     started_at TEXT,
     completed_at TEXT,
     cutoff TEXT,
-    from TEXT,
-    to TEXT,
+    "from" TEXT,
+    "to" TEXT,
     timezone TEXT,
     version TEXT,
     source_url TEXT,
@@ -4869,7 +4869,7 @@ CREATE TABLE IF NOT EXISTS vera_kit360_manual_section (
     usage_guide TEXT,
     related_entities JSONB DEFAULT '[]'::jsonb,
     screenshot_urls JSONB DEFAULT '[]'::jsonb,
-    order NUMERIC,
+    "order" NUMERIC,
     last_updated TIMESTAMPTZ
 );
 
