@@ -184,7 +184,15 @@ export const auth = {
         data: { user },
         error,
       } = await supabase.auth.getUser();
-      if (error || !user) {
+      if (user && !error) {
+        const { data: profile } = await supabase
+          .from('user')
+          .select('*')
+          .eq('id', user.id)
+          .maybeSingle();
+        return profile ? { ...user, ...profile } : user;
+      }
+      if (typeof window !== 'undefined' && localStorage.getItem('rosemary_demo_admin') === 'true') {
         return {
           id: 'user_admin',
           email: 'admin@rosemary.com',
@@ -192,19 +200,17 @@ export const auth = {
           full_name: 'Rosemary Admin',
         };
       }
-      const { data: profile } = await supabase
-        .from('user')
-        .select('*')
-        .eq('id', user.id)
-        .maybeSingle();
-      return profile ? { ...user, ...profile } : user;
+      return null;
     } catch {
-      return {
-        id: 'user_admin',
-        email: 'admin@rosemary.com',
-        role: 'admin',
-        full_name: 'Rosemary Admin',
-      };
+      if (typeof window !== 'undefined' && localStorage.getItem('rosemary_demo_admin') === 'true') {
+        return {
+          id: 'user_admin',
+          email: 'admin@rosemary.com',
+          role: 'admin',
+          full_name: 'Rosemary Admin',
+        };
+      }
+      return null;
     }
   },
 
@@ -217,7 +223,11 @@ export const auth = {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      return !!session;
+      if (session) return true;
+      if (typeof window !== 'undefined' && localStorage.getItem('rosemary_demo_admin') === 'true') {
+        return true;
+      }
+      return false;
     } catch {
       return false;
     }
@@ -237,6 +247,9 @@ export const auth = {
   },
 
   async logout(redirectUrl) {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('rosemary_demo_admin');
+    }
     await supabase.auth.signOut().catch(() => {});
     if (redirectUrl) {
       window.location.href = redirectUrl;

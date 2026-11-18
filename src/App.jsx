@@ -49,6 +49,7 @@ const PurchasesHub = lazy(() => import('./pages/PurchasesHub'));
 const HRHub = lazy(() => import('./pages/HRHub'));
 const SystemManual = lazy(() => import('./pages/SystemManual'));
 const Landing = lazy(() => import('./pages/Landing'));
+const Login = lazy(() => import('./pages/Login'));
 const PermissionCopyCheck = lazy(() => import('./pages/PermissionCopyCheck'));
 const Finance = lazy(() => import('@/pages/Finance'));
 const PettyCashCustody = lazy(() => import('@/pages/PettyCashCustody'));
@@ -128,6 +129,8 @@ const AuthenticatedApp = () => {
     <Routes>
       <Route path="/" element={<HomeRoute />} />
       <Route path="/Landing" element={<Suspense fallback={<PageLoader />}><Landing /></Suspense>} />
+      <Route path="/login" element={<Suspense fallback={<PageLoader />}><Login /></Suspense>} />
+      <Route path="/Login" element={<Suspense fallback={<PageLoader />}><Login /></Suspense>} />
       {Object.entries(Pages).map(([path, Page]) => {
         if (!Page || path === "Packages") return null;
         return (
