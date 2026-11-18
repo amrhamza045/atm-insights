@@ -1,0 +1,563 @@
+{
+  "name": "Order",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this order belongs to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this order belongs to"
+    },
+    "customer_id": {
+      "type": "string",
+      "description": "ID of the customer (from Client entity)"
+    },
+    "customer_name": {
+      "type": "string",
+      "description": "Name of the customer"
+    },
+    "customer_phone": {
+      "type": "string",
+      "description": "Customer's phone number for delivery"
+    },
+    "order_type": {
+      "type": "string",
+      "enum": [
+        "dine_in",
+        "delivery",
+        "takeaway"
+      ],
+      "default": "dine_in",
+      "description": "Type of order"
+    },
+    "table_id": {
+      "type": "string",
+      "description": "ID of the table for dine-in orders"
+    },
+    "table_number": {
+      "type": "string",
+      "description": "Table number for dine-in orders"
+    },
+    "delivery_address_id": {
+      "type": "string",
+      "description": "ID of the selected delivery address"
+    },
+    "delivery_address": {
+      "type": "object",
+      "description": "Snapshot of delivery address details at time of order"
+    },
+    "delivery_person_id": {
+      "type": "string",
+      "description": "ID of assigned delivery person"
+    },
+    "delivery_person_name": {
+      "type": "string",
+      "description": "Name of delivery person"
+    },
+    "delivery_company_id": {
+      "type": "string",
+      "description": "ID of delivery company (for third-party delivery)"
+    },
+    "delivery_company_name": {
+      "type": "string",
+      "description": "Name of delivery company"
+    },
+    "delivery_zone_id": {
+      "type": "string",
+      "description": "ID of delivery zone"
+    },
+    "delivery_zone_name": {
+      "type": "string",
+      "description": "Name of delivery zone"
+    },
+    "delivery_fee": {
+      "type": "number",
+      "default": 0,
+      "description": "Delivery fee charged"
+    },
+    "is_pro_delivery": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether Pro Free Delivery was enabled (delivery fee waived)"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "menu_item_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "selected_options": {
+            "type": "object"
+          },
+          "option_price_modifier": {
+            "type": "number",
+            "default": 0
+          },
+          "optionsWithModifiers": {
+            "type": "object"
+          }
+        }
+      },
+      "description": "Order items"
+    },
+    "voice_order_id": {
+      "type": "string",
+      "description": "ID of the VoiceOrder this POS order was created from (if originated from a voice order)"
+    },
+    "total": {
+      "type": "number",
+      "description": "Total order amount"
+    },
+    "subtotal": {
+      "type": "number",
+      "description": "Subtotal before tax and discount"
+    },
+    "tax": {
+      "type": "number",
+      "description": "Tax amount"
+    },
+    "service_charge": {
+      "type": "number",
+      "default": 0,
+      "description": "Service charge amount"
+    },
+    "discount_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Order discount amount"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "preparing",
+        "ready",
+        "paid",
+        "completed",
+        "cancelled"
+      ],
+      "default": "pending",
+      "description": "Order status"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "cash",
+        "visa",
+        "instapay",
+        "wallet",
+        "cashback_balance",
+        "stripe",
+        "cl",
+        "hospitality",
+        "recharge_balance",
+        "visa_cash",
+        "visa_instapay"
+      ],
+      "description": "Payment method"
+    },
+    "visa_amount": {
+      "type": "number",
+      "description": "Amount paid via Visa (for split payments)"
+    },
+    "secondary_payment_method": {
+      "type": "string",
+      "description": "Secondary payment method for split payments"
+    },
+    "secondary_amount": {
+      "type": "number",
+      "description": "Amount paid via secondary method"
+    },
+    "cashback_used": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount deducted from cashback balance"
+    },
+    "payment_receipt_url": {
+      "type": "string",
+      "description": "URL to uploaded payment receipt"
+    },
+    "stripe_payment_intent_id": {
+      "type": "string",
+      "description": "Stripe payment intent ID"
+    },
+    "stripe_payment_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "processing",
+        "succeeded",
+        "failed",
+        "canceled"
+      ],
+      "description": "Stripe payment status"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Order notes"
+    },
+    "cashback_distributed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether cashback has been distributed for this order"
+    },
+    "recharge_balance_before": {
+      "type": "number",
+      "description": "Recharge wallet balance before this order"
+    },
+    "recharge_balance_deducted": {
+      "type": "number",
+      "description": "Amount deducted from recharge balance"
+    },
+    "recharge_balance_after": {
+      "type": "number",
+      "description": "Remaining recharge balance after this order"
+    },
+    "consumed_balance_sofar": {
+      "type": "number",
+      "description": "Total consumed recharge balance including this order"
+    },
+    "receipt_usage_type": {
+      "type": "string",
+      "enum": [
+        "generate_cashback",
+        "utilize_cashback",
+        "none"
+      ],
+      "default": "none",
+      "description": "Whether this receipt generates or utilizes cashback"
+    },
+    "auto_cashback_generated": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether cashback was automatically generated at POS"
+    },
+    "cashback_excluded_by_admin": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether admin manually excluded this order from cashback generation"
+    },
+    "cashback_exclusion_reason": {
+      "type": "string",
+      "description": "Reason admin excluded this order from cashback generation"
+    },
+    "delivery_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "acknowledged",
+        "in_delivery",
+        "delivered",
+        "failed"
+      ],
+      "default": "pending",
+      "description": "Delivery tracking status in the delivery portal"
+    },
+    "delivery_acknowledged_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the delivery was acknowledged"
+    },
+    "delivery_picked_up_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the order was picked up for delivery"
+    },
+    "delivery_delivered_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the order was delivered"
+    },
+    "delivery_acknowledged_by": {
+      "type": "string",
+      "description": "Name/email of who acknowledged the delivery"
+    },
+    "kitchen_ready_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the kitchen marked the order as ready"
+    },
+    "global_discount_amount": {
+      "type": "number",
+      "description": "Global admin-configured discount amount"
+    },
+    "manual_discount_percent": {
+      "type": "number",
+      "description": "Manual discount percentage"
+    },
+    "manual_discount_fixed": {
+      "type": "number",
+      "description": "Manual discount fixed amount"
+    },
+    "manual_discount_mode": {
+      "type": "string",
+      "description": "Manual discount mode: percentage or fixed"
+    },
+    "minimum_charge_per_guest": {
+      "type": "number",
+      "description": "Minimum charge per guest set on the table"
+    },
+    "minimum_charge_guests": {
+      "type": "number",
+      "description": "Number of guests for minimum charge"
+    },
+    "minimum_charge_total": {
+      "type": "number",
+      "description": "Total minimum charge (per_guest \u00d7 guests)"
+    },
+    "minimum_charge_adjustment": {
+      "type": "number",
+      "description": "Amount added to reach minimum charge when items total is below it"
+    },
+    "split_check": {
+      "type": "object",
+      "description": "Split check configuration for dine-in orders divided between guests",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this order has a split check"
+        },
+        "split_count": {
+          "type": "number",
+          "description": "Number of splits"
+        },
+        "splits": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "guest_name": {
+                "type": "string",
+                "description": "Name of the guest for this split"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                },
+                "description": "Items assigned to this guest"
+              },
+              "subtotal": {
+                "type": "number",
+                "description": "Subtotal for this split"
+              },
+              "tax": {
+                "type": "number",
+                "description": "Tax amount for this split"
+              },
+              "service_charge": {
+                "type": "number",
+                "description": "Service charge for this split"
+              },
+              "discount": {
+                "type": "number",
+                "description": "Discount share for this split"
+              },
+              "total": {
+                "type": "number",
+                "description": "Total amount for this split"
+              },
+              "payment_method": {
+                "type": "string",
+                "description": "Payment method used for this split"
+              },
+              "paid": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether this split has been paid"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "items",
+    "total"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_cashier_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_cashier_edit": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_cashier_audit": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_kds_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_delivery_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_analytics_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_finance_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_clients_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_cashback_dist_approve": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_admin_operations": true
+                  }
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "data.customer_id": "{{user.data.perm_client_id}}"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            },
+            {
+              "data.status": {
+                "$in": [
+                  "pending"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,190 @@
+{
+  "name": "FinanceMappingVersion",
+  "type": "object",
+  "description": "Company-scoped dated posting rule versions. Reviewed definitions remain immutable. Semantic account keys resolve from company bindings and document context. All seven blueprint sections await joint activation; configuration approval alone never posts.",
+  "properties": {
+    "company_id": {
+      "type": "string"
+    },
+    "event_type": {
+      "type": "string"
+    },
+    "rule_key": {
+      "type": "string"
+    },
+    "version": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "policy_reference": {
+      "type": "string"
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date"
+    },
+    "effective_to": {
+      "type": "string"
+    },
+    "priority": {
+      "type": "integer"
+    },
+    "conditions": {
+      "type": "object"
+    },
+    "required_dimensions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "processing_policy": {
+      "type": "object",
+      "properties": {
+        "valuation": {
+          "type": "string"
+        },
+        "landed_cost_allocation": {
+          "type": "string",
+          "enum": [
+            "none",
+            "manual",
+            "quantity",
+            "value",
+            "weight"
+          ]
+        },
+        "collection_percent": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "recognition_timing": {
+          "type": "string"
+        }
+      }
+    },
+    "lines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "side": {
+            "type": "string",
+            "enum": [
+              "debit",
+              "credit"
+            ]
+          },
+          "account_id": {
+            "type": "string"
+          },
+          "account_key": {
+            "type": "string",
+            "description": "Semantic account key; resolves by company, date, priority and document context. Mutually exclusive with a fixed account_id."
+          },
+          "account_code": {
+            "type": "string"
+          },
+          "account_name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "basis": {
+            "type": "string"
+          },
+          "negative_behavior": {
+            "type": "string",
+            "enum": [
+              "reject",
+              "reverse"
+            ]
+          }
+        },
+        "required": [
+          "side",
+          "basis",
+          "negative_behavior"
+        ]
+      }
+    },
+    "fixture": {
+      "type": "object"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "enumColors": [
+        "gray",
+        "yellow",
+        "green",
+        "red"
+      ]
+    },
+    "prepared_by_id": {
+      "type": "string"
+    },
+    "prepared_by": {
+      "type": "string"
+    },
+    "reviewed_by_id": {
+      "type": "string"
+    },
+    "reviewed_by": {
+      "type": "string"
+    },
+    "reviewed_at": {
+      "type": "string"
+    },
+    "review_note": {
+      "type": "string"
+    },
+    "supersedes_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "company_id",
+    "event_type",
+    "rule_key",
+    "version",
+    "name",
+    "status",
+    "prepared_by_id"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    }
+  }
+}

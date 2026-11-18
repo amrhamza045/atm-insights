@@ -1,0 +1,152 @@
+{
+  "name": "SocialMediaConnection",
+  "type": "object",
+  "description": "Lead-capture settings per platform (Admin \u203a Systems \u203a Social Media). Tokens and app secrets are never stored here: they live in the app's Secrets. connection_status, last_verified_date and last_check_message are written by the checkSocialConnection backend function; last_lead_date (and connected) whenever a lead arrives.",
+  "properties": {
+    "platform": {
+      "type": "string",
+      "enum": [
+        "facebook",
+        "instagram",
+        "linkedin",
+        "tiktok",
+        "whatsapp"
+      ],
+      "description": "Social platform this connection configures"
+    },
+    "is_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether lead capture from this platform is switched on. While off, leads arriving from it are ignored."
+    },
+    "account_name": {
+      "type": "string",
+      "description": "Page / profile / company / business name on the platform"
+    },
+    "account_id": {
+      "type": "string",
+      "description": "Page ID, Instagram account ID, organisation / advertiser ID or WhatsApp number. For Facebook and Instagram the connection check compares it with the account the access token belongs to."
+    },
+    "app_id": {
+      "type": "string",
+      "description": "Platform app / client ID used for the integration (reference only)"
+    },
+    "default_campaign": {
+      "type": "string",
+      "description": "Campaign label stamped on leads arriving from this platform when none is supplied"
+    },
+    "connection_status": {
+      "type": "string",
+      "enum": [
+        "not_connected",
+        "connected",
+        "error"
+      ],
+      "enumColors": [
+        "gray",
+        "green",
+        "red"
+      ],
+      "default": "not_connected",
+      "description": "Result of the last connection check, or connected once a lead has arrived"
+    },
+    "last_verified_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the connection was last confirmed as working"
+    },
+    "last_check_message": {
+      "type": "string",
+      "description": "What the last connection check found, shown on the platform's card"
+    },
+    "last_lead_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the last lead arrived from this platform"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "platform"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_systems": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_systems": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_systems": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_systems": true
+          }
+        }
+      ]
+    }
+  }
+}

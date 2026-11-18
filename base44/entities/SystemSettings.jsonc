@@ -1,0 +1,285 @@
+{
+  "name": "SystemSettings",
+  "type": "object",
+  "properties": {
+    "enable_low_stock_alerts": {
+      "type": "boolean",
+      "default": true
+    },
+    "send_low_stock_emails": {
+      "type": "boolean",
+      "default": false
+    },
+    "send_low_stock_sms": {
+      "type": "boolean",
+      "default": false
+    },
+    "registration_fee": {
+      "type": "number",
+      "default": 0
+    },
+    "welcome_cashback_percentage": {
+      "type": "number",
+      "default": 0
+    },
+    "payout_percent": {
+      "type": "number",
+      "default": 0
+    },
+    "min_payout_amount": {
+      "type": "number",
+      "default": 50
+    },
+    "rewards_discounts_percent": {
+      "type": "number",
+      "default": 0
+    },
+    "default_tax_percentage": {
+      "type": "number",
+      "default": 0
+    },
+    "default_service_percentage": {
+      "type": "number",
+      "default": 0
+    },
+    "dine_in_tax_percentage": {
+      "type": "number",
+      "default": 0
+    },
+    "dine_in_service_percentage": {
+      "type": "number",
+      "default": 0
+    },
+    "delivery_tax_percentage": {
+      "type": "number",
+      "default": 0
+    },
+    "delivery_service_percentage": {
+      "type": "number",
+      "default": 0
+    },
+    "takeaway_tax_percentage": {
+      "type": "number",
+      "default": 0
+    },
+    "takeaway_service_percentage": {
+      "type": "number",
+      "default": 0
+    },
+    "overall_restaurant_margin_percentage": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Optional restaurant-wide target margin. No default \u2014 unset means no target."
+    },
+    "catering_target_margin_percentage": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Optional global catering actual-margin benchmark; null uses the restaurant target"
+    },
+    "bank_transfer_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "paypal_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "cash_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "instapay_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "wallet_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "stripe_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "stripe_public_key": {
+      "type": "string",
+      "description": "Stripe publishable key (safe for the browser). The secret key is never stored here \u2014 it lives in the app's environment secrets."
+    },
+    "default_daily_withdrawal_limit": {
+      "type": "number"
+    },
+    "default_weekly_withdrawal_limit": {
+      "type": "number"
+    },
+    "default_monthly_withdrawal_limit": {
+      "type": "number"
+    },
+    "instapay_number": {
+      "type": "string"
+    },
+    "wallet_number": {
+      "type": "string"
+    },
+    "default_root_client_id": {
+      "type": "string"
+    },
+    "default_root_client_name": {
+      "type": "string"
+    },
+    "default_pos_client_id": {
+      "type": "string"
+    },
+    "default_pos_client_name": {
+      "type": "string"
+    },
+    "stock_review_freeze_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "stock_review_freeze_type": {
+      "type": "string",
+      "enum": [
+        "full",
+        "partial"
+      ],
+      "default": "full"
+    },
+    "stock_review_frozen_categories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "stock_review_freeze_start": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "stock_review_freeze_end": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "stock_review_freeze_reason": {
+      "type": "string"
+    },
+    "kds_sound_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "kds_alert_volume": {
+      "type": "number",
+      "default": 0.8
+    },
+    "kds_new_order_sound_url": {
+      "type": "string",
+      "default": "https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg"
+    },
+    "kds_overdue_sound_url": {
+      "type": "string",
+      "default": "https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
+    },
+    "setting_key": {
+      "type": "string",
+      "unique": true
+    },
+    "numeral_style": {
+      "type": "string",
+      "enum": [
+        "english",
+        "arabic"
+      ],
+      "default": "english"
+    },
+    "timezone_offset_minutes": {
+      "type": "number",
+      "description": "Company timezone as minutes from UTC. No default \u2014 must be set by an admin."
+    },
+    "disabled_modules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "disabled_tabs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Sub-tabs closed for everyone (admins included) in Admin \u203a Modules, stored on the 'default' record as '<Screen>:<tab key>', e.g. 'Catering:quotes' or 'Admin:leads'."
+    },
+    "auto_approve_with_permission": {
+      "type": "boolean",
+      "default": false,
+      "description": "Stored on the 'approval_settings' record. When on, a new request is auto-approved if its requester holds the matching approval permission. Requests needing an independent approver always stay pending."
+    }
+  },
+  "required": [
+    "setting_key"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

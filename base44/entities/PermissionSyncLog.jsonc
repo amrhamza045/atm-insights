@@ -1,0 +1,88 @@
+{
+  "name": "PermissionSyncLog",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    },
+    "trigger": {
+      "type": "string",
+      "enum": [
+        "role_change",
+        "override",
+        "branch",
+        "role_edit",
+        "signup",
+        "sign_in",
+        "nightly",
+        "bulk",
+        "manual",
+        "app_open",
+        "action_check"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "success",
+        "failed"
+      ]
+    },
+    "error_message": {
+      "type": "string"
+    },
+    "attempts": {
+      "type": "number"
+    },
+    "mismatch_before": {
+      "type": "boolean",
+      "default": false,
+      "description": "Stored copy differed from the resolver before this overwrite"
+    },
+    "mismatch_fields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "synced_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "trigger",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

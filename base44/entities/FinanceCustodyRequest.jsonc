@@ -1,0 +1,157 @@
+{
+  "name": "FinanceCustodyRequest",
+  "type": "object",
+  "description": "Custody funding, replenishment, or settlement/return request routed through System Role Group approvals in the dedicated Petty Cash & Custody module.",
+  "properties": {
+    "company_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "request_type": {
+      "type": "string",
+      "enum": [
+        "issue",
+        "replenishment",
+        "settlement"
+      ],
+      "enumColors": [
+        "blue",
+        "green",
+        "purple"
+      ]
+    },
+    "custody_id": {
+      "type": "string"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "employee_name": {
+      "type": "string"
+    },
+    "entry_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "amount": {
+      "type": "number",
+      "default": 0
+    },
+    "currency": {
+      "type": "string"
+    },
+    "payment_method": {
+      "type": "string"
+    },
+    "payment_method_name": {
+      "type": "string"
+    },
+    "close_after_return": {
+      "type": "boolean",
+      "default": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "enumColors": [
+        "yellow",
+        "green",
+        "red"
+      ],
+      "default": "pending"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "requested_by": {
+      "type": "string"
+    },
+    "requested_by_id": {
+      "type": "string"
+    },
+    "decided_by": {
+      "type": "string"
+    },
+    "decided_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rejection_reason": {
+      "type": "string"
+    },
+    "journal_id": {
+      "type": "string"
+    },
+    "custody_entry_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "company_id",
+    "branch_id",
+    "request_type",
+    "employee_id",
+    "employee_name",
+    "entry_date",
+    "amount",
+    "currency",
+    "status",
+    "requested_by"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.employee_id": "{{user.data.perm_employee_id}}"
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    }
+  }
+}

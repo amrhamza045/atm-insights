@@ -1,0 +1,162 @@
+{
+  "name": "CateringEventTypeDiscount",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "Branch the rule applies to"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "event_type": {
+      "type": "string",
+      "description": "Event type name this rule covers"
+    },
+    "discount_mode": {
+      "type": "string",
+      "enum": [
+        "percent",
+        "amount"
+      ],
+      "default": "percent"
+    },
+    "discount_value": {
+      "type": "number",
+      "default": 0
+    },
+    "target_margin_percentage": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Optional actual-margin benchmark override for this event type"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "reason": {
+      "type": "string"
+    },
+    "last_applied_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_applied_count": {
+      "type": "number",
+      "default": 0
+    },
+    "created_by_email": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

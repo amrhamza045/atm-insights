@@ -1,0 +1,195 @@
+{
+  "name": "CateringPaymentPolicy",
+  "type": "object",
+  "description": "Payment policy for one booking window, set in Catering \u203a Settings \u203a Payment Policies. The window is how far ahead the event is booked, counted from the day the event is requested to the event date: from min_days_before (included) up to max_days_before (not included; empty = no upper limit). Each policy holds the payment schedule and the approval rule for those bookings. Every new catering event is booked under the active policy for its window and keeps a snapshot of it (CateringEvent.payment_policy), so later edits only affect new bookings and reschedules; a date no active policy covers can't be booked.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Policy name shown in the list"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional internal note"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Switched-off policies are kept but don't count towards the booking windows"
+    },
+    "min_days_before": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Applies to events booked at least this many days before their date (whole days)"
+    },
+    "max_days_before": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Applies to events booked fewer than this many days before their date (whole days). Empty = no upper limit"
+    },
+    "amount_mode": {
+      "type": "string",
+      "enum": [
+        "running_total",
+        "separate"
+      ],
+      "enumColors": [
+        "blue",
+        "purple"
+      ],
+      "default": "running_total",
+      "description": "running_total: each step is the total the client must have paid by its due point. separate: each step is a new payment on top of the earlier ones"
+    },
+    "schedule": {
+      "type": "array",
+      "description": "Payment steps, in order",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "Optional step name"
+          },
+          "amount_type": {
+            "type": "string",
+            "enum": [
+              "percent",
+              "fixed",
+              "balance"
+            ],
+            "description": "percent: % of the quote total. fixed: a set amount. balance: whatever is still unpaid"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0,
+            "description": "The percentage or the fixed amount (0 for balance)"
+          },
+          "due_type": {
+            "type": "string",
+            "enum": [
+              "booking_day",
+              "days_after_booking",
+              "days_before_event"
+            ],
+            "description": "When the step is due"
+          },
+          "due_days": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Days after booking or before the event (0 for booking_day)"
+          }
+        },
+        "required": [
+          "amount_type",
+          "due_type"
+        ]
+      }
+    },
+    "requires_approval": {
+      "type": "boolean",
+      "default": false,
+      "description": "Bookings in this window wait for approval"
+    },
+    "approver_role_key": {
+      "type": "string",
+      "description": "Role (role_key from Role Management) whose members approve these bookings"
+    },
+    "approval_status_label": {
+      "type": "string",
+      "description": "Status shown on the event while it waits for approval"
+    },
+    "hold_until_approved": {
+      "type": "boolean",
+      "default": false,
+      "description": "The event can't move forward until it is approved"
+    }
+  },
+  "required": [
+    "name",
+    "min_days_before"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

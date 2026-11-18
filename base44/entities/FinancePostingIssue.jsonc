@@ -1,0 +1,67 @@
+{
+  "name": "FinancePostingIssue",
+  "type": "object",
+  "properties": {
+    "issue_key": {
+      "type": "string"
+    },
+    "company_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "source_entity": {
+      "type": "string"
+    },
+    "source_description": {
+      "type": "string"
+    },
+    "entry_date": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "resolved"
+      ]
+    },
+    "message": {
+      "type": "string"
+    },
+    "last_attempt_at": {
+      "type": "string"
+    },
+    "resolved_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "issue_key",
+    "company_id",
+    "branch_id",
+    "source_id",
+    "status",
+    "message"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

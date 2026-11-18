@@ -1,0 +1,330 @@
+{
+  "name": "CateringActualCostRun",
+  "type": "object",
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_finance": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_finance": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_finance": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "properties": {
+    "event_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "calculated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "calculated_by": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "incomplete",
+        "skipped_cancelled"
+      ]
+    },
+    "currency": {
+      "type": "string",
+      "default": "EGP"
+    },
+    "food_cost": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "labor_cost": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "equipment_cost": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "total_cost": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "revenue": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "margin": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "margin_percentage": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "margin_bridge_expected_margin": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "margin_bridge_actual_margin": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "margin_bridge_expected_delta": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "margin_bridge_total_delta": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "margin_bridge_mismatch_amount": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "margin_bridge_consistent": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "margin_bridge_lines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "expected_amount": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "actual_amount": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "delta": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "delta"
+        ]
+      }
+    },
+    "margin_bridge_ranking": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "rank": {
+            "type": "number"
+          },
+          "absolute_amount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "key",
+          "rank",
+          "absolute_amount"
+        ]
+      }
+    },
+    "warning_codes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "source_counts": {
+      "type": "object"
+    },
+    "audit_file_uri": {
+      "type": "string",
+      "description": "Private JSON audit: source record IDs, input snapshots, valuation basis, bridge lines, inclusion/exclusion amounts and warnings."
+    }
+  },
+  "required": [
+    "event_id",
+    "branch_id",
+    "calculated_at",
+    "version",
+    "status"
+  ]
+}

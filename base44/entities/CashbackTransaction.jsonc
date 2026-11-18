@@ -1,0 +1,147 @@
+{
+  "name": "CashbackTransaction",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "ID of the client receiving the cashback"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Name of the client"
+    },
+    "transaction_type": {
+      "type": "string",
+      "enum": [
+        "welcome_cashback",
+        "referral_cashback",
+        "self_cashback",
+        "redemption",
+        "payout"
+      ],
+      "description": "Type of cashback transaction"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Total transaction amount"
+    },
+    "cashback_amount": {
+      "type": "number",
+      "description": "Amount that went to cashback balance"
+    },
+    "payout_amount": {
+      "type": "number",
+      "description": "Amount that went to payout balance"
+    },
+    "source_client_id": {
+      "type": "string",
+      "description": "ID of the client who triggered this transaction (for referral cashback)"
+    },
+    "source_client_name": {
+      "type": "string",
+      "description": "Name of the source client"
+    },
+    "purchase_amount": {
+      "type": "number",
+      "description": "Original purchase amount (for cashback transactions)"
+    },
+    "referral_level": {
+      "type": "number",
+      "description": "Referral level (1, 2, or 3)"
+    },
+    "cashback_rate": {
+      "type": "number",
+      "description": "Cashback percentage rate applied"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the transaction"
+    }
+  },
+  "required": [
+    "client_id",
+    "transaction_type",
+    "amount"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        },
+        {
+          "data.client_id": "{{user.data.perm_client_id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_actions": true
+          }
+        }
+      ]
+    }
+  }
+}

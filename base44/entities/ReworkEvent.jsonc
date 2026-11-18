@@ -1,0 +1,201 @@
+{
+  "name": "ReworkEvent",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Rework date"
+    },
+    "rework_type": {
+      "type": "string",
+      "enum": [
+        "deboning",
+        "trimming",
+        "grinding",
+        "portioning",
+        "cubing",
+        "slicing",
+        "sausage_making",
+        "curing",
+        "smoking",
+        "marinating",
+        "tenderizing",
+        "aging",
+        "rendering",
+        "other"
+      ],
+      "default": "other",
+      "description": "Type of rework/processing operation performed"
+    },
+    "rework_type_custom": {
+      "type": "string",
+      "description": "Custom rework type name when rework_type is 'other'"
+    },
+    "input_sku_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of input raw material SKUs consumed"
+    },
+    "input_sku_names": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Names of input SKUs"
+    },
+    "input_quantities": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "description": "Quantities consumed from each input"
+    },
+    "input_total_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Total cost of input SKUs consumed"
+    },
+    "output_sku_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of output SKUs created"
+    },
+    "output_sku_names": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Names of output SKUs"
+    },
+    "output_quantities": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "description": "Quantities produced"
+    },
+    "labor_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Additional rework labor/processing cost"
+    },
+    "total_output_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Input cost + labor cost"
+    },
+    "lot_chain": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Inherited lot chain"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "date",
+    "rework_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

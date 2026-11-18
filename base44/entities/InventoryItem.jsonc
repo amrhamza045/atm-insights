@@ -1,0 +1,227 @@
+{
+  "name": "InventoryItem",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this inventory item belongs to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this inventory item belongs to"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of the inventory item"
+    },
+    "arabic_name": {
+      "type": "string",
+      "description": "Optional Arabic name used in Arabic documents (e.g. release slip PDFs). Empty = auto-translated."
+    },
+    "category_id": {
+      "type": "string",
+      "description": "ID of the inventory category"
+    },
+    "category_name": {
+      "type": "string",
+      "description": "Name of the inventory category"
+    },
+    "quantity": {
+      "type": "number",
+      "default": 0,
+      "description": "Current quantity in stock (in selling unit)"
+    },
+    "unit": {
+      "type": "string",
+      "description": "Legacy unit of measurement (kg, pieces, liters, etc.)"
+    },
+    "purchase_unit": {
+      "type": "string",
+      "enum": [
+        "weight",
+        "pcs"
+      ],
+      "default": "pcs",
+      "description": "Unit used when purchasing this item (weight or pieces)"
+    },
+    "purchase_unit_label": {
+      "type": "string",
+      "description": "Custom label for purchase unit (e.g. kg, box, carton)"
+    },
+    "selling_unit": {
+      "type": "string",
+      "enum": [
+        "weight",
+        "pcs"
+      ],
+      "default": "pcs",
+      "description": "Unit used when selling/consuming this item (weight or pieces)"
+    },
+    "selling_unit_label": {
+      "type": "string",
+      "description": "Custom label for selling unit (e.g. kg, piece, portion)"
+    },
+    "low_stock_threshold": {
+      "type": "number",
+      "default": 10,
+      "description": "Alert when stock is below this (in selling unit)"
+    },
+    "cost_per_unit": {
+      "type": "number",
+      "description": "Cost per purchase unit"
+    },
+    "supplier_id": {
+      "type": "string",
+      "description": "ID of preferred supplier"
+    },
+    "supplier": {
+      "type": "string",
+      "description": "Supplier name"
+    },
+    "expiry_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Expiry date of the current stock of this raw material. Required for all newly added inventory items."
+    },
+    "lead_time_days": {
+      "type": "number",
+      "default": 2,
+      "description": "Typical procurement lead time in days for this material \u2014 how long a supplier needs from PO to delivery. Drives the catering shortfall at-risk escalation: a shortfall becomes at-risk when lead time exceeds remaining time."
+    },
+    "storage_location_id": {
+      "type": "string",
+      "description": "StorageLocation (same branch) where this item is physically kept"
+    },
+    "storage_location_name": {
+      "type": "string",
+      "description": "Name of the storage location (copied for display)"
+    },
+    "source_item_id": {
+      "type": "string",
+      "description": "The stock item in another branch this item was copied from. Links the same item across branches."
+    },
+    "supplier_return_entry_id": {
+      "type": "string",
+      "description": "Server-only retry marker for an applied supplier return; not reset by normal stock changes.",
+      "rls": {
+        "update": {
+          "user_condition": {
+            "collaborator_role": "editor"
+          }
+        }
+      }
+    },
+    "opening_entry_id": {
+      "type": "string",
+      "description": "Server-only marker: the opening balance (Finance \u203a Opening balances) already added to this item, so a retry never adds it twice.",
+      "rls": {
+        "update": {
+          "user_condition": {
+            "collaborator_role": "editor"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_manufacturing_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

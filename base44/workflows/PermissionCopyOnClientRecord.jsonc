@@ -1,0 +1,42 @@
+{
+  "name": "Permission Copy on Client Record",
+  "description": "Re-syncs an account's permission copy (client link) when a Client record is created, changed or removed, so new clients can read their own purchases, recharges and payouts straight away",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create",
+        "update",
+        "delete"
+      ],
+      "entity_name": "Client"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "permission_copy_on_client_record",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "sync_user": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "syncPermissionCopy",
+            "args": {
+              "trigger": "signup",
+              "email": "${ .trigger.data.email // .trigger.old_data.email }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Sync client's account"
+          }
+        }
+      }
+    ]
+  }
+}

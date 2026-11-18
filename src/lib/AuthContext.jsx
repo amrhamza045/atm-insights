@@ -1,58 +1,94 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { supabase } from '@/api/supabaseClient';
+import { base44 } from '@/api/base44Client';
+import { queryClientInstance } from '@/lib/query-client';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoadingAuth, setIsLoadingAuth] = useState(false);
-  const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(false);
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(true);
   const [authError, setAuthError] = useState(null);
+  const [appPublicSettings, setAppPublicSettings] = useState({
+    id: 'rosemary-erp',
+    public_settings: {},
+  });
 
   useEffect(() => {
-    // Check initial Supabase auth session if available
-    if (supabase && supabase.auth) {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session?.user) {
-          setUser(session.user);
-          setIsAuthenticated(true);
-        }
-      }).catch((err) => {
-        console.warn('Auth check skipped:', err);
-      });
-
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-        setUser(session?.user || null);
-        setIsAuthenticated(!!session?.user);
-      });
-
-      return () => subscription?.unsubscribe();
-    }
+    checkAppState();
   }, []);
 
-  const logout = async () => {
-    if (supabase?.auth) {
-      await supabase.auth.signOut();
+  const checkAppState = async () => {
+    try {
+      setIsLoadingPublicSettings(true);
+      setAuthError(null);
+
+      // Public settings default for Rosemary ERP
+      setAppPublicSettings({
+        id: 'rosemary-erp',
+        public_settings: {},
+      });
+      setIsLoadingPublicSettings(false);
+
+      await checkUserAuth();
+    } catch (error) {
+      console.error('App state check error:', error);
+      setIsLoadingPublicSettings(false);
+      setIsLoadingAuth(false);
     }
+  };
+
+  const checkUserAuth = async () => {
+    try {
+      setIsLoadingAuth(true);
+      const currentUser = await base44.auth.me();
+      if (currentUser) {
+        if (queryClientInstance) {
+          queryClientInstance.setQueryData(['currentUser'], currentUser);
+        }
+        setUser(currentUser);
+        setIsAuthenticated(true);
+      } else {
+        setUser(null);
+        setIsAuthenticated(false);
+      }
+      setIsLoadingAuth(false);
+    } catch (error) {
+      console.error('User auth check failed:', error);
+      setIsLoadingAuth(false);
+      setIsAuthenticated(false);
+    }
+  };
+
+  const logout = (shouldRedirect = true) => {
     setUser(null);
     setIsAuthenticated(false);
+    if (shouldRedirect) {
+      base44.auth.logout(window.location.href);
+    } else {
+      base44.auth.logout();
+    }
   };
 
   const navigateToLogin = () => {
-    console.log('Login requested');
+    base44.auth.redirectToLogin(window.location.href);
   };
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      isAuthenticated,
-      isLoadingAuth,
-      isLoadingPublicSettings,
-      authError,
-      logout,
-      navigateToLogin,
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated,
+        isLoadingAuth,
+        isLoadingPublicSettings,
+        authError,
+        appPublicSettings,
+        logout,
+        navigateToLogin,
+        checkAppState,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

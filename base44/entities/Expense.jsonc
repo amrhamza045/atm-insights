@@ -1,0 +1,338 @@
+{
+  "name": "Expense",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this expense belongs to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this expense belongs to"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "ID of the cashier session"
+    },
+    "expense_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date and time of expense"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "utilities",
+        "supplies",
+        "maintenance",
+        "salaries",
+        "rent",
+        "delivery",
+        "other"
+      ],
+      "description": "Expense category"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Expense amount"
+    },
+    "description": {
+      "type": "string",
+      "description": "Expense description"
+    },
+    "recipient": {
+      "type": "string",
+      "description": "Who received the payment"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "cash",
+        "card",
+        "bank_transfer"
+      ],
+      "default": "cash",
+      "description": "How the expense was paid"
+    },
+    "receipt_url": {
+      "type": "string",
+      "description": "URL to uploaded receipt/invoice"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Approval status"
+    },
+    "approved_by": {
+      "type": "string",
+      "description": "Admin who approved/rejected this expense"
+    },
+    "rejection_reason": {
+      "type": "string",
+      "description": "Reason for rejection if applicable"
+    },
+    "submitted_by": {
+      "type": "string",
+      "description": "Cashier who submitted the expense"
+    }
+  },
+  "required": [
+    "expense_date",
+    "category",
+    "amount",
+    "description",
+    "receipt_url"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_finance_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_cashier_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_expense_approve": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_cashier_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_finance_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_finance_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_admin_operations": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_expense_approve": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_finance_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

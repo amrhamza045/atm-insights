@@ -1,0 +1,263 @@
+{
+  "name": "OperationalMeeting",
+  "type": "object",
+  "description": "Internal operational meeting focused on delay root causes, with attendance and follow-up actions.",
+  "properties": {
+    "branch_id": {
+      "type": "string"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "meeting_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "meeting_time": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "held",
+        "cancelled"
+      ],
+      "default": "scheduled"
+    },
+    "agenda": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "root_causes": {
+      "type": "string",
+      "description": "Delay root causes identified"
+    },
+    "attendees": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "employee_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "present": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "owner_id": {
+            "type": "string"
+          },
+          "owner_name": {
+            "type": "string"
+          },
+          "due_date": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "in_progress",
+              "done"
+            ]
+          },
+          "completed_date": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "recorded_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "meeting_date"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

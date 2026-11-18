@@ -1,0 +1,5 @@
+import { financeAmount } from '@/components/finance/financeApi';
+export default function ComparisonTable({report}){
+ const format=(value,metric)=>value===null?'Not available':metric.format==='percent'?`${financeAmount(value,{currency_decimals:2})}%`:financeAmount(value,{currency_decimals:report.currency_decimals});
+ return <section className="space-y-3"><h3 className="font-semibold">Side-by-side financial report</h3><div className="overflow-x-auto border rounded-lg"><table className="w-full text-sm"><thead><tr className="bg-muted"><th className="p-3 text-left">Metric ({report.currency})</th>{report.rows.map(r=><th key={r.id} className="p-3 text-right min-w-48">{r.label}</th>)}</tr></thead><tbody>{report.metrics.map(m=><tr key={m.key} className="border-t"><th className="p-3 text-left font-medium">{m.label}<span className="block font-normal text-xs text-muted-foreground">{m.basis==='closing'?'At end date':'Selected period'}</span></th>{report.rows.map(r=><td key={r.id} className="p-3 text-right tabular-nums">{format(r.values[m.key],m)}</td>)}</tr>)}</tbody></table></div></section>;
+}

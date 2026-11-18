@@ -1,0 +1,170 @@
+{
+  "name": "DailyFinancialSummary",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this summary belongs to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this summary belongs to"
+    },
+    "business_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the financial summary"
+    },
+    "cashier_session_id": {
+      "type": "string",
+      "description": "Associated cashier session"
+    },
+    "total_revenue": {
+      "type": "number",
+      "default": 0,
+      "description": "Total POS (restaurant) revenue for the day \u2014 catering is reported separately in catering_revenue and is never added in here"
+    },
+    "catering_revenue": {
+      "type": "number",
+      "default": 0,
+      "description": "Catering revenue collected on the day (catering payments net of refunds) \u2014 kept separate from POS revenue so neither figure is double-counted"
+    },
+    "catering_payment_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of catering payments included in catering_revenue"
+    },
+    "food_revenue": {
+      "type": "number",
+      "default": 0,
+      "description": "Food sales revenue"
+    },
+    "beverage_revenue": {
+      "type": "number",
+      "default": 0,
+      "description": "Beverage sales revenue"
+    },
+    "total_food_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Total food costs for the day"
+    },
+    "total_beverage_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Total beverage costs for the day"
+    },
+    "total_cogs": {
+      "type": "number",
+      "default": 0,
+      "description": "Total cost of goods sold"
+    },
+    "food_cost_percentage": {
+      "type": "number",
+      "description": "Food cost as % of food revenue"
+    },
+    "beverage_cost_percentage": {
+      "type": "number",
+      "description": "Beverage cost as % of beverage revenue"
+    },
+    "overall_cogs_percentage": {
+      "type": "number",
+      "description": "COGS as % of total revenue"
+    },
+    "gross_profit": {
+      "type": "number",
+      "description": "Revenue - COGS"
+    },
+    "gross_profit_margin": {
+      "type": "number",
+      "description": "Gross profit as % of revenue"
+    },
+    "operating_expenses": {
+      "type": "number",
+      "default": 0,
+      "description": "Total operating expenses (labor, utilities, supplies, etc.)"
+    },
+    "labor_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Labor/payroll costs"
+    },
+    "operating_profit": {
+      "type": "number",
+      "description": "Gross profit - Operating expenses"
+    },
+    "operating_margin_percentage": {
+      "type": "number",
+      "description": "Operating profit as % of revenue"
+    },
+    "number_of_covers": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of customers/transactions"
+    },
+    "average_check": {
+      "type": "number",
+      "description": "Average revenue per transaction"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notes about the day"
+    }
+  },
+  "required": [
+    "business_date",
+    "total_revenue",
+    "total_cogs"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_finance_view": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_finance_view": true
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

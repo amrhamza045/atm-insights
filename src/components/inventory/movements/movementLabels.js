@@ -1,0 +1,15 @@
+export const MOVEMENT_LABELS = {
+  purchase: "Purchase received",
+  opening: "Opening stock",
+  adjustment: "Stock adjustment",
+  sale: "Sale",
+  catering_release: "Catering release",
+  production_consumption: "Used in production",
+  production_output: "Produced",
+  waste: "Waste",
+  expiry: "Expired / used up",
+  supplier_return: "Returned to supplier",
+  butchery_input: "Butchery rework input",
+  butchery_output: "Butchery output",
+  transfer: "Transfer",
+};

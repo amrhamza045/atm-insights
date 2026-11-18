@@ -1,0 +1,13 @@
+import { useEffect,useState } from 'react';
+import { Button } from '@/components/ui/button';
+import useFinanceList from '@/components/finance/useFinanceList';
+import FinanceListState from '@/components/finance/FinanceListState';
+import FinanceAuditFilters from '@/components/finance/audit/FinanceAuditFilters';
+import FinanceAuditDetails from '@/components/finance/audit/FinanceAuditDetails';
+export default function FinanceAuditHistory({company,branches,filters}){
+ const [selection,setSelection]=useState({actor:'',action_filter:'',entity_type:''}),[actor,setActor]=useState('');
+ useEffect(()=>{const timer=setTimeout(()=>setActor(selection.actor.trim()),300);return ()=>clearTimeout(timer);},[selection.actor]);
+ const query=useFinanceList({action:'audit_history',company_id:company.id,...filters,...selection,actor});
+ const branchName=id=>id?(branches.items.find(b=>b.id===id)?.name||id):'Company-wide';
+ return <section className="space-y-4"><div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="text-xl font-semibold">Finance audit history</h2><p className="text-sm text-muted-foreground">Saved changes across authorized branches. Use the branch and date filters above; audit dates and timestamps are UTC.</p></div><Button variant="outline" disabled={query.isFetching} onClick={()=>query.refetch()}>{query.isFetching?'Refreshing…':'Refresh history'}</Button></div><p className="text-sm text-muted-foreground border rounded-md p-3">Detailed events start when this feature is enabled; older missing snapshots cannot be reconstructed. Viewing or refreshing reports and rebuilding reporting indexes are not financial changes. Audit storage failures do not undo accounting changes; this history is not a guaranteed gap-free ledger.</p><FinanceAuditFilters value={selection} onChange={setSelection}/>{!query.isPending&&!query.error&&<div className="space-y-3">{query.items.map(event=><details key={event.id} className="border rounded-lg bg-card text-card-foreground"><summary className="cursor-pointer p-4"><span className="font-medium">{event.action} · {event.entity_label||event.entity_type}</span><span className="block text-sm mt-1">{event.actor_type==='automatic_posting'?'Automated posting · execution account: ':''}{event.actor_name?`${event.actor_name} · `:''}{event.actor_email}</span><span className="block text-xs text-muted-foreground mt-1">{event.created_date?.replace('T',' ').replace('Z',' UTC')} · {company.name} / {branchName(event.branch_id)} · {event.entity_type}</span></summary><div className="px-4 pb-4"><FinanceAuditDetails event={event}/></div></details>)}</div>}<FinanceListState query={query}/></section>;
+}

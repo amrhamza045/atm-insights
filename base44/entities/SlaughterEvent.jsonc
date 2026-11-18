@@ -1,0 +1,193 @@
+{
+  "name": "SlaughterEvent",
+  "type": "object",
+  "properties": {
+    "animal_id": {
+      "type": "string",
+      "description": "ID of the animal (1:1)"
+    },
+    "animal_tag": {
+      "type": "string",
+      "description": "Animal tag number"
+    },
+    "processing_batch_id": {
+      "type": "string",
+      "description": "ID of processing batch"
+    },
+    "batch_number": {
+      "type": "string",
+      "description": "Batch number"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Slaughter date"
+    },
+    "hot_carcass_weight": {
+      "type": "number",
+      "description": "Hot carcass weight"
+    },
+    "cold_carcass_weight": {
+      "type": "number",
+      "description": "Cold carcass weight"
+    },
+    "dressing_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Auto-calculated: carcass weight / live weight"
+    },
+    "disposal_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Disposal cost"
+    },
+    "processing_cost_share": {
+      "type": "number",
+      "default": 0,
+      "description": "Pro-rated shared cost from batch (by carcass weight)"
+    },
+    "total_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Purchase + processing + disposal"
+    },
+    "net_cost_to_allocate": {
+      "type": "number",
+      "default": 0,
+      "description": "After by-product recovery offset"
+    },
+    "condemnation_type": {
+      "type": "string",
+      "enum": [
+        "none",
+        "full",
+        "partial"
+      ],
+      "default": "none",
+      "description": "Condemnation type"
+    },
+    "condemnation_note": {
+      "type": "string",
+      "description": "Condemnation details"
+    },
+    "reconciliation_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "complete",
+        "warning"
+      ],
+      "default": "pending",
+      "description": "Weight reconciliation status"
+    },
+    "reconciliation_note": {
+      "type": "string",
+      "description": "Reason note if variance exceeds tolerance"
+    },
+    "cost_allocated": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether costing has been run"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "animal_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

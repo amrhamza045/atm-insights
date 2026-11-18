@@ -1,0 +1,116 @@
+{
+  "name": "MilestoneAchievement",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "ID of the client who achieved the milestone"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Name of the client"
+    },
+    "milestone_id": {
+      "type": "string",
+      "description": "ID of the milestone achieved"
+    },
+    "milestone_name": {
+      "type": "string",
+      "description": "Name of the milestone"
+    },
+    "bonus_awarded": {
+      "type": "number",
+      "description": "Bonus amount awarded"
+    },
+    "referrals_count": {
+      "type": "number",
+      "description": "Number of referrals at time of achievement"
+    }
+  },
+  "required": [
+    "client_id",
+    "milestone_id",
+    "bonus_awarded"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        },
+        {
+          "data.client_id": "{{user.data.perm_client_id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_actions": true
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,248 @@
+{
+  "name": "Supplier",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Supplier company name"
+    },
+    "contact_person": {
+      "type": "string",
+      "description": "Primary contact person name"
+    },
+    "email": {
+      "type": "string",
+      "description": "Email address"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Phone number"
+    },
+    "address": {
+      "type": "string",
+      "description": "Physical address"
+    },
+    "payment_terms": {
+      "type": "string",
+      "description": "Payment terms (e.g., Net 30, COD, Prepaid)"
+    },
+    "supplied_category_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "IDs of the InventoryCategory records this supplier provides"
+    },
+    "supplied_category_names": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Display names of the supplied categories (kept in step with the ids)"
+    },
+    "rating": {
+      "type": "number",
+      "default": 0,
+      "description": "Average supplier rating (1-5)"
+    },
+    "total_orders": {
+      "type": "number",
+      "default": 0,
+      "description": "Total number of orders placed"
+    },
+    "total_spent": {
+      "type": "number",
+      "default": 0,
+      "description": "Total amount spent with this supplier"
+    },
+    "total_outstanding": {
+      "type": "number",
+      "default": 0,
+      "description": "Legacy reported outstanding balance; reconcile against the verified supplier subledger before importing. Not automatically added to invoice balances."
+    },
+    "account_write_token": {
+      "type": "string",
+      "default": "",
+      "description": "Server supplier-account write lock; interrupted locks require review.",
+      "rls": {
+        "update": {
+          "user_condition": {
+            "collaborator_role": "editor"
+          }
+        }
+      }
+    },
+    "account_write_started_at": {
+      "type": "string",
+      "rls": {
+        "update": {
+          "user_condition": {
+            "collaborator_role": "editor"
+          }
+        }
+      }
+    },
+    "delivery_performance": {
+      "type": "number",
+      "default": 0,
+      "description": "Average delivery performance score (1-5)"
+    },
+    "quality_rating": {
+      "type": "number",
+      "default": 0,
+      "description": "Average quality rating (1-5)"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes about the supplier"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether supplier is currently active"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchases_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchases_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    }
+  }
+}

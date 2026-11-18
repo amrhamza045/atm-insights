@@ -1,0 +1,162 @@
+{
+  "name": "ButcheryExpense",
+  "type": "object",
+  "properties": {
+    "category": {
+      "type": "string",
+      "enum": [
+        "fodder",
+        "medicine",
+        "veterinary",
+        "other"
+      ],
+      "default": "fodder",
+      "description": "Expense category"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Expense date"
+    },
+    "description": {
+      "type": "string",
+      "description": "What the expense was for"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Total cost (weight * cost_per_kg when applicable, otherwise manual)"
+    },
+    "weight": {
+      "type": "number",
+      "description": "Weight in kg (used for per-kg cost calculation)"
+    },
+    "cost_per_kg": {
+      "type": "number",
+      "description": "Cost per kg"
+    },
+    "vendor_name": {
+      "type": "string",
+      "description": "Supplier or service provider name"
+    },
+    "animal_id": {
+      "type": "string",
+      "description": "Optional ID of related animal"
+    },
+    "animal_tag": {
+      "type": "string",
+      "description": "Optional related animal tag"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "category",
+    "date",
+    "amount"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

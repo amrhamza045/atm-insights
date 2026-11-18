@@ -1,0 +1,92 @@
+{
+  "name": "Finance Inventory on Production",
+  "description": "Finalize prepared production cost evidence and post category inventory/WIP movements after confirmed completion.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "ProductionOrder",
+      "events": [
+        "create",
+        "update"
+      ]
+    },
+    "condition": "${ .trigger.data.status == \"completed\" and .trigger.old_data.status != \"completed\" }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "finance_inventory_on_production",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "settle": {
+          "wait": "PT30S",
+          "then": "post",
+          "x-base44": {
+            "title": "Let production completion finish"
+          }
+        }
+      },
+      {
+        "post": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeAutoPost",
+            "args": {
+              "inventory_entity": "ProductionOrder",
+              "source_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "check_retry",
+          "x-base44": {
+            "title": "Finalize actual production costs"
+          }
+        }
+      },
+      {
+        "check_retry": {
+          "switch": [
+            {
+              "when": "${ .post.retry == true }",
+              "then": "delay"
+            },
+            {
+              "when": "${ true }",
+              "then": "end"
+            }
+          ],
+          "x-base44": {
+            "title": "Retry temporary contention?"
+          }
+        }
+      },
+      {
+        "delay": {
+          "wait": "PT15S",
+          "then": "retry",
+          "x-base44": {
+            "title": "Wait for company posting lock"
+          }
+        }
+      },
+      {
+        "retry": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeAutoPost",
+            "args": {
+              "inventory_entity": "ProductionOrder",
+              "source_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Retry production posting once"
+          }
+        }
+      }
+    ]
+  }
+}

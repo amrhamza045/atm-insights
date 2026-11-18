@@ -1,0 +1,171 @@
+{
+  "name": "EmailNotificationSettings",
+  "type": "object",
+  "description": "Admin \u203a Email switches and recipient choices for automatic emails (one record, setting_key 'email_notifications'). An unset switch counts as on. Chain of custody emails use CateringSettings.custody_emails_enabled as their switch; their recipient choices are stored under recipients.custody_emails_enabled. Saved through the emailSettingsAdmin backend function.",
+  "properties": {
+    "setting_key": {
+      "type": "string",
+      "default": "email_notifications",
+      "description": "Unique key for the settings record"
+    },
+    "catering_deposit_customer": {
+      "type": "boolean",
+      "default": true,
+      "description": "Email the client a deposit receipt when a deposit payment is completed"
+    },
+    "rsvp_entry_pass": {
+      "type": "boolean",
+      "default": true,
+      "description": "Email the guest their QR entry pass after an attending RSVP"
+    },
+    "catering_chef_brief": {
+      "type": "boolean",
+      "default": true,
+      "description": "Email the Head Chef the price-free kitchen brief when an event's deposit is fully paid (WhatsApp and in-app copies are not affected)"
+    },
+    "catering_ops_payment": {
+      "type": "boolean",
+      "default": true,
+      "description": "Email Operations and Kitchen staff when the deposit is fully paid and when later payments are recorded"
+    },
+    "catering_quote_decision": {
+      "type": "boolean",
+      "default": true,
+      "description": "Email catering approvers when a client accepts or declines a quote in the portal"
+    },
+    "catering_deposit_recorder": {
+      "type": "boolean",
+      "default": true,
+      "description": "Email a copy of the deposit receipt to the staff member who recorded it"
+    },
+    "catering_orphan_scan": {
+      "type": "boolean",
+      "default": true,
+      "description": "Email catering approvers the weekly catering data check (in-app alerts are not affected)"
+    },
+    "registration_approved": {
+      "type": "boolean",
+      "default": true,
+      "description": "Send the welcome email when a customer completes their account"
+    },
+    "tier_upgrade": {
+      "type": "boolean",
+      "default": true,
+      "description": "Send email when a customer is upgraded to a new loyalty tier"
+    },
+    "recipients": {
+      "type": "object",
+      "default": {},
+      "description": "Who receives each email, keyed by its switch key (custody_emails_enabled for the chain of custody overdue digest). include_default false skips a staff email's usual recipients (client, guest and customer emails always reach them). employee_ids are chosen employees: only active ones with an email receive it. extra_emails are other addresses. For client, guest and customer emails, the people added here receive a copy. Written only by the emailSettingsAdmin backend function, which validates and audits every change.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "include_default": {
+            "type": "boolean",
+            "default": true
+          },
+          "employee_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "extra_emails": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "rls": {
+        "write": {
+          "user_condition": {
+            "collaborator_role": "editor"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "setting_key"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

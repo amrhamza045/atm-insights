@@ -1,0 +1,198 @@
+{
+  "name": "ScheduleSettings",
+  "type": "object",
+  "properties": {
+    "setting_key": {
+      "type": "string",
+      "default": "schedules"
+    },
+    "shortfall_escalation_hour": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 23,
+      "description": "Hour (company time) the daily catering shortfall escalation runs"
+    },
+    "orphan_scan_weekday": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 6,
+      "description": "Day of week (0=Sunday) of the weekly catering orphan scan"
+    },
+    "orphan_scan_hour": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 23,
+      "description": "Hour (company time) of the weekly catering orphan scan"
+    },
+    "permission_sync_hour": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 23,
+      "description": "Hour (company time) of the nightly permission safety sync"
+    },
+    "daily_summary_hour": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 23,
+      "description": "Hour (company time) the Daily Financial Summary email is sent"
+    },
+    "custody_delay_hours": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Hours a custody stage may stay unconfirmed before it is escalated"
+    },
+    "default_lead_time_days": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Lead time used for materials that have none of their own (shortfall escalation)"
+    },
+    "default_low_stock_threshold": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Low-stock threshold used for items that have none of their own"
+    },
+    "catering_default_expected_hours": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Expected hours for a catering staff assignment that has none of its own"
+    },
+    "catering_min_actual_hours": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Minimum hours counted for a catering staff member on an event"
+    },
+    "catering_default_start_hour": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 23,
+      "description": "Start hour (company time) for catering staff when the assignment and event have none"
+    },
+    "record_job_min_gap_minutes": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "default": 0,
+      "description": "Minimum minutes between repeat record-change job runs (actual costs, permission sync) for the same record when no user is signed in. 0 = no gap."
+    },
+    "action_heal_throttle_minutes": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "default": 180,
+      "description": "Minimum minutes between server-action permission-copy drift checks for the same user (Layer 2 self-heal)."
+    }
+  },
+  "required": [
+    "setting_key"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    }
+  }
+}

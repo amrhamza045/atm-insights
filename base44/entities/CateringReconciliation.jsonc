@@ -1,0 +1,329 @@
+{
+  "name": "CateringReconciliation",
+  "type": "object",
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "data.client_id": "{{user.data.portal_client_id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "Branch of the event"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "CateringEvent being reconciled (one record per event)"
+    },
+    "event_name": {
+      "type": "string",
+      "description": "Name of the event"
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the event ran"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Client the event was reconciled for. Required \u2014 this is the field customer-portal access is keyed on."
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "expected_guests": {
+      "type": "number",
+      "default": 0,
+      "description": "Snapshot of the expected count from the booking"
+    },
+    "guaranteed_guests": {
+      "type": "number",
+      "default": 0,
+      "description": "Snapshot of the guaranteed minimum billable count"
+    },
+    "actual_guests": {
+      "type": "number",
+      "default": 0,
+      "description": "Guests who actually showed up \u2014 record-keeping and forecasting only; does not lower billing once the guarantee is locked"
+    },
+    "guarantee_locked": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when the guarantee cutoff had passed, so billing is locked to the guaranteed count"
+    },
+    "billable_guests": {
+      "type": "number",
+      "default": 0,
+      "description": "Count actually billed: guaranteed count when locked, otherwise max(actual, guaranteed)"
+    },
+    "billing_basis": {
+      "type": "string",
+      "description": "Plain-language explanation of how billable_guests was arrived at, kept for audit"
+    },
+    "quote_total": {
+      "type": "number",
+      "default": 0,
+      "description": "Active quote total at reconciliation"
+    },
+    "quote_id": {
+      "type": "string",
+      "description": "Quote revision reconciled against"
+    },
+    "guest_adjustment": {
+      "type": "number",
+      "default": 0,
+      "description": "Adjustment applied when the billable count differs from the count the quote was priced on (per-guest rate \u00d7 difference)"
+    },
+    "additional_charges": {
+      "type": "array",
+      "description": "Extras sold or incurred during the event (bar consumption, overtime, extra covers, damage charges)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number",
+            "default": 0
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "extra_food",
+              "beverage",
+              "overtime",
+              "equipment_damage",
+              "equipment_loss",
+              "transport",
+              "other"
+            ],
+            "default": "other"
+          }
+        },
+        "required": [
+          "label"
+        ]
+      }
+    },
+    "additional_charges_total": {
+      "type": "number",
+      "default": 0
+    },
+    "final_billing_total": {
+      "type": "number",
+      "default": 0,
+      "description": "Final amount owed: quote total + guest adjustment + additional charges"
+    },
+    "total_paid": {
+      "type": "number",
+      "default": 0,
+      "description": "Snapshot of everything already received (deposits and payments)"
+    },
+    "final_balance_due": {
+      "type": "number",
+      "default": 0,
+      "description": "Final billing total minus total paid (negative = refund owed to the client)"
+    },
+    "equipment_returned_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Equipment holds checked back in"
+    },
+    "equipment_outstanding_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Equipment still out at reconciliation time"
+    },
+    "equipment_damaged_count": {
+      "type": "number",
+      "default": 0
+    },
+    "equipment_missing_count": {
+      "type": "number",
+      "default": 0
+    },
+    "inventory_released": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the event's remaining stock reservations were released at closeout"
+    },
+    "post_event_notes": {
+      "type": "string",
+      "description": "How the event actually went \u2014 issues, what to do differently"
+    },
+    "client_feedback": {
+      "type": "string",
+      "description": "Client feedback, where it was given"
+    },
+    "client_rating": {
+      "type": "number",
+      "description": "Optional 1\u20135 rating of how the event went"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "finalized"
+      ],
+      "default": "open",
+      "description": "Finalized means a person confirmed reconciliation and closed the event \u2014 never set automatically"
+    },
+    "finalized_by": {
+      "type": "string",
+      "description": "Email of the user who confirmed reconciliation"
+    },
+    "finalized_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "event_id",
+    "client_id"
+  ]
+}

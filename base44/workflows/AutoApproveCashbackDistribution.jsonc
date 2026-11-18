@@ -1,0 +1,40 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "auto_approve_cashback_distribution",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "approve": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoApproveRequest",
+            "args": {
+              "entity": "CashbackDistributionPending",
+              "id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Auto-approve if permitted"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "CashbackDistributionPending"
+    }
+  },
+  "description": "Approves and executes a new cashback distribution when auto-approval is on and the person who generated it can approve cashback.",
+  "name": "Auto-approve Cashback Distribution"
+}

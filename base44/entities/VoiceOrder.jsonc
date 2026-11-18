@@ -1,0 +1,301 @@
+{
+  "name": "VoiceOrder",
+  "type": "object",
+  "properties": {
+    "audio_url": {
+      "type": "string",
+      "description": "URL of the uploaded voice note audio file (empty for manual call center orders)"
+    },
+    "is_call_center_order": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when this order was entered manually by call center staff from a phone call (not an AI-transcribed voice note)"
+    },
+    "call_center_agent": {
+      "type": "string",
+      "description": "Email of the call center agent who took the phone order"
+    },
+    "is_captain_order": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when this order was entered by a floor captain on a tablet and is waiting for cashier approval"
+    },
+    "captain_email": {
+      "type": "string",
+      "description": "Email of the captain who took the table order"
+    },
+    "captain_name": {
+      "type": "string",
+      "description": "Name of the captain who took the table order"
+    },
+    "table_number": {
+      "type": "string",
+      "description": "Table the captain took the order for"
+    },
+    "guest_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of guests seated at the table (captain orders)"
+    },
+    "order_items": {
+      "type": "array",
+      "description": "Items requested by the customer on the phone call",
+      "items": {
+        "type": "object",
+        "properties": {
+          "menu_item_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "comment": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "estimated_total": {
+      "type": "number",
+      "default": 0,
+      "description": "Estimated order total calculated from the selected items"
+    },
+    "customer_name": {
+      "type": "string",
+      "description": "Name of the customer who placed the voice order"
+    },
+    "customer_phone": {
+      "type": "string",
+      "description": "Phone number of the customer"
+    },
+    "delivery_address": {
+      "type": "string",
+      "description": "Delivery address captured on the phone call"
+    },
+    "delivery_zone_id": {
+      "type": "string",
+      "description": "ID of the delivery zone selected by the call center agent"
+    },
+    "delivery_zone_name": {
+      "type": "string",
+      "description": "Name of the selected delivery zone"
+    },
+    "delivery_fee": {
+      "type": "number",
+      "default": 0,
+      "description": "Delivery fee of the selected zone"
+    },
+    "order_type": {
+      "type": "string",
+      "enum": [
+        "dine_in",
+        "takeaway",
+        "delivery"
+      ],
+      "default": "delivery",
+      "description": "Type of order the customer wants to place"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "processing",
+        "approved",
+        "flagged",
+        "rejected",
+        "completed"
+      ],
+      "default": "pending",
+      "description": "Processing status of the voice order"
+    },
+    "transcript": {
+      "type": "string",
+      "description": "Full raw text transcription of the voice note (from Whisper)"
+    },
+    "corrected_transcript": {
+      "type": "string",
+      "description": "LLM-reconstructed version of the transcript \u2014 fixes phonetic errors and misheard Arabic words while preserving the customer's intended meaning"
+    },
+    "summary": {
+      "type": "string",
+      "description": "AI-generated summary of the order contents"
+    },
+    "confidence": {
+      "type": "string",
+      "enum": [
+        "high",
+        "medium",
+        "low",
+        "none"
+      ],
+      "default": "none",
+      "description": "AI confidence level in the order interpretation"
+    },
+    "confidence_reason": {
+      "type": "string",
+      "description": "Explanation of why the AI assigned this confidence level"
+    },
+    "rejection_reason": {
+      "type": "string",
+      "description": "Reason for rejection if status is rejected"
+    },
+    "processed_by": {
+      "type": "string",
+      "description": "Email of the admin/cashier who processed this order"
+    },
+    "processed_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this voice order was processed"
+    },
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this voice order belongs to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this voice order belongs to"
+    },
+    "created_order_id": {
+      "type": "string",
+      "description": "ID of the Order entity created when this voice order was approved"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes from the customer or staff"
+    }
+  },
+  "required": [],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_order_taking": true
+              }
+            },
+            {
+              "data.status": "pending"
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    }
+  }
+}

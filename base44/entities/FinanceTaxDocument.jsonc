@@ -1,0 +1,176 @@
+{
+  "name": "FinanceTaxDocument",
+  "type": "object",
+  "description": "Manually maintained Egypt ETA invoice and VAT evidence register; never posts accounting entries or submits documents to ETA. Reviewed VAT amounts are independent of submission status.",
+  "properties": {
+    "company_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "record_key": {
+      "type": "string"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "request_signature": {
+      "type": "string"
+    },
+    "revision": {
+      "type": "integer",
+      "default": 1
+    },
+    "entry_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "sales",
+        "purchases"
+      ]
+    },
+    "document_type": {
+      "type": "string",
+      "enum": [
+        "i",
+        "c",
+        "d",
+        "ii",
+        "ei",
+        "ec",
+        "ed"
+      ]
+    },
+    "invoice_number": {
+      "type": "string"
+    },
+    "original_reference": {
+      "type": "string"
+    },
+    "counterparty_name": {
+      "type": "string"
+    },
+    "counterparty_tax_id": {
+      "type": "string"
+    },
+    "taxable_units": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "vat_units": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "recoverable_units": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "vat_reviewed": {
+      "type": "boolean",
+      "default": false
+    },
+    "signed_base_units": {
+      "type": "integer",
+      "default": 0
+    },
+    "output_units": {
+      "type": "integer",
+      "default": 0
+    },
+    "input_units": {
+      "type": "integer",
+      "default": 0
+    },
+    "purchase_vat_units": {
+      "type": "integer",
+      "default": 0
+    },
+    "evidence_note": {
+      "type": "string"
+    },
+    "eta_status": {
+      "type": "string",
+      "enum": [
+        "untracked",
+        "not_submitted",
+        "Submitted",
+        "Valid",
+        "Invalid",
+        "Rejected",
+        "Cancelled"
+      ],
+      "default": "untracked"
+    },
+    "eta_uuid": {
+      "type": "string"
+    },
+    "submission_uuid": {
+      "type": "string"
+    },
+    "status_checked_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "status_note": {
+      "type": "string"
+    },
+    "status_recorded_by": {
+      "type": "string"
+    },
+    "status_recorded_at": {
+      "type": "string"
+    },
+    "vat_recorded_by": {
+      "type": "string"
+    },
+    "vat_recorded_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "company_id",
+    "branch_id",
+    "currency",
+    "record_key",
+    "revision",
+    "entry_date",
+    "direction",
+    "document_type",
+    "invoice_number",
+    "counterparty_name",
+    "vat_reviewed",
+    "eta_status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

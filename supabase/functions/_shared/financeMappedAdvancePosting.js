@@ -1,0 +1,21 @@
+import { mappedAdvancePlan } from './financeMappedAdvance.js';
+import { projectFinanceJournal } from './financeLedger.js';
+import { settleEventSafely } from './financeEventReceivable.js';
+export async function postMappedAdvance(ctx,company,source,{dryRun=false}={}){
+ const key=`${company.id}:legacy:${source.id}`;
+ try{
+  const plan=await mappedAdvancePlan(ctx,company,source);if(!plan)return null;
+  if(plan.already_posted){if(!dryRun){await projectFinanceJournal(ctx,company,plan.journal);await ctx.svc.entities.FinancePostingIssue.updateMany({company_id:company.id,issue_key:key,status:'open'},{$set:{status:'resolved',resolved_at:new Date().toISOString()}});}return {already_posted:true,journal_id:plan.journal.id,posting_path:'mapped_catering_advance',...(dryRun?{preview:true}: {})};}
+  if(dryRun)return {preview:true,posting_enabled:true,posting_path:'mapped_catering_advance',payment_id:plan.payment_id,entry_date:plan.date,currency:company.currency,lines:plan.lines,total_debit:plan.total_debit,total_credit:plan.total_credit};
+  const journal=await ctx.svc.entities.FinanceJournal.create({company_id:company.id,branch_id:source.branch_id,proposal_id:`mapped-advance:${plan.payment_id}`,posting_key:key,status:'posted',entry_date:plan.date,description:source.description,kind:'automatic',currency:company.currency,business_edition:company.edition,source_id:source.id,source_entity:'JournalEntry',source_version:source.updated_date,source_summary:plan.source_summary,lines:plan.lines,total_debit:plan.total_debit,total_credit:plan.total_credit,prepared_by:'Configured catering advance mapping',prepared_by_id:'system',reviewed_by:'Validated semantic account routing',reviewed_by_id:'system',reviewed_at:new Date().toISOString(),review_note:plan.retained?'Retained advance reclassified using complete, dated, unambiguous customer-advance and Cancellation_Customer mappings.':plan.outgoing?'Completed refund or withdrawal automatically routed using its recorded payment method, dated asset mapping and customer-advance liability mapping.':'Automatically active for completed advances with complete, dated, unambiguous payment-method and customer-advance mappings.',rule_version:plan.retained?'mapped-catering-retention-v1':plan.outgoing?'mapped-catering-refund-v1':'mapped-catering-advance-v1',evidence_note:plan.retained?'Approved retained cancellation advance recognized as revenue without a cash movement. Original operational journal preserved as source evidence; company lines follow the configured retention routing.':plan.outgoing?'Completed outgoing payment and original operational journal verified. Customer advances are reduced and the asset selected by the actual refund payment method is credited. No revenue or tax recognition is inferred.':'Completed payment and posted operational journal verified. Receipts remain customer-advance liabilities; no revenue or tax recognition is inferred.',is_test:!!company.is_test,ledger_ready:false});
+  await projectFinanceJournal(ctx,company,journal);
+  await ctx.svc.entities.FinancePostingIssue.updateMany({company_id:company.id,issue_key:key,status:'open'},{$set:{status:'resolved',resolved_at:new Date().toISOString()}});
+  // A receipt or refund on an already-invoiced event settles its receivable (B17).
+  const eventId=plan.source_summary.mapped_payment?.event_id,settlement=eventId&&!plan.retained?await settleEventSafely(ctx,company,eventId,journal):null;
+  return {posted:true,journal_id:journal.id,payment_id:plan.payment_id,posting_path:'mapped_catering_advance',...(settlement?{settlement}:{})};
+ }catch(error){
+  if(![400,409].includes(error.status))throw error;
+  if(!dryRun)await ctx.svc.entities.FinancePostingIssue.upsert([{issue_key:key,company_id:company.id,branch_id:source.branch_id,source_entity:'JournalEntry',source_id:source.id,source_description:source.description,entry_date:String(source.entry_date||'').slice(0,10),status:'open',message:error.message,last_attempt_at:new Date().toISOString(),resolved_at:''}],{key:'issue_key'});
+  return {blocked:true,message:error.message,posting_path:'mapped_catering_advance'};
+ }
+}

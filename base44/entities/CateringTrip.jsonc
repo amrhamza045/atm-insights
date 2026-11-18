@@ -1,0 +1,469 @@
+{
+  "name": "CateringTrip",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "Branch of the event"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "CateringEvent this trip serves"
+    },
+    "event_name": {
+      "type": "string",
+      "description": "Name of the event"
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the vehicle is needed \u2014 vehicle conflict checking keys off this"
+    },
+    "trip_label": {
+      "type": "string",
+      "description": "Label when an event runs several trips"
+    },
+    "vehicle_id": {
+      "type": "string",
+      "description": "Assigned CateringVehicle"
+    },
+    "vehicle_name": {
+      "type": "string",
+      "description": "Name of the assigned vehicle"
+    },
+    "vehicle_plate": {
+      "type": "string",
+      "description": "Plate of the assigned vehicle"
+    },
+    "vehicle_conflict_override": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when the vehicle was double-booked with a manager override"
+    },
+    "vehicle_conflict_detail": {
+      "type": "string",
+      "description": "What the vehicle clashed with"
+    },
+    "override_by": {
+      "type": "string",
+      "description": "Email of the user who overrode the vehicle conflict"
+    },
+    "override_reason": {
+      "type": "string",
+      "description": "Why the double-booking was allowed"
+    },
+    "driver_assignment_id": {
+      "type": "string",
+      "description": "CateringAssignment filling the driver seat"
+    },
+    "driver_employee_id": {
+      "type": "string",
+      "description": "Employee ID of the driver"
+    },
+    "driver_name": {
+      "type": "string",
+      "description": "Name of the driver"
+    },
+    "custody_assignments": {
+      "type": "array",
+      "description": "Optional per-stage custody responsibility: exactly who (by email) must confirm each custody checkpoint. Enforced by createCustodyCheckpoint.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "stage": {
+            "type": "string",
+            "enum": [
+              "dispatched",
+              "delivered",
+              "collected",
+              "returned"
+            ],
+            "description": "Custody stage this assignment covers"
+          },
+          "assigned_email": {
+            "type": "string",
+            "description": "Email of the person who must confirm this stage"
+          },
+          "assigned_name": {
+            "type": "string",
+            "description": "Display name of the assigned person"
+          }
+        },
+        "required": [
+          "stage",
+          "assigned_email"
+        ]
+      }
+    },
+    "custody_confirmed_stages": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "dispatched",
+          "delivered",
+          "collected",
+          "returned"
+        ]
+      },
+      "default": [],
+      "description": "Custody stages already confirmed on this trip. Written only by createCustodyCheckpoint so people who can read only their own checkpoints still see the correct next stage."
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "loading",
+        "dispatched",
+        "arrived",
+        "returning",
+        "returned",
+        "cancelled"
+      ],
+      "default": "planned",
+      "description": "Dispatch stage progression \u2014 read by the Execution Dashboard"
+    },
+    "loading_started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "dispatched_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "arrived_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "returning_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "returned_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "destination_label": {
+      "type": "string",
+      "description": "Venue/branch name the trip goes to"
+    },
+    "destination_address": {
+      "type": "string",
+      "description": "Full address for the driver"
+    },
+    "destination_lat": {
+      "type": "number",
+      "description": "Venue GPS latitude (snapshot)"
+    },
+    "destination_lng": {
+      "type": "number",
+      "description": "Venue GPS longitude (snapshot)"
+    },
+    "checklist": {
+      "type": "array",
+      "description": "Everything this trip must carry",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item_key": {
+            "type": "string",
+            "description": "source:ref_id"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "equipment",
+              "production",
+              "stock"
+            ],
+            "description": "Source of the item"
+          },
+          "ref_id": {
+            "type": "string",
+            "description": "ID of the underlying reservation / production order"
+          },
+          "label": {
+            "type": "string",
+            "description": "What to load"
+          },
+          "quantity": {
+            "type": "number",
+            "default": 1
+          },
+          "unit": {
+            "type": "string"
+          },
+          "return_expected": {
+            "type": "boolean",
+            "default": false,
+            "description": "Equipment comes back; food does not"
+          },
+          "loaded": {
+            "type": "boolean",
+            "default": false,
+            "description": "Checked off at loading"
+          },
+          "returned_status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "ok",
+              "damaged",
+              "missing",
+              "not_applicable"
+            ],
+            "default": "pending",
+            "description": "Return check-in result"
+          }
+        },
+        "required": [
+          "label"
+        ]
+      }
+    },
+    "cost_basis": {
+      "type": "string",
+      "enum": [
+        "per_km",
+        "per_day"
+      ],
+      "default": "per_km",
+      "description": "How this trip was costed"
+    },
+    "distance_km": {
+      "type": "number",
+      "default": 0,
+      "description": "Round-trip distance estimate"
+    },
+    "cost_per_km": {
+      "type": "number",
+      "default": 0,
+      "description": "Cost per km snapshot"
+    },
+    "days_used": {
+      "type": "number",
+      "default": 0,
+      "description": "Days the vehicle is used"
+    },
+    "cost_per_day": {
+      "type": "number",
+      "default": 0,
+      "description": "Cost per day snapshot"
+    },
+    "extra_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Tolls, parking, loader fees\u2026"
+    },
+    "estimated_transport_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Total estimated transport cost"
+    },
+    "discrepancy_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Return-checklist rows damaged or missing"
+    },
+    "return_notes": {
+      "type": "string",
+      "description": "Condition notes taken at return check-in"
+    },
+    "created_by": {
+      "type": "string",
+      "description": "Email of the user who created the trip"
+    },
+    "cancel_reason": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_catering_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_analytics_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_inventory_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_finance_view": true
+                  }
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "data.driver_employee_id": "{{user.data.perm_employee_id}}"
+        },
+        {
+          "data.custody_assignments.assigned_email": "{{user.email}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_catering_edit": true
+                  }
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_catering_edit": true
+                  }
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_catering_edit": true
+                  }
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

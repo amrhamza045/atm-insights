@@ -1,0 +1,12 @@
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import ReceiptLink from '@/components/shared/ReceiptLink';
+import CateringPaymentReviewActions from '@/components/catering/CateringPaymentReviewActions';
+import { formatCurrency } from '@/components/utils/currencyFormatter';
+export default function CateringPaymentQueue({query,statusOnly=false}){
+ if(!query.enabled)return null;
+ if(query.isPending)return <p className="text-sm text-muted-foreground">Loading catering payment approvals…</p>;
+ if(query.error)return <div role="alert" className="text-sm text-destructive">{query.error?.response?.data?.error||query.error.message}<Button size="sm" variant="outline" onClick={()=>query.refetch()}>Retry</Button></div>;
+ if(statusOnly)return null;
+ return <section className="space-y-3"><div className="flex flex-wrap justify-between gap-2"><h2 className="text-xl font-semibold">Catering payments awaiting approval ({query.total})</h2><Button variant="outline" size="sm" disabled={query.isFetching} onClick={()=>query.refetch()}>Refresh</Button></div><p className="text-sm text-muted-foreground">Pending payments are not posted or included in event balances until independently approved.</p>{!query.items.length&&<p className="text-muted-foreground">No pending catering payments.</p>}{query.items.map(payment=><Card key={payment.id} className="p-4 space-y-2"><div className="flex flex-wrap justify-between gap-2"><div><p className="font-semibold">{payment.event_name} · {payment.payment_type.replaceAll('_',' ')}</p><p className="text-xs text-muted-foreground">{payment.branch_name||payment.branch_id} · {payment.client_name} · {payment.payment_method?.replaceAll('_',' ')} · submitted by {payment.recorded_by}{payment.payment_date?` · ${new Date(payment.payment_date).toLocaleString()}`:''}</p></div><strong>{formatCurrency(payment.amount,true)}</strong></div>{payment.reference&&<p className="text-sm">Reference: {payment.reference}</p>}{payment.notes&&<p className="text-sm whitespace-pre-wrap">{payment.notes}</p>}{payment.receipt_url&&<ReceiptLink value={payment.receipt_url} className="text-sm underline">View payment proof</ReceiptLink>}<CateringPaymentReviewActions payment={payment}/></Card>)}{query.hasNextPage&&<Button variant="outline" disabled={query.isFetchingNextPage} onClick={()=>query.fetchNextPage()}>{query.isFetchingNextPage?'Loading…':'Load more payments'}</Button>}</section>;
+}

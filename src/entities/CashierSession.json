@@ -1,0 +1,153 @@
+{
+  "name": "CashierSession",
+  "type": "object",
+  "properties": {
+    "session_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the session (YYYY-MM-DD)"
+    },
+    "cashier_id": {
+      "type": "string",
+      "description": "ID of the cashier opening the session"
+    },
+    "cashier_name": {
+      "type": "string",
+      "description": "Name of the cashier"
+    },
+    "opening_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Time when session was opened"
+    },
+    "closing_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Time when session was closed"
+    },
+    "opening_cash": {
+      "type": "number",
+      "default": 0,
+      "description": "Starting cash amount"
+    },
+    "closing_cash": {
+      "type": "number",
+      "default": 0,
+      "description": "Ending cash amount"
+    },
+    "expected_cash": {
+      "type": "number",
+      "default": 0,
+      "description": "Expected cash based on transactions"
+    },
+    "cash_difference": {
+      "type": "number",
+      "default": 0,
+      "description": "Difference between actual and expected cash"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["open", "closed"],
+      "default": "open",
+      "description": "Session status"
+    },
+    "total_sales": {
+      "type": "number",
+      "default": 0,
+      "description": "Total sales in this session"
+    },
+    "cash_sales": {
+      "type": "number",
+      "default": 0,
+      "description": "Sales from cash payments"
+    },
+    "card_sales": {
+      "type": "number",
+      "default": 0,
+      "description": "Sales from card payments"
+    },
+    "wallet_sales": {
+      "type": "number",
+      "default": 0,
+      "description": "Sales from wallet/instapay"
+    },
+    "recharge_balance_sales": {
+      "type": "number",
+      "default": 0,
+      "description": "Sales from recharge balance"
+    },
+    "total_orders": {
+      "type": "number",
+      "default": 0,
+      "description": "Total number of orders"
+    },
+    "total_expenses": {
+      "type": "number",
+      "default": 0,
+      "description": "Total expenses recorded"
+    },
+    "total_returns": {
+      "type": "number",
+      "default": 0,
+      "description": "Total refunds/returns"
+    },
+    "total_delivery_orders": {
+      "type": "number",
+      "default": 0,
+      "description": "Total third-party delivery orders"
+    },
+    "total_delivery_cash": {
+      "type": "number",
+      "default": 0,
+      "description": "Total delivery payment in cash"
+    },
+    "total_delivery_credit": {
+      "type": "number",
+      "default": 0,
+      "description": "Total delivery payment on credit"
+    },
+    "total_delivery_commission": {
+      "type": "number",
+      "default": 0,
+      "description": "Total commission from delivery companies"
+    },
+    "delivery_breakdown": {
+      "type": "object",
+      "description": "Breakdown of sales by delivery company"
+    },
+    "recharge_balance_remaining": {
+      "type": "number",
+      "default": 0,
+      "description": "Total recharge balance remaining across all users"
+    },
+    "new_recharge_cash": {
+      "type": "number",
+      "default": 0,
+      "description": "New recharge balance added via cash"
+    },
+    "new_recharge_visa": {
+      "type": "number",
+      "default": 0,
+      "description": "New recharge balance added via card"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Session notes"
+    },
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this session belongs to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch"
+    }
+  },
+  "required": [
+    "session_date",
+    "cashier_id",
+    "opening_time",
+    "opening_cash",
+    "status"
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "name": "ReferralBonus",
+  "type": "object",
+  "properties": {
+    "referrer_id": {
+      "type": "string",
+      "description": "ID of the referrer who earned the bonus"
+    },
+    "referrer_name": {
+      "type": "string",
+      "description": "Name of the referrer"
+    },
+    "referred_client_id": {
+      "type": "string",
+      "description": "ID of the client who made the redemption"
+    },
+    "referred_client_name": {
+      "type": "string",
+      "description": "Name of the client who redeemed"
+    },
+    "redemption_id": {
+      "type": "string",
+      "description": "ID of the redemption that triggered this bonus"
+    },
+    "reward_name": {
+      "type": "string",
+      "description": "Name of the reward redeemed"
+    },
+    "cashback_amount": {
+      "type": "number",
+      "description": "Cashback amount earned by referrer"
+    },
+    "cashback_percentage": {
+      "type": "number",
+      "description": "Percentage used to calculate the bonus"
+    },
+    "redemption_cost": {
+      "type": "number",
+      "description": "Original cost of the redemption"
+    }
+  },
+  "required": [
+    "referrer_id",
+    "referred_client_id",
+    "redemption_id",
+    "cashback_amount"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        },
+        {
+          "data.referrer_id": "{{user.data.perm_client_id}}"
+        },
+        {
+          "data.referred_client_id": "{{user.data.perm_client_id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_actions": true
+          }
+        }
+      ]
+    }
+  }
+}

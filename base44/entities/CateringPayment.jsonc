@@ -1,0 +1,238 @@
+{
+  "name": "CateringPayment",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "ID of the CateringEvent this payment belongs to"
+    },
+    "event_name": {
+      "type": "string",
+      "description": "Name of the event"
+    },
+    "quote_id": {
+      "type": "string",
+      "description": "ID of the quote this payment was taken against"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Paying client; customer portal access is keyed on this field."
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "payment_type": {
+      "type": "string",
+      "enum": [
+        "deposit",
+        "final_balance",
+        "additional",
+        "refund",
+        "penalty",
+        "deposit_withdrawal"
+      ],
+      "default": "deposit",
+      "description": "Positive payment amount; refunds and withdrawals are outgoing."
+    },
+    "source": {
+      "type": "string",
+      "default": "catering"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "payment_method": {
+      "type": "string",
+      "description": "Immutable code from the company payment-method master. Historical codes are preserved."
+    },
+    "payment_method_id": {
+      "type": "string",
+      "description": "Server-resolved FinancePaymentMethod ID; never supplied as an account by the browser."
+    },
+    "payment_account_snapshot": {
+      "type": "object",
+      "description": "Server-captured company, method identity and resolved accounts at submission. Preserves routing if the master is subsequently edited."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "completed",
+        "refunded",
+        "voided",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Only completed payments affect balances and the ledger."
+    },
+    "payment_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reference": {
+      "type": "string"
+    },
+    "receipt_url": {
+      "type": "string"
+    },
+    "recorded_by": {
+      "type": "string"
+    },
+    "recorded_by_id": {
+      "type": "string"
+    },
+    "credit_note": {
+      "type": "boolean",
+      "default": false
+    },
+    "opening_balance": {
+      "type": "boolean",
+      "default": false,
+      "description": "Advance the client paid before the company opening cut-off, entered in Finance \u203a Opening balances. It counts as paid on the event, but its journal is opening balance equity / customer advances (never cash), so the regular payment posting skips it and it cannot be voided. Set only by backend functions."
+    },
+    "approved_by": {
+      "type": "string"
+    },
+    "approved_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rejection_reason": {
+      "type": "string"
+    },
+    "voided_by": {
+      "type": "string"
+    },
+    "voided_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "void_reason": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "minimum_percent": {
+      "type": "number",
+      "description": "Deposits entered in the payment form: the percentage of the event total typed in its % box. Set only by backend functions."
+    },
+    "minimum_amount": {
+      "type": "number",
+      "description": "Deposits entered in the payment form: the smallest amount allowed when submitted, the higher of the % box amount (percentage \u00d7 event total) and, for an event booked under a payment policy, what the policy's first payment still needed (required deposit minus deposits already paid). A pending deposit can't be edited below it, nor below what the policy still needs at the time of the edit. Set only by backend functions."
+    },
+    "client_request_id": {
+      "type": "string",
+      "description": "One-time ID the payment form sends with each submission. The server refuses a second payment carrying the same ID on the same event, so repeated clicks or retries never record the payment twice. Set only by backend functions."
+    },
+    "receipt_email_status": {
+      "type": "string",
+      "enum": [
+        "sent",
+        "failed"
+      ],
+      "enumColors": [
+        "green",
+        "red"
+      ],
+      "description": "Outcome of the last client receipt email (Catering \u203a Settings \u203a Client Receipt). Set only by backend functions."
+    },
+    "receipt_email_trigger": {
+      "type": "string",
+      "enum": [
+        "auto",
+        "manual"
+      ],
+      "enumColors": [
+        "blue",
+        "purple"
+      ]
+    },
+    "receipt_email_to": {
+      "type": "string"
+    },
+    "receipt_email_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "receipt_email_by": {
+      "type": "string"
+    },
+    "receipt_email_error": {
+      "type": "string"
+    },
+    "receipt_email_count": {
+      "type": "number",
+      "default": 0,
+      "description": "How many receipt emails were delivered for this payment"
+    }
+  },
+  "required": [
+    "event_id",
+    "client_id",
+    "payment_type",
+    "amount"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_view": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_view": true
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        },
+        {
+          "data.client_id": "{{user.data.portal_client_id}}"
+        }
+      ]
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

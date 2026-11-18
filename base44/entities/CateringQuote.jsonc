@@ -1,0 +1,497 @@
+{
+  "name": "CateringQuote",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string"
+    },
+    "event_name": {
+      "type": "string"
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "revision_number": {
+      "type": "number",
+      "default": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "superseded",
+        "accepted",
+        "rejected",
+        "pending_approval"
+      ],
+      "default": "active",
+      "description": "pending_approval = duplicated revision awaiting staff approval before it replaces the active quote."
+    },
+    "quote_cancelled": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when staff cancelled this quote (status is set to superseded). The record and any deposit paid on the event are kept; the deposit counts toward the next quote."
+    },
+    "cancelled_by": {
+      "type": "string",
+      "description": "Email of the staff member who cancelled the quote."
+    },
+    "cancelled_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "cancellation_reason": {
+      "type": "string"
+    },
+    "customer_decision_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "customer_decision_total": {
+      "type": "number",
+      "default": 0
+    },
+    "staff_acknowledged": {
+      "type": "boolean",
+      "default": false
+    },
+    "acknowledged_by": {
+      "type": "string"
+    },
+    "acknowledged_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "staff_response_note": {
+      "type": "string"
+    },
+    "package_id": {
+      "type": "string"
+    },
+    "package_name": {
+      "type": "string"
+    },
+    "package_category": {
+      "type": "string"
+    },
+    "package_source": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "catalog_package",
+        "one_off_package"
+      ],
+      "default": "manual"
+    },
+    "package_description": {
+      "type": "string",
+      "description": "Package inclusions, menu highlights and service parameters shown on the quotation."
+    },
+    "variant_label": {
+      "type": "string"
+    },
+    "guests_at_quote": {
+      "type": "number",
+      "default": 0
+    },
+    "line_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item_type": {
+            "type": "string",
+            "enum": [
+              "menu_item",
+              "custom"
+            ],
+            "default": "menu_item"
+          },
+          "cost_category": {
+            "type": "string",
+            "enum": [
+              "food",
+              "other"
+            ],
+            "default": "food",
+            "description": "Classifies frozen quote cost for the stored actual-margin bridge."
+          },
+          "menu_item_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "kitchen_note": {
+            "type": "string",
+            "description": "Per-item preparation or service instructions shown on the KDS."
+          },
+          "quantity": {
+            "type": "number",
+            "default": 1
+          },
+          "unit_price": {
+            "type": "number",
+            "default": 0
+          },
+          "unit_cost": {
+            "type": "number",
+            "default": 0
+          },
+          "discount_value": {
+            "type": "number",
+            "default": 0,
+            "description": "Line discount as entered: a percentage or a fixed amount depending on discount_mode."
+          },
+          "discount_mode": {
+            "type": "string",
+            "enum": [
+              "percent",
+              "amount"
+            ],
+            "default": "percent"
+          },
+          "discount_amount": {
+            "type": "number",
+            "default": 0,
+            "description": "Resolved line discount; line_total is quantity \u00d7 unit_price minus this."
+          },
+          "line_total": {
+            "type": "number",
+            "default": 0
+          },
+          "line_cost": {
+            "type": "number",
+            "default": 0
+          },
+          "tax_exempt": {
+            "type": "boolean",
+            "default": false
+          },
+          "service_exempt": {
+            "type": "boolean",
+            "default": false
+          },
+          "manually_sourced": {
+            "type": "boolean",
+            "default": false,
+            "description": "Line is prepared/sourced outside planning; excluded from reservations and gap warnings."
+          },
+          "manually_sourced_by": {
+            "type": "string"
+          },
+          "manually_sourced_date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "name",
+          "quantity",
+          "unit_price"
+        ]
+      }
+    },
+    "subtotal": {
+      "type": "number",
+      "default": 0
+    },
+    "line_discount_total": {
+      "type": "number",
+      "default": 0,
+      "description": "Sum of all line-level discounts (already netted into subtotal)."
+    },
+    "tax_rate": {
+      "type": "number",
+      "default": 0
+    },
+    "tax_total": {
+      "type": "number",
+      "default": 0
+    },
+    "service_charge_rate": {
+      "type": "number",
+      "default": 0
+    },
+    "service_charge_total": {
+      "type": "number",
+      "default": 0
+    },
+    "discount_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Quote-level discount off the total."
+    },
+    "total": {
+      "type": "number",
+      "default": 0
+    },
+    "estimated_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Sum of every quote line quantity multiplied by unit_cost; may include food and other categorized costs."
+    },
+    "estimated_margin": {
+      "type": "number",
+      "default": 0,
+      "description": "Frozen quote total minus frozen estimated_cost."
+    },
+    "estimated_margin_percentage": {
+      "type": "number",
+      "default": 0
+    },
+    "deposit_percentage": {
+      "type": "number",
+      "default": 50
+    },
+    "required_deposit": {
+      "type": "number",
+      "default": 0
+    },
+    "credit_check_status": {
+      "type": "string",
+      "enum": [
+        "passed",
+        "overridden",
+        "not_applicable"
+      ],
+      "default": "passed"
+    },
+    "credit_exposure_snapshot": {
+      "type": "number",
+      "default": 0
+    },
+    "credit_limit_snapshot": {
+      "type": "number",
+      "default": 0
+    },
+    "credit_override_by": {
+      "type": "string"
+    },
+    "valid_until": {
+      "type": "string",
+      "format": "date"
+    },
+    "created_by_email": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id",
+    "client_id",
+    "revision_number",
+    "total"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_catering_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_catering_approve": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_catering_finance": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_catering_quote_approve": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_analytics_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_finance_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_purchase_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_purchase_edit": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_kds_view": true
+                  }
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "data.client_id": "{{user.data.portal_client_id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_catering_edit": true
+                  }
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_catering_edit": true
+                  }
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

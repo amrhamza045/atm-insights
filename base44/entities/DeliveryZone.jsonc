@@ -1,0 +1,157 @@
+{
+  "name": "DeliveryZone",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this delivery zone belongs to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this delivery zone belongs to"
+    },
+    "name": {
+      "type": "string",
+      "description": "Zone name (e.g., Downtown, North District)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description or landmarks"
+    },
+    "delivery_fee": {
+      "type": "number",
+      "description": "Default delivery fee for this zone (used when no company-specific fee is set)"
+    },
+    "company_specific_fees": {
+      "type": "object",
+      "description": "Delivery fees per company (key: company_id, value: fee_amount)"
+    },
+    "estimated_time": {
+      "type": "number",
+      "description": "Estimated delivery time in minutes"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this zone is currently accepting orders"
+    },
+    "color": {
+      "type": "string",
+      "description": "Color code for UI display"
+    },
+    "areas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of specific areas/streets in this zone"
+    }
+  },
+  "required": [
+    "name",
+    "delivery_fee"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    }
+  }
+}

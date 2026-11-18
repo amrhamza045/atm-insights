@@ -1,0 +1,40 @@
+<mjml>
+ <mj-head>
+  <mj-title>Branch performance alert: {{alert_count}} branches</mj-title>
+  <mj-preview>Selected branches exceeded your 10-percentage-point variance threshold.</mj-preview>
+  <mj-attributes>
+   <mj-all font-family="Arial, Helvetica, sans-serif" />
+   <mj-section background-color="#ffffff" padding="32px 36px" />
+   <mj-text color="#020817" font-size="15px" line-height="1.6" padding="0" />
+   <mj-button background-color="#b18f59" color="#000000" border-radius="6px" inner-padding="14px 26px" font-weight="700" />
+   <mj-class name="heading" font-family="Playfair Display, Georgia, serif" font-weight="700" />
+  </mj-attributes>
+ </mj-head>
+ <mj-body background-color="#ffffff">
+  <mj-section background-color="#b18f59" padding="28px 36px"><mj-column>
+   <mj-image src="https://media.base44.com/images/public/6a8b0b3fb73ae7d930386c1d/7ca3bc4be_logo.png" alt="Rosemary" width="76px" align="left" padding="0 0 12px" />
+   <mj-text mj-class="heading" color="#000000" font-size="26px">Rosemary</mj-text>
+   <mj-text color="#000000" font-size="13px">More than catering, a partner in every occasion.</mj-text>
+  </mj-column></mj-section>
+  <mj-section><mj-column>
+   <mj-text mj-class="heading" font-size="28px">Branch performance needs attention</mj-text>
+   <mj-text color="#475569" padding-top="12px">Your selected branches show lower profitability or higher operating costs relative to their selected peers.</mj-text>
+  </mj-column></mj-section>
+  <mj-section background-color="#f6f3ee"><mj-column>
+   <mj-text mj-class="heading" font-size="22px">{{alert_count}} branches flagged</mj-text>
+   <mj-text color="#475569">Threshold: 10 percentage points</mj-text>
+  </mj-column><mj-column>
+   <mj-text mj-class="heading" font-size="20px">Previous completed week</mj-text>
+   <mj-text color="#475569">{{from}} to {{to}}</mj-text>
+  </mj-column></mj-section>
+  <mj-section><mj-column>
+   <mj-text mj-class="heading" font-size="22px" padding-bottom="16px">Variance findings</mj-text>
+   <mj-text><div style="white-space:pre-line;">{{findings}}</div></mj-text>
+   <mj-button href="https://rosemary-catering.com/Finance" align="left" padding="24px 0 0">Review in Finance</mj-button>
+  </mj-column></mj-section>
+  <mj-section background-color="#f6f3ee"><mj-column>
+   <mj-text color="#475569" font-size="12px">Net margin is net profit divided by revenue. Operating-cost ratio is operating expenses divided by revenue. Each branch is compared with the revenue-weighted totals of the other selected branches, excluding itself. Only posted, prepared ledgers are used. These are review signals, not proof of the cause or accounting completeness. Missing activity, non-positive revenue, pending proposals or blocked postings suppress the comparison.</mj-text>
+   <mj-text color="#475569" font-size="12px" padding-top="12px">Sent only when a threshold is reached. Manage your branch selection or pause alerts in Finance, Entity comparisons. Schedule: Monday, 9:00 AM Cairo time.</mj-text>
+  </mj-column></mj-section>
+ </mj-body>
+</mjml>

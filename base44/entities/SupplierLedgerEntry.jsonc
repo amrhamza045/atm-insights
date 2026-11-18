@@ -1,0 +1,127 @@
+{
+  "name": "SupplierLedgerEntry",
+  "type": "object",
+  "description": "Audited supplier subledger. Positive delta means owed; negative means settlement or supplier credit. Supplier returns hold immutable invoice/stock/account evidence and are resumed, never reissued. Keys are serialized under supplier and company locks.",
+  "properties": {
+    "entry_key": {
+      "type": "string"
+    },
+    "company_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "supplier_id": {
+      "type": "string"
+    },
+    "invoice_id": {
+      "type": "string"
+    },
+    "invoice_number": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "invoice",
+        "payment",
+        "opening",
+        "historical_settlement",
+        "supplier_return"
+      ],
+      "enumColors": [
+        "blue",
+        "green",
+        "purple",
+        "gray",
+        "yellow"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "posted"
+      ],
+      "enumColors": [
+        "yellow",
+        "green"
+      ]
+    },
+    "entry_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "due_date": {
+      "type": "string"
+    },
+    "delta": {
+      "type": "number"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "payment_method_id": {
+      "type": "string"
+    },
+    "payment_method": {
+      "type": "string"
+    },
+    "payment_method_name": {
+      "type": "string"
+    },
+    "journal_id": {
+      "type": "string"
+    },
+    "account_snapshot": {
+      "type": "object"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "actor_email": {
+      "type": "string"
+    },
+    "reviewed_paid": {
+      "type": "number"
+    },
+    "source_version": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "entry_key",
+    "company_id",
+    "branch_id",
+    "supplier_id",
+    "kind",
+    "status",
+    "entry_date",
+    "delta",
+    "currency",
+    "actor_email"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    }
+  }
+}

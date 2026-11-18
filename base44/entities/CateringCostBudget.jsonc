@@ -1,0 +1,204 @@
+{
+  "name": "CateringCostBudget",
+  "type": "object",
+  "description": "Management's cost budget for one catering event, per cost category. One record per event: the budget dialog edits the event's existing record and only creates one when none exists. Compared with the estimated cost (quote + staffing plan) and the actual cost in the event's Post-event variance step and the Executive Dashboard's Cost Variance report.",
+  "properties": {
+    "event_id": {
+      "type": "string"
+    },
+    "event_name": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "food": {
+      "type": "number",
+      "minimum": 0,
+      "default": 0,
+      "description": "Food & ingredients budget"
+    },
+    "labor": {
+      "type": "number",
+      "minimum": 0,
+      "default": 0
+    },
+    "equipment": {
+      "type": "number",
+      "minimum": 0,
+      "default": 0
+    },
+    "transport": {
+      "type": "number",
+      "minimum": 0,
+      "default": 0
+    },
+    "other": {
+      "type": "number",
+      "minimum": 0,
+      "default": 0,
+      "description": "Other quoted costs budget"
+    },
+    "total": {
+      "type": "number",
+      "default": 0,
+      "description": "Sum of the category budgets, rewritten on every save."
+    },
+    "note": {
+      "type": "string"
+    },
+    "set_by": {
+      "type": "string"
+    },
+    "set_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "event_id",
+    "branch_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_finance": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_finance": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_finance": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

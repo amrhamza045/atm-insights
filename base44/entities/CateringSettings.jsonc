@@ -1,0 +1,183 @@
+{
+  "name": "CateringSettings",
+  "type": "object",
+  "properties": {
+    "logistics_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Master switch for the in-house logistics module (trips, vehicles, drivers, transport costs, chain of custody). Turn off when a third-party supplier handles all transport."
+    },
+    "custody_emails_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "When false, the custody overdue job sends no emails \u2014 neither the nudges to per-stage assigned people nor the admin/owner digest. Changed from the Equipment tab through the setCustodyEmails backend function (catering_view)."
+    },
+    "portal_show_line_items": {
+      "type": "boolean",
+      "default": true,
+      "description": "Client-side quote: show the itemised quote lines in the customer portal. When off, the customer sees only the totals."
+    },
+    "portal_show_quantities": {
+      "type": "boolean",
+      "default": true,
+      "description": "Client-side quote: show the quantity next to each quote line in the customer portal."
+    },
+    "portal_show_line_prices": {
+      "type": "boolean",
+      "default": true,
+      "description": "Client-side quote: show the price of each individual quote line in the customer portal."
+    },
+    "portal_show_charge_breakdown": {
+      "type": "boolean",
+      "default": true,
+      "description": "Client-side quote: show subtotal, service charge, tax and discount lines in the customer portal. When off, only the final total is shown."
+    },
+    "portal_show_service_costs": {
+      "type": "boolean",
+      "default": true,
+      "description": "Client-side quote: show the staffing / logistics / equipment service costs card in the customer portal."
+    },
+    "portal_show_payment_history": {
+      "type": "boolean",
+      "default": true,
+      "description": "Client-side quote: show the recorded payments list in the customer portal. Documents stay available either way."
+    },
+    "hidden_charge_allocation": {
+      "type": "string",
+      "enum": [
+        "into_lines",
+        "into_subtotal",
+        "total_only"
+      ],
+      "default": "into_subtotal",
+      "description": "Where hidden charges (service charge, tax, service costs) are absorbed in the customer view: spread proportionally across the quote lines, folded into the shown subtotal, or reflected only in the final total."
+    },
+    "portal_show_per_guest_price": {
+      "type": "boolean",
+      "default": false,
+      "description": "Client-side quote: also show the price per guest (total divided by expected guests)."
+    },
+    "portal_hide_discount": {
+      "type": "boolean",
+      "default": false,
+      "description": "Client-side quote: never show the discount line \u2014 the customer only sees the net price."
+    },
+    "portal_starting_from_mode": {
+      "type": "boolean",
+      "default": false,
+      "description": "Client-side quote: show only a single 'starting from' price instead of any lines or breakdown."
+    },
+    "portal_show_balance_due": {
+      "type": "boolean",
+      "default": true,
+      "description": "Client-side quote: show the outstanding balance tile in the customer portal."
+    },
+    "portal_label_subtotal": {
+      "type": "string",
+      "description": "Custom label for the subtotal line shown to customers (empty = 'Subtotal')."
+    },
+    "portal_label_service_charge": {
+      "type": "string",
+      "description": "Custom label for the service charge line shown to customers (empty = 'Service charge')."
+    },
+    "portal_label_tax": {
+      "type": "string",
+      "description": "Custom label for the tax line shown to customers (empty = 'Tax')."
+    },
+    "portal_label_total": {
+      "type": "string",
+      "description": "Custom label for the total line shown to customers (empty = 'Total')."
+    },
+    "portal_round_total_to": {
+      "type": "number",
+      "default": 0,
+      "description": "Round the customer-facing total to the nearest multiple of this amount (0 = no rounding)."
+    },
+    "portal_package_only_mode": {
+      "type": "boolean",
+      "default": false,
+      "description": "Client-side quote: show the package name and total only, with no individual lines."
+    },
+    "quote_hide_recipe_lines": {
+      "type": "boolean",
+      "default": false,
+      "description": "Quotation documents: collapse each package's recipe lines into one line with the package name and guest count."
+    },
+    "portal_hide_internal_notes": {
+      "type": "boolean",
+      "default": true,
+      "description": "Client-side quote: keep quote notes hidden from the customer portal."
+    },
+    "head_chef_employee_id": {
+      "type": "string",
+      "description": "Employee who receives the event-confirmed kitchen brief (email, WhatsApp, in-app). No prices are ever included."
+    },
+    "extra_items_limit_percent": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Extra items limit, as a % of the event's planned food cost. Empty counts as 0: every extra goes to Approvals. Read live at every requisition check. Written only by the setExtraItemsLimit backend function (catering_settings_edit, validated there).",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "additional_requisition_allowance_amount": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Configurable money allowance (in EGP) per catering event for additional requisitions after the first requisition is confirmed. Deducted at agreed quantity \u00d7 recorded item cost upon mutual confirmation. Once exhausted, further requisitions require Approval Center approval (requisition_approve). Written only by the setExtraItemsLimit backend function.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "required": [],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "data.perm_catering_settings_edit": true
+      }
+    },
+    "update": {
+      "user_condition": {
+        "data.perm_catering_settings_edit": true
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "data.perm_catering_settings_edit": true
+      }
+    }
+  }
+}

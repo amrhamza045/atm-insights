@@ -1,0 +1,4 @@
+import { financeAmount } from '@/components/finance/financeApi';
+export default function TransactionJournalLines({entry,company}){
+ return <div className="space-y-2"><p className="text-sm">{entry.entry_date} · Debit {financeAmount(entry.total_debit,company)} / Credit {financeAmount(entry.total_credit,company)} {entry.currency||company.currency}</p><div className="overflow-x-auto"><table className="w-full text-sm text-left"><thead><tr><th className="p-2">Account</th><th className="p-2">Debit</th><th className="p-2">Credit</th></tr></thead><tbody>{entry.lines.map((l,i)=><tr key={i} className="border-t"><td className="p-2">{l.account_code}{l.account_name&&` · ${l.account_name}`}</td><td className="p-2">{financeAmount(l.debit,company)}</td><td className="p-2">{financeAmount(l.credit,company)}</td></tr>)}</tbody></table></div></div>;
+}

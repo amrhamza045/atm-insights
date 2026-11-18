@@ -1,0 +1,268 @@
+{
+  "name": "SupplierPayment",
+  "type": "object",
+  "description": "Branch-scoped supplier payment records with private confirmation file references.",
+  "properties": {
+    "payment_key": {
+      "type": "string",
+      "description": "Client-generated idempotency key preventing duplicate payment submissions"
+    },
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this supplier payment belongs to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this supplier payment belongs to"
+    },
+    "supplier_id": {
+      "type": "string",
+      "description": "ID of the supplier paid"
+    },
+    "supplier_name": {
+      "type": "string",
+      "description": "Name of the supplier paid"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Payment amount in EGP"
+    },
+    "payment_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the payment was made"
+    },
+    "confirmation_file_uri": {
+      "type": "string",
+      "description": "Private file URI of the uploaded payment confirmation image or document"
+    },
+    "confirmation_file_name": {
+      "type": "string",
+      "description": "Original file name of the uploaded payment confirmation"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional payment reference or notes"
+    },
+    "recorded_by_email": {
+      "type": "string",
+      "description": "Email of the user who recorded the payment"
+    },
+    "recorded_by_name": {
+      "type": "string",
+      "description": "Display name of the user who recorded the payment"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "posted"
+      ],
+      "enumColors": [
+        "yellow",
+        "green"
+      ],
+      "description": "pending = being posted to the supplier ledger; posted = settled in the ledger. Missing on older standalone payments."
+    },
+    "settlement": {
+      "type": "string",
+      "enum": [
+        "full",
+        "partial"
+      ],
+      "enumColors": [
+        "green",
+        "blue"
+      ],
+      "description": "Whether the full open balance or part of it was paid"
+    },
+    "payment_method": {
+      "type": "string",
+      "description": "Code of the finance payment method used"
+    },
+    "payment_method_name": {
+      "type": "string",
+      "description": "Display name of the finance payment method used"
+    },
+    "allocations": {
+      "type": "array",
+      "description": "How the payment was split across open invoices (oldest first)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "invoice_id": {
+            "type": "string"
+          },
+          "invoice_number": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "ledger_entry_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Supplier ledger payment entries created for this payment"
+    }
+  },
+  "required": [
+    "branch_id",
+    "supplier_id",
+    "amount",
+    "payment_date",
+    "recorded_by_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_purchase_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_purchase_edit": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_purchase_approve": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_purchases_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_purchases_approve": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_supplier_payment_record": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_inventory_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_inventory_edit": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_finance_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_finance_edit": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_analytics_view": true
+                  }
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_supplier_payment_record": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_supplier_payment_record": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,397 @@
+{
+  "name": "ProductionOrder",
+  "type": "object",
+  "properties": {
+    "recipe_id": {
+      "type": "string",
+      "description": "ID of the recipe used for this production order"
+    },
+    "recipe_name": {
+      "type": "string",
+      "description": "Name of the recipe"
+    },
+    "output_item_id": {
+      "type": "string",
+      "description": "ID of the finished product being produced"
+    },
+    "output_item_name": {
+      "type": "string",
+      "description": "Name of the finished product"
+    },
+    "target_quantity": {
+      "type": "number",
+      "description": "Target number of batches to produce"
+    },
+    "actual_output_quantity": {
+      "type": "number",
+      "description": "Actual amount produced (may differ from target due to shrinkage/waste)"
+    },
+    "output_unit": {
+      "type": "string",
+      "description": "Unit of measurement for the output"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_progress",
+        "completed",
+        "cancelled"
+      ],
+      "default": "pending",
+      "description": "Production order status"
+    },
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch"
+    },
+    "order_source": {
+      "type": "string",
+      "enum": [
+        "regular",
+        "catering"
+      ],
+      "default": "regular",
+      "description": "Regular menu production or production planned for a catering event"
+    },
+    "catering_event_id": {
+      "type": "string",
+      "description": "CateringEvent this batch was planned for (catering orders only)"
+    },
+    "catering_event_name": {
+      "type": "string",
+      "description": "Name of the catering event"
+    },
+    "catering_guests": {
+      "type": "number",
+      "default": 0,
+      "description": "Guest count the required quantity was scaled to"
+    },
+    "required_output_quantity": {
+      "type": "number",
+      "default": 0,
+      "description": "Finished quantity the event actually needs (batches are rounded up from this)"
+    },
+    "custody_output_quantity": {
+      "type": "number",
+      "default": 0,
+      "description": "Finished output quantity held in event-specific kitchen custody rather than general shelf stock"
+    },
+    "needed_by_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date production must be ready by (the event date for catering batches)"
+    },
+    "started_by": {
+      "type": "string",
+      "description": "Email of who started production"
+    },
+    "started_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When production was started"
+    },
+    "completed_by": {
+      "type": "string",
+      "description": "Email of who completed the order"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the order was completed"
+    },
+    "total_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Total cost of ingredients consumed"
+    },
+    "ingredients_consumed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "inventory_item_id": {
+            "type": "string"
+          },
+          "inventory_item_name": {
+            "type": "string"
+          },
+          "quantity_consumed": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "cost": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Record of ingredients consumed during production"
+    },
+    "sub_recipe_consumption": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "inventory_item_id": {
+            "type": "string"
+          },
+          "inventory_item_name": {
+            "type": "string"
+          },
+          "source_recipe_id": {
+            "type": "string"
+          },
+          "source_recipe_name": {
+            "type": "string"
+          },
+          "quantity_consumed": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "cost": {
+            "type": "number"
+          }
+        }
+      },
+      "default": [],
+      "description": "Subset of ingredients_consumed that were prepared stock of another recipe (stage 2 consumption of a sub-recipe)"
+    },
+    "parent_production_order_id": {
+      "type": "string",
+      "description": "Parent batch this sub-recipe batch was created for"
+    },
+    "parent_recipe_name": {
+      "type": "string",
+      "description": "Name of the parent recipe"
+    },
+    "production_stage": {
+      "type": "string",
+      "description": "sub_recipe when this batch prepares an ingredient for a parent batch"
+    },
+    "waste_note": {
+      "type": "string",
+      "description": "Notes about shrinkage or waste during production"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    },
+    "assigned_staff": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "employee_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "default": [],
+      "description": "Kitchen staff assigned to this prep batch by the Head Chef"
+    },
+    "prep_stage": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "prepping",
+        "cooking",
+        "ready",
+        "handed_off"
+      ],
+      "default": "queued",
+      "description": "Head Chef board workflow stage"
+    },
+    "prep_notes": {
+      "type": "string",
+      "description": "Head Chef prep notes for this batch"
+    },
+    "handoff_to": {
+      "type": "string",
+      "description": "Who received the finished batch (person or team)"
+    },
+    "handoff_by": {
+      "type": "string",
+      "description": "Email of who recorded the handoff"
+    },
+    "handoff_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the batch was handed off"
+    },
+    "prep_updated_by": {
+      "type": "string",
+      "description": "Email of who last changed the prep stage"
+    }
+  },
+  "required": [
+    "recipe_id",
+    "target_quantity"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_manufacturing_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_manufacturing_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_kds_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_requisition_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        },
+        {
+          "data.assigned_staff.employee_id": "{{user.data.perm_employee_id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_manufacturing_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_kds_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_manufacturing_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_kds_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_manufacturing_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

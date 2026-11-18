@@ -1,0 +1,5 @@
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+export default function PayrollWithholdingFields({value,note,onChange}) {
+ return <fieldset className="border rounded-md p-3 space-y-3"><legend className="text-sm font-medium">Recorded tax withholding</legend><Label className="block">Tax already withheld (EGP)<Input aria-label="Tax already withheld" type="number" min="0" max="1000000000000" step="0.01" value={value} onChange={e=>onChange('tax_withheld_amount',e.target.value)} placeholder="Blank = not recorded; 0 = confirmed none"/></Label><Label className="block">Withholding evidence / reference<Input aria-label="Withholding evidence" value={note} maxLength={2000} onChange={e=>onChange('tax_withholding_note',e.target.value)}/></Label><p className="text-xs text-muted-foreground">Reporting only: enter withholding already reflected in payroll. This field does not subtract tax again or change net salary. Penalties and loan repayments are not tax allowances.</p></fieldset>;
+}

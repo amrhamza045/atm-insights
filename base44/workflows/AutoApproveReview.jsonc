@@ -1,0 +1,40 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "auto_approve_review",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "approve": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoApproveRequest",
+            "args": {
+              "entity": "Review",
+              "id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Auto-approve if permitted"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "Review"
+    }
+  },
+  "description": "Auto-approves a new customer review when auto-approval is on and the author can moderate reviews.",
+  "name": "Auto-approve Customer Review"
+}

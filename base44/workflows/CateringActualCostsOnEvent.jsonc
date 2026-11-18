@@ -1,0 +1,40 @@
+{
+  "name": "Catering Actual Costs on Event",
+  "description": "Recompute after completion/cancellation or revenue/basis changes, never in response to actual-cost output writes.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "CateringEvent",
+      "events": [
+        "create",
+        "update"
+      ]
+    },
+    "condition": "${ (.trigger.data.status == \"completed\" or .trigger.data.status == \"cancelled\") and (.trigger.event_type == \"create\" or any((.trigger.changed_fields // [])[]; . == \"status\" or . == \"total_paid\" or . == \"event_date\" or . == \"active_quote_id\" or . == \"branch_id\")) }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "catering_actual_costs_event",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "recompute": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "recomputeCateringActualCosts",
+            "args": {
+              "event_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Recompute actual event costs"
+          }
+        }
+      }
+    ]
+  }
+}

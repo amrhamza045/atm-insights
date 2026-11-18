@@ -1,0 +1,267 @@
+{
+  "name": "Lead",
+  "type": "object",
+  "properties": {
+    "lead_number": {
+      "type": "string",
+      "description": "Human reference for the lead (e.g. LEAD-0042)"
+    },
+    "external_id": {
+      "type": "string",
+      "description": "Stable reference of the source item on the platform (e.g. ig_comment:<id>, fb_message:<id>) used to avoid importing the same lead twice"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "instagram",
+        "facebook",
+        "linkedin",
+        "whatsapp",
+        "tiktok"
+      ],
+      "description": "Social platform the lead arrived from"
+    },
+    "brand_purpose": {
+      "type": "string",
+      "description": "What the lead is interested in / the reason they reached out"
+    },
+    "priority": {
+      "type": "number",
+      "default": 0,
+      "description": "Numeric priority score (higher = hotter lead)"
+    },
+    "priority_label": {
+      "type": "string",
+      "enum": [
+        "Low",
+        "Medium",
+        "High",
+        "Urgent"
+      ],
+      "description": "Readable priority band derived from the priority score"
+    },
+    "contact_username": {
+      "type": "string",
+      "description": "Handle or username of the person on the platform"
+    },
+    "company": {
+      "type": "string",
+      "description": "Company or organisation the lead represents"
+    },
+    "email": {
+      "type": "string",
+      "description": "Email address of the lead"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Phone number of the lead"
+    },
+    "campaign": {
+      "type": "string",
+      "description": "Campaign or ad the lead came through"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "tiktok",
+        "linkedin"
+      ],
+      "default": "whatsapp",
+      "description": "Which platform the lead came from (legacy field kept for WhatsApp leads)"
+    },
+    "sender_name": {
+      "type": "string",
+      "description": "Name of the person who sent the message"
+    },
+    "phone_number": {
+      "type": "string",
+      "description": "Phone number of the sender (legacy WhatsApp field)"
+    },
+    "message_text": {
+      "type": "string",
+      "description": "The message content"
+    },
+    "referrer_name": {
+      "type": "string",
+      "description": "Name of the guest who referred this lead"
+    },
+    "referrer_phone": {
+      "type": "string",
+      "description": "Phone number of the referring guest, used to pay their commission"
+    },
+    "referrer_email": {
+      "type": "string",
+      "description": "Email of the referring guest, used to pay their commission"
+    },
+    "referrer_event_name": {
+      "type": "string",
+      "description": "Event the referring guest attended (snapshot of the name)"
+    },
+    "referrer_event_id": {
+      "type": "string",
+      "description": "ID of the event the referring guest attended, used to always show the event's current name"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "contacted",
+        "qualified",
+        "converted",
+        "lost",
+        "closed"
+      ],
+      "default": "new",
+      "description": "Pipeline stage: new -> contacted -> qualified -> converted, with lost as the drop-out stage. 'closed' is the legacy value kept so existing records stay valid; treat it as equivalent to lost."
+    },
+    "converted_client_id": {
+      "type": "string",
+      "description": "ID of the Client this lead was converted into or linked to. Set only by the deliberate staff conversion action."
+    },
+    "converted_client_name": {
+      "type": "string",
+      "description": "Snapshot of the client name at conversion time"
+    },
+    "converted_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the lead was converted"
+    },
+    "converted_by_email": {
+      "type": "string",
+      "description": "Email of the staff member who performed the conversion"
+    },
+    "conversion_mode": {
+      "type": "string",
+      "enum": [
+        "created_new",
+        "linked_existing"
+      ],
+      "description": "Whether conversion created a new Client or linked an existing one found by email/phone"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal notes about the lead"
+    },
+    "governorate": {
+      "type": "string",
+      "description": "Egyptian governorate selected on the contact form"
+    },
+    "address": {
+      "type": "string",
+      "description": "Optional address entered on the contact form"
+    }
+  },
+  "required": [],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_marketing_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

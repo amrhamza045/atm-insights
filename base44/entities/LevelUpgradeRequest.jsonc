@@ -1,0 +1,149 @@
+{
+  "name": "LevelUpgradeRequest",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "ID of the client requesting upgrade"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Name of the client"
+    },
+    "client_email": {
+      "type": "string",
+      "description": "Email of the client"
+    },
+    "current_level_name": {
+      "type": "string",
+      "description": "Current registration level name"
+    },
+    "requested_level_id": {
+      "type": "string",
+      "description": "ID of the requested registration level"
+    },
+    "requested_level_name": {
+      "type": "string",
+      "description": "Name of the requested level"
+    },
+    "registration_fee": {
+      "type": "number",
+      "description": "Fee for the requested level"
+    },
+    "welcome_cashback_percentage": {
+      "type": "number",
+      "description": "Welcome cashback percentage for the level"
+    },
+    "payment_receipt_url": {
+      "type": "string",
+      "description": "URL to uploaded payment receipt"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Status of the upgrade request"
+    },
+    "rejection_reason": {
+      "type": "string",
+      "description": "Reason for rejection if applicable"
+    }
+  },
+  "required": [
+    "client_id",
+    "requested_level_id",
+    "registration_fee",
+    "payment_receipt_url"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_level_upgrade_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_view": true
+          }
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.client_id": "{{user.data.perm_client_id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        },
+        {
+          "data.client_id": "{{user.data.perm_client_id}}"
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_level_upgrade_approve": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    }
+  }
+}

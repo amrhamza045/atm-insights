@@ -1,0 +1,13 @@
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
+import { formatCurrency } from '@/components/utils/currencyFormatter';
+import { supplierAccountCall, supplierError } from '@/components/purchasing/supplierAccounts/supplierAccountApi';
+import SupplierReturnPreview from '@/components/purchasing/supplierAccounts/SupplierReturnPreview';
+export default function SupplierAccountHistory({scope, canWrite, canOpen, onResume}) {
+  const q = useInfiniteQuery({queryKey: ['supplier-accounts', scope, 'history'], initialPageParam: undefined, queryFn: ({pageParam}) => supplierAccountCall({...scope, action: 'history', cursor: pageParam}), getNextPageParam: p => p.has_more ? p.next_cursor : undefined});
+  const items = q.data?.pages.flatMap(p => p.items) || [];
+  return <div className="space-y-2"><h4 className="font-semibold">Account history</h4>{q.isPending && <p role="status">Loading history…</p>}{q.error && <p role="alert" className="text-destructive">{supplierError(q.error)} <Button variant="link" onClick={() => q.refetch()}>Retry</Button></p>}{q.isSuccess && !items.length && <p className="text-sm text-muted-foreground">No verified entries yet.</p>}
+    {items.map(e => <div className="rounded-md border p-3 space-y-1" key={e.id}><div className="flex flex-wrap justify-between gap-2"><strong className="text-sm capitalize">{e.kind.replaceAll('_', ' ')} · {e.status}</strong><span>{e.delta > 0 ? '+' : ''}{formatCurrency(e.delta)}</span></div><p className="text-xs text-muted-foreground break-all">{e.entry_date} · {e.invoice_number || 'Opening balance'}{e.payment_method_name ? ` · ${e.payment_method_name}` : ''} · {e.actor_email}</p><p className="text-sm">{e.notes}</p>{e.journal_id && <p className="text-xs text-muted-foreground break-all">GL journal: {e.journal_id}</p>}{e.kind === 'supplier_return' && <details className="text-sm"><summary className="cursor-pointer py-2">Stock and journal evidence</summary><SupplierReturnPreview plan={e.account_snapshot}/></details>}{e.kind === 'opening' && <p className="text-xs text-muted-foreground">{e.account_snapshot?.already_in_gl ? 'Already included in GL; not posted again' : e.journal_id ? 'Balanced opening journal posted' : 'Zero opening balance'}</p>}{e.status === 'pending' && ((['payment','supplier_return'].includes(e.kind) && canWrite) || (e.kind === 'opening' && canOpen)) && <Button size="sm" variant="outline" onClick={() => onResume(e)}>Resume saved {e.kind}</Button>}</div>)}
+    {q.hasNextPage && <Button variant="outline" disabled={q.isFetchingNextPage} onClick={() => q.fetchNextPage()}>Load more history</Button>}
+  </div>;
+}

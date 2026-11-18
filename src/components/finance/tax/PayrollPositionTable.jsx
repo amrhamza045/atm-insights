@@ -1,0 +1,5 @@
+import { financeAmount } from '@/components/finance/financeApi';
+export default function PayrollPositionTable({company,items}){
+ const amount=value=>value==null?'Not recorded':financeAmount(value,company);
+ return <div className="overflow-x-auto border rounded-lg"><table className="w-full text-sm"><thead className="bg-muted"><tr>{['Payroll month / employee','Branch / payment status','Recorded tax withheld','Manual deductions','Penalties','Loan repayments','Evidence'].map(label=><th key={label} className="text-left p-3">{label}</th>)}</tr></thead><tbody>{items.map(r=><tr key={r.id} className="border-t"><td className="p-3">{r.month}<p>{r.employee_name||r.employee_id}</p></td><td className="p-3">{r.branch_name||r.branch_id}<p>{r.payment_status||'Not recorded'}</p></td><td className="p-3 tabular-nums">{amount(r.tax_withheld_amount)}</td><td className="p-3 tabular-nums">{amount(r.deductions)}</td><td className="p-3 tabular-nums">{amount(r.penalty_deductions)}</td><td className="p-3 tabular-nums">{amount(r.borrowing_deductions)}</td><td className="p-3 whitespace-pre-wrap">{r.tax_withholding_note||'Not recorded'}</td></tr>)}</tbody></table></div>;
+}

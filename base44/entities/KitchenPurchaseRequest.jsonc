@@ -1,0 +1,136 @@
+{
+  "name": "KitchenPurchaseRequest",
+  "type": "object",
+  "description": "Kitchen shortage request for one ingredient on one production batch. Written only by backend functions.",
+  "properties": {
+    "branch_id": {
+      "type": "string"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "production_order_id": {
+      "type": "string"
+    },
+    "recipe_name": {
+      "type": "string"
+    },
+    "batches": {
+      "type": "number"
+    },
+    "catering_event_id": {
+      "type": "string"
+    },
+    "catering_event_name": {
+      "type": "string"
+    },
+    "needed_by_date": {
+      "type": "string"
+    },
+    "inventory_item_id": {
+      "type": "string"
+    },
+    "inventory_item_name": {
+      "type": "string"
+    },
+    "quantity_needed": {
+      "type": "number"
+    },
+    "quantity_available": {
+      "type": "number"
+    },
+    "quantity_requested": {
+      "type": "number"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "note": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "po_linked",
+        "received",
+        "resolved",
+        "cancelled"
+      ],
+      "default": "open"
+    },
+    "purchase_order_id": {
+      "type": "string"
+    },
+    "purchase_order_number": {
+      "type": "string"
+    },
+    "requested_by": {
+      "type": "string"
+    },
+    "requested_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "handled_by": {
+      "type": "string"
+    },
+    "handled_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resolution_note": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "production_order_id",
+    "inventory_item_id",
+    "quantity_requested"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_manufacturing_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_manufacturing_edit": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

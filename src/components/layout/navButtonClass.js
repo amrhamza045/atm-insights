@@ -1,0 +1,2 @@
+export const navButtonClass =
+  "h-8 flex items-center justify-center rounded-lg border bg-white border-[#d9e0e5] text-[#53616b] flex-shrink-0 transition-colors duration-200 hover:bg-[#e8edf0] hover:text-[#25313a] hover:border-[#bfcbd2] active:bg-[#dce4e9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#a77c39] focus-visible:outline-offset-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-[#53616b] disabled:hover:border-[#d9e0e5]";

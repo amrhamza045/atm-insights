@@ -1,0 +1,144 @@
+{
+  "name": "CashbackTier",
+  "type": "object",
+  "properties": {
+    "level_name": {
+      "type": "string",
+      "description": "Name of the cashback tier (e.g., Bronze, Silver, Gold)"
+    },
+    "min_referrals": {
+      "type": "number",
+      "default": 0,
+      "description": "Minimum number of referrals to reach this tier"
+    },
+    "registration_level_id": {
+      "type": "string",
+      "description": "ID of the registration level this tier applies to"
+    },
+    "registration_level_name": {
+      "type": "string",
+      "description": "Name of the registration level"
+    },
+    "cashback_percentage_level1": {
+      "type": "number",
+      "description": "Cashback percentage for direct referrals (Level 1)"
+    },
+    "cashback_percentage_level2": {
+      "type": "number",
+      "default": 0,
+      "description": "Cashback percentage for 2nd level up referrals"
+    },
+    "cashback_percentage_level3": {
+      "type": "number",
+      "default": 0,
+      "description": "Cashback percentage for 3rd level up referrals"
+    },
+    "self_cashback_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Cashback percentage for the client's own purchases"
+    },
+    "is_default": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is the default tier"
+    },
+    "color": {
+      "type": "string",
+      "description": "Color code for UI display"
+    }
+  },
+  "required": [
+    "level_name",
+    "cashback_percentage_level1",
+    "registration_level_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        }
+      ]
+    }
+  }
+}

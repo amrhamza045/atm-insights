@@ -1,0 +1,180 @@
+{
+  "name": "FinanceJournal",
+  "type": "object",
+  "description": "Immutable balanced accounting snapshot, independently reviewed or automatically posted from a configured operational journal. Only posted records affect statements. ledger_ready and analytics_version are rebuildable reporting-index markers; accounting amounts remain immutable.",
+  "properties": {
+    "company_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "proposal_id": {
+      "type": "string"
+    },
+    "posting_key": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "posted",
+        "rejected"
+      ]
+    },
+    "entry_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "description": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "opening",
+        "historical",
+        "reversal",
+        "automatic"
+      ]
+    },
+    "currency": {
+      "type": "string"
+    },
+    "business_edition": {
+      "type": "string"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "source_entity": {
+      "type": "string"
+    },
+    "source_version": {
+      "type": "string"
+    },
+    "source_summary": {
+      "type": "object"
+    },
+    "reversal_of": {
+      "type": "string"
+    },
+    "lines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "type": "string"
+          },
+          "account_code": {
+            "type": "string"
+          },
+          "account_name": {
+            "type": "string"
+          },
+          "management_mapping": {
+            "type": "string"
+          },
+          "statutory_mapping": {
+            "type": "string"
+          },
+          "debit": {
+            "type": "number"
+          },
+          "credit": {
+            "type": "number"
+          },
+          "cost_center": {
+            "type": "string"
+          },
+          "channel": {
+            "type": "string"
+          },
+          "product_category": {
+            "type": "string"
+          },
+          "product_reference": {
+            "type": "string"
+          },
+          "counterparty_reference": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id",
+          "debit",
+          "credit"
+        ]
+      }
+    },
+    "total_debit": {
+      "type": "number"
+    },
+    "total_credit": {
+      "type": "number"
+    },
+    "prepared_by": {
+      "type": "string"
+    },
+    "prepared_by_id": {
+      "type": "string"
+    },
+    "reviewed_by": {
+      "type": "string"
+    },
+    "reviewed_by_id": {
+      "type": "string"
+    },
+    "reviewed_at": {
+      "type": "string"
+    },
+    "review_note": {
+      "type": "string"
+    },
+    "rule_version": {
+      "type": "string"
+    },
+    "evidence_note": {
+      "type": "string"
+    },
+    "is_test": {
+      "type": "boolean"
+    },
+    "ledger_ready": {
+      "type": "boolean",
+      "default": false
+    },
+    "analytics_version": {
+      "type": "integer",
+      "default": 0
+    }
+  },
+  "required": [
+    "company_id",
+    "branch_id",
+    "proposal_id",
+    "posting_key",
+    "status",
+    "entry_date",
+    "lines",
+    "reviewed_by_id"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "name": "Permission Copy on Permission Record",
+  "description": "Re-syncs a user's permission copy when their permission record (role, overrides, branch) is created, changed or removed",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create",
+        "update",
+        "delete"
+      ],
+      "entity_name": "UserPermissions"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "permission_copy_on_permission_record",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "sync_user": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "syncPermissionCopy",
+            "args": {
+              "trigger": "permission_record",
+              "email": "${ .trigger.data.user_email // .trigger.old_data.user_email }",
+              "event_type": "${ .trigger.event_type }",
+              "changed_fields": "${ .trigger.changed_fields // [] }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Sync user's copy"
+          }
+        }
+      }
+    ]
+  }
+}

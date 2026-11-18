@@ -1,0 +1,16 @@
+export function inventoryFixture() {
+ const tables={};const value=(row,path)=>path.split('.').reduce((v,k)=>Array.isArray(v)?v.flatMap(i=>i?.[k]??[]):v?.[k],row);
+ const matches=(r,q)=>Object.entries(q).every(([k,v])=>{const a=value(r,k);if(v&&typeof v==='object')return Object.entries(v).every(([op,target])=>op==='$in'?target.includes(a):op==='$ne'?a!==target:op==='$gte'?a>=target:true);return Array.isArray(a)?a.includes(v):a===v;});
+ const entities=new Proxy({}, {get:(_,name)=>{
+  const rows=tables[name]||=[];
+  return {rows,async get(id){const r=rows.find(i=>i.id===id);if(!r)throw Object.assign(Error('Missing record'),{status:404});return structuredClone(r);},async filter(q,opts){const items=rows.filter(r=>matches(r,q));return opts?{items:structuredClone(items),has_more:false}:structuredClone(items);},async count(q){return rows.filter(r=>matches(r,q)).length;},async create(data){const r={...structuredClone(data),id:`${name}-${rows.length}`,updated_date:'v1'};rows.push(r);return structuredClone(r);},async update(id,data){const r=rows.find(i=>i.id===id);Object.assign(r,structuredClone(data));return structuredClone(r);},async updateMany(q,data){for(const r of rows.filter(r=>matches(r,q)))Object.assign(r,data.$set);},async upsert(items){for(const r of items)rows.push(structuredClone(r));return {records:[]};},async aggregate({query,sum}){const found=rows.filter(r=>matches(r,query));return {rows:found.length?[Object.fromEntries((sum||[]).map(k=>['sum_'+k,found.reduce((n,r)=>n+Number(r[k]||0),0)]))]:[]};}};
+ }});
+ const company={id:'company',branch_ids:['branch'],currency:'EGP',currency_decimals:2,is_test:true,module_policy:{inventory:{enabled:true,from:'2026-11-01',cogs_trigger:'sale'}}};
+ const bindings=['INVENTORY_CONTROL_ACCOUNT','INVENTORY_WIP_ACCOUNT','INVENTORY_COGS_ACCOUNT'].map((mapping_key,i)=>({id:`binding-${i}`,company_id:company.id,mapping_key,account_id:`account-${i}`,effective_from:'2026-11-01',priority:100,conditions:{category:'finished'},inventory_stage:'finished',updated_date:'v1'}));
+ entities.FinanceAccountBinding.rows.push(...bindings);entities.FinanceAccount.rows.push(...bindings.map((b,i)=>({id:b.account_id,company_id:company.id,code:['112100','112200','510100'][i],name:`Account ${i}`,classification:i===2?'cogs':'assets',active:true,posting:true,management_mapping:'mapped'})));
+ entities.SystemSettings.rows.push({id:'timezone',setting_key:'timezone_settings',timezone_offset_minutes:120});
+ const ctx={svc:{entities},base44:{asServiceRole:{entities}},user:{id:'admin',email:'admin@example.test'},permissions:{},admin:true};
+ const movement={id:'movement',company_id:company.id,branch_id:'branch',movement_key:'movement-key',source_entity:'ProductionOrder',source_id:'batch',kind:'production',status:'applied',entry_date:'2026-11-08',currency:'EGP',quantity:10,amount:50,snapshot:{inputs:[{inventory_item_id:'ingredient',category_id:'finished',quantity:1,cost:50}],output:{inventory_item_id:'meal',category_id:'finished',quantity:10,source_quantity:10,source_unit:'pcs',unit:'pcs',cost:50},event_id:'event'}};
+ entities.InventoryAccountingMovement.rows.push(movement);
+ return {ctx,company,movement,bindings,entities,tables};
+}

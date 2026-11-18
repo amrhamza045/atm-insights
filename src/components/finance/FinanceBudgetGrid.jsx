@@ -1,0 +1,5 @@
+import { Input } from '@/components/ui/input';
+export default function FinanceBudgetGrid({values,categories,decimals,disabled,onChange}) {
+ const scale=10**decimals;
+ return <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr><th className="p-2 text-left">Month</th>{Object.values(categories).map(label=><th className="p-2 text-left min-w-36" key={label}>{label}</th>)}</tr></thead><tbody>{Array.from({length:12},(_,i)=><tr className="border-t" key={i}><td className="p-2">{new Date(2000,i,1).toLocaleString('en-US',{month:'short'})}</td>{Object.keys(categories).map(category=>{const v=values.find(x=>x.month===i+1&&x.category===category);return <td className="p-2" key={category}><Input aria-label={`${i+1} ${categories[category]}`} type="number" step={1/scale} disabled={disabled} placeholder="No history" value={v?.amount??''} onChange={e=>onChange(i+1,category,e.target.value)}/></td>;})}</tr>)}</tbody></table></div>;
+}

@@ -1,0 +1,8 @@
+import { useQuery } from '@tanstack/react-query';
+import { financeCall,financeError,financeAmount } from '@/components/finance/financeApi';
+export default function FinanceSummary({company,filters}) {
+ const query=useQuery({queryKey:['finance','summary',company.id,filters],queryFn:()=>financeCall({action:'read',view:'summary',company_id:company.id,...filters})});
+ if(query.isPending)return <p className="text-sm">Loading ledger summary…</p>;if(query.error)return <p role="alert" className="text-destructive">{financeError(query.error)}</p>;
+ const posted=query.data.totals.find(r=>r.status==='posted')||{};
+ return <section className="space-y-2"><div className="grid grid-cols-2 lg:grid-cols-4 gap-3">{[['Posted journals',posted.count||0],['Posted debits',financeAmount(posted.sum_total_debit,company)],['Posted credits',financeAmount(posted.sum_total_credit,company)],['Pending review',query.data.pending]].map(([label,value])=><div key={label} className="border bg-card rounded-lg p-4"><p className="text-xs text-muted-foreground">{label}</p><p className="text-xl font-semibold mt-1 tabular-nums">{value}</p></div>)}</div><p className="text-xs text-muted-foreground">{company.currency} · {query.data.legacy} legacy posted journals across authorized company branches (all dates) · Refreshed {new Date(query.data.refreshed_at).toLocaleString()}</p><p className="text-sm text-muted-foreground">{query.data.reconciliation_status}</p></section>;
+}

@@ -1,0 +1,8 @@
+import { useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+export default function MappingTemplates({catalogue,onOpen}){
+ const [search,setSearch]=useState('');
+ return <div className="space-y-3"><p className="text-sm text-muted-foreground">B01–B16 implement the seven-section specification’s posting patterns; P01–P46 and supplemental events retain the wider accounting catalogue. Account choices are intentionally blank. Alternative tax, recognition, returns and settlement policies require separate reviewed rules; no template is approved automatically.</p><Input aria-label="Search templates" placeholder="Search pattern, source or module…" value={search} onChange={e=>setSearch(e.target.value)}/>
+ {catalogue.events.filter(e=>`${e.id} ${e.name} ${e.module} ${e.source_entity}`.toLowerCase().includes(search.toLowerCase())).map(event=><div className="border rounded-lg p-4 space-y-2" key={event.id}><h3 className="font-semibold">{event.id} · {event.name}</h3><p className="text-sm text-muted-foreground">{event.module} · {event.source_entity}</p><div className="grid sm:grid-cols-2 gap-2">{event.lines.map((line,i)=><p className="text-sm" key={i}>{line.side==='debit'?'Dr':'Cr'} · {line.role.replaceAll('_',' ')} · {line.basis.replaceAll('_',' ')}</p>)}</div><p className="text-xs text-muted-foreground">{event.note}</p><Button variant="outline" size="sm" onClick={()=>onOpen({event_type:event.id})}>Use as draft</Button></div>)}</div>;
+}

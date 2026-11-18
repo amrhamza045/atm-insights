@@ -1,0 +1,178 @@
+{
+  "name": "OrderChangeLog",
+  "type": "object",
+  "properties": {
+    "order_id": {
+      "type": "string",
+      "description": "ID of the order"
+    },
+    "order_reference": {
+      "type": "string",
+      "description": "Short order reference (e.g. #ABC12345)"
+    },
+    "table_id": {
+      "type": "string",
+      "description": "ID of the table"
+    },
+    "table_number": {
+      "type": "string",
+      "description": "Table number"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "ID of the cashier session"
+    },
+    "change_type": {
+      "type": "string",
+      "enum": [
+        "item_added",
+        "item_removed",
+        "quantity_increased",
+        "quantity_decreased",
+        "order_prepared",
+        "order_modified",
+        "payment_method_changed",
+        "status_changed",
+        "order_deleted",
+        "order_created",
+        "order_cancelled",
+        "notes_changed",
+        "discount_applied",
+        "customer_changed"
+      ],
+      "description": "Type of change made"
+    },
+    "item_name": {
+      "type": "string",
+      "description": "Name of the item affected"
+    },
+    "previous_quantity": {
+      "type": "number",
+      "description": "Previous quantity (for quantity changes)"
+    },
+    "new_quantity": {
+      "type": "number",
+      "description": "New quantity (for quantity changes)"
+    },
+    "previous_value": {
+      "type": "string",
+      "description": "Previous value (for payment_method, status, etc. changes)"
+    },
+    "new_value": {
+      "type": "string",
+      "description": "New value after change"
+    },
+    "order_total": {
+      "type": "number",
+      "description": "Total amount of the order at time of change"
+    },
+    "customer_name": {
+      "type": "string",
+      "description": "Customer name at time of change"
+    },
+    "details": {
+      "type": "string",
+      "description": "Additional details about the change"
+    },
+    "cashier_name": {
+      "type": "string",
+      "description": "Name of the cashier who made the change"
+    },
+    "cashier_email": {
+      "type": "string",
+      "description": "Email of the cashier who made the change"
+    }
+  },
+  "required": [
+    "order_id",
+    "change_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_audit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    }
+  }
+}

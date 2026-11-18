@@ -1,0 +1,378 @@
+{
+  "name": "Shift",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this shift belongs to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this shift belongs to"
+    },
+    "employee_id": {
+      "type": "string",
+      "description": "ID of the employee"
+    },
+    "employee_name": {
+      "type": "string",
+      "description": "Name of the employee"
+    },
+    "shift_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the shift (leave empty if repeating)"
+    },
+    "start_time": {
+      "type": "string",
+      "format": "time",
+      "description": "Shift start time (HH:MM)"
+    },
+    "end_time": {
+      "type": "string",
+      "format": "time",
+      "description": "Shift end time (HH:MM)"
+    },
+    "expected_hours": {
+      "type": "number",
+      "description": "Expected hours for this shift"
+    },
+    "is_repeating": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is a repeating shift pattern"
+    },
+    "repeat_days": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ]
+      },
+      "description": "Days of the week this shift repeats on"
+    },
+    "repeat_start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Start date for the repeating shift pattern"
+    },
+    "repeat_end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "End date for the repeating shift pattern"
+    },
+    "weekends_off": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "saturday",
+          "sunday"
+        ]
+      },
+      "description": "Weekends when employee is off"
+    },
+    "shift_source": {
+      "type": "string",
+      "enum": [
+        "regular",
+        "catering"
+      ],
+      "default": "regular",
+      "description": "Regular branch shift or a shift generated from a catering event assignment"
+    },
+    "catering_event_id": {
+      "type": "string",
+      "description": "CateringEvent this shift was generated for (catering shifts only)"
+    },
+    "catering_event_name": {
+      "type": "string",
+      "description": "Name of the catering event"
+    },
+    "catering_assignment_id": {
+      "type": "string",
+      "description": "CateringAssignment that generated this shift"
+    },
+    "catering_role": {
+      "type": "string",
+      "description": "Role the employee is working at the event (e.g. Waiter, Chef)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "completed",
+        "cancelled",
+        "no_show"
+      ],
+      "default": "scheduled",
+      "description": "Shift status"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes about the shift"
+    }
+  },
+  "required": [
+    "employee_id",
+    "start_time",
+    "end_time"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "data.employee_id": "{{user.data.perm_employee_id}}"
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_approve": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

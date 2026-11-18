@@ -1,0 +1,43 @@
+{
+  "name": "CustomerAccountSync",
+  "type": "object",
+  "description": "Server-only marker: the last quote/payment/event change already folded into the saved customer accounts.",
+  "properties": {
+    "key": {
+      "type": "string"
+    },
+    "synced_through": {
+      "type": "string",
+      "description": "Latest updated_date already applied"
+    },
+    "last_full_rebuild": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "key"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    }
+  }
+}

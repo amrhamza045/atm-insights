@@ -1,0 +1,40 @@
+{
+  "description": "Auto-approves a new order return when auto-approval is on and the submitter can approve returns.",
+  "name": "Auto-approve Return",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "Return"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "auto_approve_return",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "approve": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoApproveRequest",
+            "args": {
+              "entity": "Return",
+              "id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Auto-approve if permitted"
+          }
+        }
+      }
+    ]
+  }
+}

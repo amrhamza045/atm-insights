@@ -1,0 +1,93 @@
+{
+  "name": "FinanceWasteReason",
+  "type": "object",
+  "description": "Company waste reasons shown in the inventory waste popup, each linked to a GL account. Changed only through the finance service; deactivated reasons stay for history.",
+  "properties": {
+    "company_id": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "reason_group": {
+      "type": "string",
+      "enum": [
+        "expired",
+        "damaged",
+        "spoiled",
+        "overproduction",
+        "preparation_error",
+        "other"
+      ],
+      "enumColors": [
+        "yellow",
+        "red",
+        "pink",
+        "blue",
+        "purple",
+        "gray"
+      ],
+      "default": "other",
+      "description": "Built-in reporting group saved on each declaration's reason field."
+    },
+    "account_id": {
+      "type": "string"
+    },
+    "account_code": {
+      "type": "string"
+    },
+    "account_name": {
+      "type": "string"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "treatment": {
+      "type": "string",
+      "enum": [
+        "waste",
+        "food_tasting"
+      ],
+      "enumColors": [
+        "red",
+        "purple"
+      ],
+      "default": "waste",
+      "description": "food_tasting: stock used for a tasting (blueprint B11). Linked to an event, the cost waits in the tastings holding (clearing) account until the outcome: a cancelled event moves it to this reason's account (marketing expense), a completed event moves it to event COGS (event direct costs). A reinstated event moves it back. Without an event it posts straight to this reason's account."
+    }
+  },
+  "required": [
+    "company_id",
+    "code",
+    "name",
+    "reason_group",
+    "account_id",
+    "is_active"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    }
+  }
+}

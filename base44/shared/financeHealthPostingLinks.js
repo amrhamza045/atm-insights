@@ -1,0 +1,21 @@
+import { requireValue } from './financeValidation.js';
+import { auditDiagnosticContext } from './financeTransactionDiagnostics.js';
+export async function healthPostingLinks(ctx,company,def,sources,scope){
+ const db=ctx.svc.entities,ids=sources.map(s=>s.id),inventory=def.entity==='InventoryAccountingMovement';
+ const [ops,movements]=await Promise.all([def.entity==='JournalEntry'?{items:sources}:db.JournalEntry.filter({...scope.branches,reference_id:{$in:ids},posted:true},{limit:250}),inventory?{items:sources}:db.InventoryAccountingMovement.filter({company_id:company.id,...scope.branches,source_entity:def.entity,source_id:{$in:ids}},{limit:250})]);
+ requireValue(!ops.has_more&&!movements.has_more,'Linked source evidence exceeds this batch; no complete result can be certified.');
+ const movementIds=movements.items.map(m=>m.id),opIds=ops.items.map(o=>o.id),clauses=[{source_entity:def.entity,source_id:{$in:ids}},{'source_summary.audit_origin.entity':def.entity,'source_summary.audit_origin.id':{$in:ids}},{source_entity:'JournalEntry',source_id:{$in:opIds}},{source_entity:'InventoryAccountingMovement',source_id:{$in:movementIds}}];
+ if(def.entity==='JournalEntry')for(const s of sources)if(s.reference_id)clauses.push({source_entity:{$nin:['JournalEntry','FinanceJournal','InventoryAccountingMovement']},source_id:s.reference_id});
+ const query={company_id:company.id,...scope.branches,$or:clauses};
+ const [journals,proposals,issues,diagnostic,bindings]=await Promise.all([db.FinanceJournal.filter({...query,status:'posted'},{limit:250}),db.FinanceProposal.filter({...query,status:'pending'},{limit:250}),db.FinancePostingIssue.filter({company_id:company.id,...scope.branches,source_id:{$in:[...ids,...opIds,...movementIds]},status:'open'},{limit:250}),auditDiagnosticContext(ctx,company,def,sources,ops.items),movements.items.length?db.FinanceAccountBinding.filter({company_id:company.id,mapping_key:{$in:['INVENTORY_CONTROL_ACCOUNT','INVENTORY_WIP_ACCOUNT','INVENTORY_COGS_ACCOUNT']}},{limit:500}):{items:[]}]);
+ requireValue(![journals,proposals,issues,bindings].some(p=>p.has_more),'Financial links exceed this batch; narrow the scope before relying on the result.');
+ const accountIds=[...new Set(movements.items.flatMap(m=>(m.snapshot?.plan?.lines||[]).map(l=>l.account_id)).concat(bindings.items.map(b=>b.account_id)))];
+ const [ledger,accounts]=await Promise.all([journals.items.length?db.FinanceLedgerLine.filter({company_id:company.id,...scope.branches,journal_id:{$in:journals.items.map(j=>j.id)}},{limit:500}):{items:[]},accountIds.length?db.FinanceAccount.filter({company_id:company.id,id:{$in:accountIds}},{limit:500}):{items:[]}]);
+ requireValue(!ledger.has_more&&!accounts.has_more,'Reporting or account evidence exceeds this batch; verification is incomplete.');
+ return {ops:ops.items,movements:movements.items,journals:journals.items,proposals:proposals.items,issues:issues.items,ledger:ledger.items,diagnostic,bindings:bindings.items,accounts:new Map(accounts.items.map(a=>[a.id,a]))};
+}
+export function healthSourceLinks(def,source,evidence){
+ const ops=evidence.ops.filter(o=>def.entity==='JournalEntry'?o.id===source.id:o.reference_id===source.id),opIds=new Set(ops.map(o=>o.id)),movements=evidence.movements.filter(m=>def.entity==='InventoryAccountingMovement'?m.id===source.id:m.source_entity===def.entity&&m.source_id===source.id),movementIds=new Set(movements.map(m=>m.id));
+ const matches=j=>j.source_entity===def.entity&&j.source_id===source.id||j.source_entity==='JournalEntry'&&opIds.has(j.source_id)||j.source_summary?.audit_origin?.entity===def.entity&&j.source_summary.audit_origin.id===source.id||j.source_entity==='InventoryAccountingMovement'&&movementIds.has(j.source_id)||def.entity==='JournalEntry'&&source.reference_id&& !['JournalEntry','FinanceJournal','InventoryAccountingMovement'].includes(j.source_entity)&&j.source_id===source.reference_id;
+ return {ops,movements,journals:evidence.journals.filter(matches),proposals:evidence.proposals.filter(matches),issues:evidence.issues.filter(i=>[source.id,...opIds,...movementIds].includes(i.source_id))};
+}

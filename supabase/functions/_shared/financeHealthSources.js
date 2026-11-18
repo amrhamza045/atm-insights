@@ -1,0 +1,9 @@
+import { TRANSACTION_SOURCES } from './financeTransactionSources.js';
+import { healthPostingPage, HEALTH_COUNTERS } from './financeHealthPostingPage.js';
+export const HEALTH_SOURCES=[...TRANSACTION_SOURCES.filter(s=>s.entity!=='InventoryAccountingMovement').map(s=>s.entity==='EmployeeBorrowing'?{...s,query:{...s.query,request_status:{$nin:['pending','rejected']}}}:s),{entity:'InventoryAccountingMovement',name:'Immutable inventory movements',query:{},date:'entry_date',amount:'amount'},{entity:'CateringCustodyCheckpoint',name:'Confirmed catering deliveries / COGS',query:{stage:'delivered'},date:'confirmed_at',amount:null},{entity:'SupplierLedgerEntry',name:'Supplier goods returns and credits',query:{kind:'supplier_return',status:{$in:['pending','posted']}},date:'entry_date',amount:null}];
+export function sourceHealthQuery(source,scope){
+ const end=new Date(Date.parse(scope.to)+86400000).toISOString();
+ return {...scope.branches,...source.query,...(['InventoryAccountingMovement','SupplierLedgerEntry'].includes(source.entity)?{company_id:scope.company_id}:{}),created_date:{$gte:`${scope.from}T00:00:00.000Z`,$lt:end<scope.cutoff?end:scope.cutoff}};
+}
+export async function sourceHealthPage(ctx,company,source,scope,cursor){return healthPostingPage(ctx,company,source,scope,sourceHealthQuery(source,{...scope,company_id:company.id}),cursor);}
+export function mergeSourceHealth(previous,next){return {...next,checked:previous.checked+next.checked,...Object.fromEntries(HEALTH_COUNTERS.map(k=>[k,(previous[k]||0)+(next[k]||0)])),examples:[...previous.examples,...next.examples].slice(0,10),samples:[...(previous.samples||[]),...(next.samples||[])].slice(0,10)};}

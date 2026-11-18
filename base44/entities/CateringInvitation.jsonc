@@ -1,0 +1,284 @@
+{
+  "name": "CateringInvitation",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "Branch of the event"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "CateringEvent the guest is invited to"
+    },
+    "event_name": {
+      "type": "string"
+    },
+    "guest_name": {
+      "type": "string",
+      "description": "Name of the invited guest"
+    },
+    "email": {
+      "type": "string",
+      "description": "Guest email (optional)"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Guest phone (optional)"
+    },
+    "party_size": {
+      "type": "number",
+      "default": 1,
+      "description": "Seats offered to this guest"
+    },
+    "token": {
+      "type": "string",
+      "description": "Random token used in the guest RSVP link",
+      "unique": true
+    },
+    "pass_code": {
+      "type": "string",
+      "description": "Unique entry-pass code encoded in the guest's QR code, issued when attendance is confirmed"
+    },
+    "rsvp_status": {
+      "type": "string",
+      "enum": [
+        "invited",
+        "attending",
+        "declined",
+        "maybe"
+      ],
+      "default": "invited",
+      "description": "Guest response state"
+    },
+    "rsvp_party_size": {
+      "type": "number",
+      "default": 0,
+      "description": "How many people the guest confirmed"
+    },
+    "rsvp_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the guest responded"
+    },
+    "email_sent_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the invitation link was last emailed"
+    },
+    "whatsapp_sent_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the invitation link was last sent by WhatsApp"
+    },
+    "sms_sent_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the invitation link was last sent by SMS"
+    },
+    "last_sent_channel": {
+      "type": "string",
+      "enum": [
+        "email",
+        "whatsapp",
+        "sms"
+      ],
+      "description": "Channel used for the most recent send"
+    },
+    "dietary_notes": {
+      "type": "string",
+      "description": "Allergies / dietary requirements the guest declared"
+    },
+    "guest_message": {
+      "type": "string",
+      "description": "Free message the guest left when responding"
+    },
+    "table_assignment": {
+      "type": "string",
+      "description": "Table or seating group assigned by staff"
+    },
+    "checked_in": {
+      "type": "boolean",
+      "default": false,
+      "description": "Guest arrived on the day"
+    },
+    "checked_in_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal staff notes"
+    }
+  },
+  "required": [
+    "event_id",
+    "guest_name",
+    "token"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_catering_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_clients_view": true
+                  }
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_catering_edit": true
+                  }
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_catering_edit": true
+                  }
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_catering_edit": true
+                  }
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,163 @@
+{
+  "name": "CateringPortalAccess",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "Client record this portal access belongs to \u2014 the value stamped onto the customer's user account as portal_client_id"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Name of the client, for the staff list"
+    },
+    "email": {
+      "type": "string",
+      "description": "Email the portal invitation was sent to \u2014 the account that will be linked to this client"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "invited",
+        "linked",
+        "revoked"
+      ],
+      "default": "invited",
+      "description": "invited = invitation sent, account not created yet; linked = a user account exists and carries this client_id; revoked = access withdrawn and the link cleared from the account"
+    },
+    "linked_user_id": {
+      "type": "string",
+      "description": "ID of the user account that was linked"
+    },
+    "invited_by": {
+      "type": "string",
+      "description": "Email of the staff member who sent the invitation"
+    },
+    "invited_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "linked_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the account was actually stamped with the client link"
+    },
+    "revoked_by": {
+      "type": "string"
+    },
+    "revoked_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "client_id",
+    "email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_view": true
+          }
+        },
+        {
+          "data.email": "{{user.email}}"
+        },
+        {
+          "data.linked_user_id": "{{user.id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

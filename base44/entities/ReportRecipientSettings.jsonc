@@ -1,0 +1,118 @@
+{
+  "name": "ReportRecipientSettings",
+  "type": "object",
+  "properties": {
+    "setting_key": {
+      "type": "string",
+      "default": "report_recipients",
+      "description": "Single settings record key"
+    },
+    "daily_financial_summary": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Emails that receive the Daily Financial Summary"
+    },
+    "delivery_compliance_report": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Emails that receive the Delivery Compliance Report on session close"
+    },
+    "inventory_weight_compliance": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Emails that receive the Inventory Weight Compliance Report"
+    },
+    "shared_report_link_days": {
+      "type": "number",
+      "default": 7,
+      "minimum": 1,
+      "maximum": 90,
+      "description": "How many days a shared report link (e.g. closed-session report over WhatsApp) stays valid"
+    }
+  },
+  "required": [
+    "setting_key"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,173 @@
+{
+  "name": "CateringCancellationPolicy",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch (empty = applies to all branches)"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch"
+    },
+    "name": {
+      "type": "string",
+      "description": "Policy name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Policy description"
+    },
+    "is_default": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is the global fallback policy"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the policy can be applied"
+    },
+    "tiers": {
+      "type": "array",
+      "description": "Penalty tiers by how many days before the event the cancellation happens (highest min_days_before that is <= days remaining wins)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "min_days_before": {
+            "type": "number",
+            "description": "Applies when days remaining is >= this value"
+          },
+          "penalty_percentage": {
+            "type": "number",
+            "description": "Penalty as a percentage of the active quote total"
+          },
+          "deposit_refundable": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether the deposit is refundable at this tier"
+          },
+          "label": {
+            "type": "string",
+            "description": "Display label for this tier"
+          }
+        },
+        "required": [
+          "min_days_before",
+          "penalty_percentage"
+        ]
+      }
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_finance": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

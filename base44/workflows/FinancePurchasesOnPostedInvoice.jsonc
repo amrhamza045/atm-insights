@@ -1,0 +1,93 @@
+{
+  "name": "Finance Purchases on Posted Invoice",
+  "description": "Post reconciled inventory invoices as inventory assets and supplier payables, with one retry for temporary company contention. Drafts are excluded; payment and consumption are never inferred.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "PurchaseInvoice",
+      "events": [
+        "create",
+        "update"
+      ]
+    },
+    "condition": "${ .trigger.data.status == \"posted\" or .trigger.old_data.status == \"posted\" }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "finance_purchases_on_posted_invoice",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "settle": {
+          "wait": "PT30S",
+          "then": "post_source",
+          "x-base44": {
+            "title": "Let invoice posting finish"
+          }
+        }
+      },
+      {
+        "post_source": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeAutoPost",
+            "args": {
+              "source_entity": "PurchaseInvoice",
+              "source_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "check_retry",
+          "x-base44": {
+            "title": "Validate invoice and post payable"
+          }
+        }
+      },
+      {
+        "check_retry": {
+          "switch": [
+            {
+              "when": "${ .post_source.retry == true }",
+              "then": "retry_delay"
+            },
+            {
+              "when": "${ true }",
+              "then": "end"
+            }
+          ],
+          "x-base44": {
+            "title": "Retry temporary contention?"
+          }
+        }
+      },
+      {
+        "retry_delay": {
+          "wait": "PT15S",
+          "then": "retry_source",
+          "x-base44": {
+            "title": "Wait for company posting lock"
+          }
+        }
+      },
+      {
+        "retry_source": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeAutoPost",
+            "args": {
+              "source_entity": "PurchaseInvoice",
+              "source_id": "${ .trigger.entity_id }",
+              "attempt": 1
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Retry invoice posting once"
+          }
+        }
+      }
+    ]
+  }
+}

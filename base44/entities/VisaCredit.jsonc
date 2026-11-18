@@ -1,0 +1,152 @@
+{
+  "name": "VisaCredit",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "ID of the cashier session"
+    },
+    "credit_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date and time of credit"
+    },
+    "delivery_company_id": {
+      "type": "string",
+      "description": "ID of the delivery company"
+    },
+    "delivery_company": {
+      "type": "string",
+      "description": "Name of delivery company (Talabat, Noon, etc.)"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "cash",
+        "credit"
+      ],
+      "default": "credit",
+      "description": "Payment method for this order"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Order amount"
+    },
+    "order_reference": {
+      "type": "string",
+      "description": "Order or reference number"
+    },
+    "customer_name": {
+      "type": "string",
+      "description": "Customer name if applicable"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "settled",
+        "cancelled"
+      ],
+      "default": "pending",
+      "description": "Order status"
+    }
+  },
+  "required": [
+    "credit_date",
+    "delivery_company",
+    "amount",
+    "payment_method"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

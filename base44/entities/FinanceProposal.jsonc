@@ -1,0 +1,156 @@
+{
+  "name": "FinanceProposal",
+  "type": "object",
+  "properties": {
+    "company_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "entry_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "description": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "opening",
+        "historical",
+        "reversal"
+      ]
+    },
+    "source_key": {
+      "type": "string"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "source_entity": {
+      "type": "string"
+    },
+    "source_version": {
+      "type": "string"
+    },
+    "source_summary": {
+      "type": "object"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "business_edition": {
+      "type": "string"
+    },
+    "lines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "type": "string"
+          },
+          "account_code": {
+            "type": "string"
+          },
+          "account_name": {
+            "type": "string"
+          },
+          "management_mapping": {
+            "type": "string"
+          },
+          "statutory_mapping": {
+            "type": "string"
+          },
+          "debit": {
+            "type": "number"
+          },
+          "credit": {
+            "type": "number"
+          },
+          "cost_center": {
+            "type": "string"
+          },
+          "channel": {
+            "type": "string"
+          },
+          "product_category": {
+            "type": "string"
+          },
+          "product_reference": {
+            "type": "string"
+          },
+          "counterparty_reference": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id",
+          "debit",
+          "credit",
+          "cost_center"
+        ]
+      }
+    },
+    "total_debit": {
+      "type": "number"
+    },
+    "total_credit": {
+      "type": "number"
+    },
+    "prepared_by": {
+      "type": "string"
+    },
+    "prepared_by_id": {
+      "type": "string"
+    },
+    "rule_version": {
+      "type": "string"
+    },
+    "evidence_note": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "posted",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "decision_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "company_id",
+    "branch_id",
+    "entry_date",
+    "description",
+    "kind",
+    "source_key",
+    "lines",
+    "prepared_by_id",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

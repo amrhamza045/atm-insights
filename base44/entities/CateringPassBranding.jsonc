@@ -1,0 +1,136 @@
+{
+  "name": "CateringPassBranding",
+  "type": "object",
+  "properties": {
+    "logo_url": {
+      "type": "string",
+      "description": "Logo image shown at the top of the guest invitation / attendance pass page. Empty = use the default restaurant logo."
+    },
+    "email_subject": {
+      "type": "string",
+      "description": "English subject line template used for invitation messages. Supports {{guest_name}}, {{event_name}}, {{when}}, {{where}}, {{seats}}, {{link}}."
+    },
+    "email_body": {
+      "type": "string",
+      "description": "English body template used for invitation messages (email, WhatsApp, SMS). Supports {{guest_name}}, {{event_name}}, {{when}}, {{where}}, {{seats}}, {{link}}."
+    },
+    "email_subject_ar": {
+      "type": "string",
+      "description": "Arabic subject line template used when invitations are sent in Arabic. Same placeholders as the English version. Empty = falls back to the built-in Arabic default."
+    },
+    "email_body_ar": {
+      "type": "string",
+      "description": "Arabic body template used when invitations are sent in Arabic. Same placeholders as the English version. Empty = falls back to the built-in Arabic default."
+    },
+    "doc_email_subject": {
+      "type": "string",
+      "description": "English subject template used when emailing a catering document (quotation, invoice, receipt) to a client. Supports {{client_name}}, {{event_name}}, {{event_date}}, {{document_type}}, {{total}}, {{link}}, {{brand_name}}. Empty = built-in default."
+    },
+    "doc_email_body": {
+      "type": "string",
+      "description": "English body template used when emailing a catering document to a client. Same placeholders as doc_email_subject; {{link}} is replaced with the freshly generated PDF download link at send time. Staff can still edit the resolved text for a single send without changing this template."
+    },
+    "doc_email_subject_ar": {
+      "type": "string",
+      "description": "Arabic subject template used when the document language chosen at send time is Arabic. Same placeholders as the English version. Empty = falls back to the built-in Arabic default."
+    },
+    "doc_email_body_ar": {
+      "type": "string",
+      "description": "Arabic body template used when the document language chosen at send time is Arabic. Same placeholders as the English version. Empty = falls back to the built-in Arabic default."
+    }
+  },
+  "required": [],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

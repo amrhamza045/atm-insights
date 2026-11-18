@@ -1,0 +1,5 @@
+import { financeAmount } from '@/components/finance/financeApi';
+export default function FinanceChannelTable({rows,company}){
+ const amount=v=>financeAmount(v,company);
+ return <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr>{['Channel','Revenue','Cost of sales','Other attributed costs','Recorded contribution','Contribution %'].map(h=><th className="p-2 text-right first:text-left whitespace-nowrap" key={h}>{h}</th>)}</tr></thead><tbody>{rows.map(r=><tr key={r.key} className="border-t"><th className="p-2 text-left font-normal">{r.label}</th><td className="p-2 text-right tabular-nums">{amount(r.revenue)}</td><td className="p-2 text-right tabular-nums">{amount(r.cogs)}</td><td className="p-2 text-right tabular-nums">{amount(r.other_costs)}</td><td className="p-2 text-right tabular-nums">{amount(r.contribution)}</td><td className="p-2 text-right">{r.margin===null?'Not applicable':`${r.margin.toFixed(1)}%`}</td></tr>)}</tbody></table></div>;
+}

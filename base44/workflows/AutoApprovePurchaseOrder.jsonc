@@ -1,0 +1,41 @@
+{
+  "name": "Auto-approve Purchase Order",
+  "description": "Auto-approves a purchase order awaiting approval when auto-approval is on and the submitter can approve purchase orders.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "PurchaseOrder",
+      "events": [
+        "create",
+        "update"
+      ]
+    },
+    "condition": "${ .trigger.data.status == \"pending_approval\" and (.trigger.old_data.status // \"\") != \"pending_approval\" }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "auto_approve_purchase_order",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "approve": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoApproveRequest",
+            "args": {
+              "entity": "PurchaseOrder",
+              "id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Auto-approve if permitted"
+          }
+        }
+      }
+    ]
+  }
+}

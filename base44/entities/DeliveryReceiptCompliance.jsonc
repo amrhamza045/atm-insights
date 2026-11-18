@@ -1,0 +1,232 @@
+{
+  "name": "DeliveryReceiptCompliance",
+  "type": "object",
+  "properties": {
+    "order_id": {
+      "type": "string",
+      "description": "ID of the linked order"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Cashier session ID this compliance record belongs to"
+    },
+    "branch_id": {
+      "type": "string",
+      "description": "Branch ID"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Branch name"
+    },
+    "delivery_company_id": {
+      "type": "string",
+      "description": "ID of the delivery company"
+    },
+    "delivery_company_name": {
+      "type": "string",
+      "description": "Name of the delivery company (Talabat, Hurry Up, etc.)"
+    },
+    "customer_id": {
+      "type": "string",
+      "description": "Client ID"
+    },
+    "customer_name": {
+      "type": "string",
+      "description": "Customer name"
+    },
+    "customer_phone": {
+      "type": "string",
+      "description": "Customer phone number"
+    },
+    "receipt_url": {
+      "type": "string",
+      "description": "URL of the uploaded delivery receipt photo"
+    },
+    "scanned_payment_method": {
+      "type": "string",
+      "enum": [
+        "cash",
+        "credit_card",
+        "unknown"
+      ],
+      "description": "Payment method extracted from the receipt by AI vision"
+    },
+    "pos_payment_method": {
+      "type": "string",
+      "description": "Payment method actually used in POS for this order"
+    },
+    "expected_pos_payment_method": {
+      "type": "string",
+      "enum": [
+        "cl",
+        "hospitality"
+      ],
+      "description": "Expected POS payment method based on receipt: cash -> cl, credit_card -> hospitality"
+    },
+    "is_compliant": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the POS payment method matches the expected method from the receipt"
+    },
+    "compliance_status": {
+      "type": "string",
+      "enum": [
+        "compliant",
+        "non_compliant",
+        "no_receipt",
+        "pending"
+      ],
+      "default": "pending",
+      "description": "Overall compliance status"
+    },
+    "order_total": {
+      "type": "number",
+      "default": 0,
+      "description": "Total order amount"
+    },
+    "cashier_name": {
+      "type": "string",
+      "description": "Name of the cashier who processed this order"
+    },
+    "report_sent": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this record was included in an emailed compliance report"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "delivery_company_name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_delivery_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_audit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_audit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_audit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_audit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    }
+  }
+}

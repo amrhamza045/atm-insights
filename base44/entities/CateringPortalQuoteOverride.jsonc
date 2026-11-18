@@ -1,0 +1,187 @@
+{
+  "name": "CateringPortalQuoteOverride",
+  "type": "object",
+  "description": "Per-event display switches for the customer portal. Read by every signed-in account because the portal applies them when showing a customer their own quote; it holds display settings only. Changed only by catering staff.",
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "CateringEvent this override applies to. One record per event."
+    },
+    "event_name": {
+      "type": "string",
+      "description": "Snapshot of the event name for display"
+    },
+    "override_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "When false the event falls back to the global Client-side quote settings."
+    },
+    "portal_show_line_items": {
+      "type": "boolean",
+      "default": true
+    },
+    "portal_show_quantities": {
+      "type": "boolean",
+      "default": true
+    },
+    "portal_show_line_prices": {
+      "type": "boolean",
+      "default": true
+    },
+    "portal_show_charge_breakdown": {
+      "type": "boolean",
+      "default": true
+    },
+    "portal_show_service_costs": {
+      "type": "boolean",
+      "default": true
+    },
+    "portal_show_payment_history": {
+      "type": "boolean",
+      "default": true
+    },
+    "hidden_charge_allocation": {
+      "type": "string",
+      "enum": [
+        "into_lines",
+        "into_subtotal",
+        "total_only"
+      ],
+      "default": "into_subtotal"
+    },
+    "portal_show_per_guest_price": {
+      "type": "boolean",
+      "default": false
+    },
+    "portal_hide_discount": {
+      "type": "boolean",
+      "default": false
+    },
+    "portal_starting_from_mode": {
+      "type": "boolean",
+      "default": false
+    },
+    "portal_show_balance_due": {
+      "type": "boolean",
+      "default": true
+    },
+    "portal_label_subtotal": {
+      "type": "string"
+    },
+    "portal_label_service_charge": {
+      "type": "string"
+    },
+    "portal_label_tax": {
+      "type": "string"
+    },
+    "portal_label_total": {
+      "type": "string"
+    },
+    "portal_round_total_to": {
+      "type": "number",
+      "default": 0
+    },
+    "portal_package_only_mode": {
+      "type": "boolean",
+      "default": false
+    },
+    "portal_hide_internal_notes": {
+      "type": "boolean",
+      "default": true
+    },
+    "created_by_email": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

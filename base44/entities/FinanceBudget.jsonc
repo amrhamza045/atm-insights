@@ -1,0 +1,120 @@
+{
+  "name": "FinanceBudget",
+  "type": "object",
+  "description": "Monthly P&L budget for one company or branch. Historical suggestions stay drafts until explicitly approved; budgets never create ledger postings.",
+  "properties": {
+    "budget_key": {
+      "type": "string"
+    },
+    "company_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "year": {
+      "type": "integer"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "approved"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "default": 1
+    },
+    "basis": {
+      "type": "string"
+    },
+    "source_year": {
+      "type": "integer"
+    },
+    "missing_months": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "values": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "month": {
+            "type": "integer"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "revenue",
+              "cogs",
+              "operating_expenses",
+              "other_result",
+              "income_tax"
+            ]
+          },
+          "amount_units": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "month",
+          "category",
+          "amount_units"
+        ]
+      }
+    },
+    "notes": {
+      "type": "string"
+    },
+    "prepared_by": {
+      "type": "string"
+    },
+    "approved_by": {
+      "type": "string"
+    },
+    "approved_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "budget_key",
+    "company_id",
+    "year",
+    "currency",
+    "status",
+    "revision",
+    "values"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

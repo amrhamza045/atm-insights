@@ -1,0 +1,5 @@
+export function transactionPresentation(def,source,operational,posted){
+ const group_key=posted.length===1?`journal:${posted[0].id}`:operational.length===1?`operational:${operational[0].id}`:`${def.entity}:${source.id}`;
+ const journal_entries=posted.length?posted.map(j=>({id:j.id,kind:'Posted company journal',entry_date:j.entry_date,total_debit:j.total_debit,total_credit:j.total_credit,currency:j.currency,lines:(j.lines||[]).map(l=>({account_code:l.account_code,account_name:l.account_name,debit:l.debit,credit:l.credit}))})):operational.map(j=>({id:j.id,kind:'Operational journal (not posted to company ledger)',entry_date:String(j.entry_date||'').slice(0,10),total_debit:j.total_debit??(j.entries||[]).reduce((n,l)=>n+Number(l.debit||0),0),total_credit:j.total_credit??(j.entries||[]).reduce((n,l)=>n+Number(l.credit||0),0),lines:(j.entries||[]).map(l=>({account_code:l.account_number,account_name:l.account_name,debit:l.debit||0,credit:l.credit||0}))}));
+ return {group_key,journal_entries};
+}

@@ -1,0 +1,92 @@
+{
+  "name": "Finance Inventory on Sale",
+  "description": "Recognize COGS from saved stock-issue costs at the configured sale/delivery event. A sale and its later delivery share the same posting key.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "Order",
+      "events": [
+        "create",
+        "update"
+      ]
+    },
+    "condition": "${ (.trigger.data.status == \"paid\" and .trigger.old_data.status != \"paid\") or (.trigger.data.status == \"completed\" and .trigger.old_data.status != \"completed\") or (.trigger.data.delivery_status == \"delivered\" and .trigger.old_data.delivery_status != \"delivered\") }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "finance_inventory_on_sale",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "settle": {
+          "wait": "PT30S",
+          "then": "post",
+          "x-base44": {
+            "title": "Let sale or delivery finish"
+          }
+        }
+      },
+      {
+        "post": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeAutoPost",
+            "args": {
+              "inventory_entity": "Order",
+              "source_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "check_retry",
+          "x-base44": {
+            "title": "Recognize actual COGS once"
+          }
+        }
+      },
+      {
+        "check_retry": {
+          "switch": [
+            {
+              "when": "${ .post.retry == true }",
+              "then": "delay"
+            },
+            {
+              "when": "${ true }",
+              "then": "end"
+            }
+          ],
+          "x-base44": {
+            "title": "Retry temporary contention?"
+          }
+        }
+      },
+      {
+        "delay": {
+          "wait": "PT15S",
+          "then": "retry",
+          "x-base44": {
+            "title": "Wait for company posting lock"
+          }
+        }
+      },
+      {
+        "retry": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeAutoPost",
+            "args": {
+              "inventory_entity": "Order",
+              "source_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Retry COGS posting once"
+          }
+        }
+      }
+    ]
+  }
+}

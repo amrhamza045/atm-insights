@@ -1,0 +1,374 @@
+{
+  "name": "CashierSession",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this cashier session belongs to. Required."
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this cashier session belongs to"
+    },
+    "session_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the cashier session"
+    },
+    "cashier_id": {
+      "type": "string",
+      "description": "ID of the cashier/employee"
+    },
+    "cashier_name": {
+      "type": "string",
+      "description": "Name of the cashier"
+    },
+    "opening_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the cashier opened"
+    },
+    "closing_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the cashier closed"
+    },
+    "opening_cash": {
+      "type": "number",
+      "description": "Starting cash in drawer"
+    },
+    "closing_cash": {
+      "type": "number",
+      "description": "Ending cash in drawer"
+    },
+    "expected_cash": {
+      "type": "number",
+      "description": "Expected cash based on transactions"
+    },
+    "cash_difference": {
+      "type": "number",
+      "default": 0,
+      "description": "Difference between expected and actual (closing - expected)"
+    },
+    "total_sales": {
+      "type": "number",
+      "default": 0,
+      "description": "Total sales for the session"
+    },
+    "cash_sales": {
+      "type": "number",
+      "default": 0,
+      "description": "Cash sales"
+    },
+    "card_sales": {
+      "type": "number",
+      "default": 0,
+      "description": "Card/visa sales"
+    },
+    "wallet_sales": {
+      "type": "number",
+      "default": 0,
+      "description": "Wallet sales"
+    },
+    "recharge_balance_sales": {
+      "type": "number",
+      "default": 0,
+      "description": "Sales paid via recharge wallet balance"
+    },
+    "total_expenses": {
+      "type": "number",
+      "default": 0,
+      "description": "Total expenses during session"
+    },
+    "total_returns": {
+      "type": "number",
+      "default": 0,
+      "description": "Total returns/refunds during session"
+    },
+    "total_delivery_orders": {
+      "type": "number",
+      "default": 0,
+      "description": "Total delivery company orders"
+    },
+    "total_delivery_cash": {
+      "type": "number",
+      "default": 0,
+      "description": "Total delivery cash payments"
+    },
+    "total_delivery_credit": {
+      "type": "number",
+      "default": 0,
+      "description": "Total delivery credit payments"
+    },
+    "delivery_breakdown": {
+      "type": "object",
+      "description": "Breakdown by delivery company with commission"
+    },
+    "total_delivery_commission": {
+      "type": "number",
+      "default": 0,
+      "description": "Total commission owed to all delivery companies"
+    },
+    "new_recharge_cash": {
+      "type": "number",
+      "default": 0,
+      "description": "Balance recharges received as cash in this session"
+    },
+    "new_recharge_visa": {
+      "type": "number",
+      "default": 0,
+      "description": "Balance recharges received as visa in this session"
+    },
+    "total_new_recharge": {
+      "type": "number",
+      "default": 0,
+      "description": "Total new recharge amount in session (cash + visa)"
+    },
+    "recharge_balance_remaining": {
+      "type": "number",
+      "default": 0,
+      "description": "Total recharge wallet balance across all users at session close"
+    },
+    "total_orders": {
+      "type": "number",
+      "default": 0,
+      "description": "Total number of orders in session"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "description": "Session status"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "session_date",
+    "opening_cash",
+    "branch_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_finance_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_cashier_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_cashier_session_approve": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "data.cashier_id": "{{user.id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_cashier_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "data.cashier_id": "{{user.id}}"
+            },
+            {
+              "data.status": "open"
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_finance_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_cashier_session_approve": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_finance_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

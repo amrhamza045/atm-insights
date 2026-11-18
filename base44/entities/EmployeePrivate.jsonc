@@ -1,0 +1,87 @@
+{
+  "name": "EmployeePrivate",
+  "type": "object",
+  "properties": {
+    "employee_record_id": {
+      "type": "string",
+      "description": "Employee record id this private data belongs to (one row per staff record, enforced by saveEmployeePrivate)"
+    },
+    "employee_code": {
+      "type": "string",
+      "description": "Snapshot of the Employee's employee_id code"
+    },
+    "face_scan_data": {
+      "type": "string",
+      "description": "Reference face photo (URL or data URL) used for attendance verification"
+    },
+    "hourly_rate": {
+      "type": "number",
+      "description": "Hourly wage"
+    },
+    "fixed_salary": {
+      "type": "number",
+      "description": "Fixed monthly salary"
+    },
+    "bonus_structure": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "bonus_percentage": {
+          "type": "number"
+        },
+        "bonus_trigger": {
+          "type": "string",
+          "enum": [
+            "performance",
+            "attendance",
+            "manual"
+          ]
+        }
+      }
+    },
+    "current_month_earnings": {
+      "type": "number",
+      "default": 0
+    },
+    "total_hours_worked": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "employee_record_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

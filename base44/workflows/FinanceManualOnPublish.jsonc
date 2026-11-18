@@ -1,0 +1,37 @@
+{
+  "description": "Validate and refresh Finance documentation verification after every app publication. Deployed guidance is assembled from the Finance navigation catalog.",
+  "name": "Finance Manual on Publication",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "finance_manual_on_publish",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "refresh_manual": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "refreshFinanceManual",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Update Finance manual",
+            "description": "Verify published section and report guidance"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "app_publish",
+      "events": [
+        "published"
+      ]
+    }
+  }
+}

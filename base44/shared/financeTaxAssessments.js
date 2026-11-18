@@ -1,0 +1,11 @@
+import { financePermission } from './financeAccess.js';
+import { requireValue,validDate } from './financeValidation.js';
+import { taxUnits } from './financeTaxMath.js';
+export async function saveAssessment(ctx,company,input,data){
+ financePermission(ctx,'finance_edit');requireValue(company.currency==='EGP','Egypt tax assessments require an EGP company.');requireValue(validDate(data.entry_date),'A valid tax recognition date is required.');requireValue(!company.closed_through||data.entry_date>company.closed_through,'Tax assessments in a locked period cannot be changed.',409);requireValue(input.data?.confirmed===true&&String(input.data?.evidence_note||'').trim(),'Confirm the source bases, rules and eligibility, and record supporting evidence.');
+ requireValue(typeof input.request_id==='string'&&/^[0-9a-f-]{36}$/i.test(input.request_id),'A unique request identifier is required.');const evidence_note=String(input.data.evidence_note).trim().slice(0,2000),values={...data,company_id:company.id,currency:company.currency,evidence_note},signature=JSON.stringify(values),entity=ctx.svc.entities.FinanceTaxAssessment;
+ const retry=(await entity.filter({company_id:company.id,request_id:input.request_id},{limit:1})).items[0];if(retry){requireValue(retry.request_signature===signature,'Request identifier was reused for different tax data.',409);return {assessment:retry,replayed:true};}
+ const old=(await entity.filter({company_id:company.id,assessment_key:data.assessment_key},{limit:1})).items[0];requireValue(!old||old.revision===input.revision,'This assessment changed; reopen the source before reassessing.',409);requireValue(!old||!company.closed_through||old.entry_date>company.closed_through,'The existing assessment belongs to a locked period.',409);
+ const snapshot={...values,revision:(old?.revision||0)+1,request_id:input.request_id,request_signature:signature,prepared_by:ctx.user.email,prepared_at:new Date().toISOString()};return {assessment:old?await entity.update(old.id,snapshot):await entity.create(snapshot),previous:old?{revision:old.revision,tax_units:old.tax_units,source_version:old.source_version}:null};
+}
+export function recordedTax(input,company){const value=input.data?.recorded_tax;return value===''||value===null||value===undefined?null:taxUnits(value,company.currency_decimals);}

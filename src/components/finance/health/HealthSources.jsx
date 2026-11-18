@@ -1,0 +1,4 @@
+import HealthSourceCard from '@/components/finance/health/HealthSourceCard';
+export default function HealthSources({sources,busy,onContinue}){
+ return <section className="space-y-3"><h3 className="font-semibold">End-to-end transaction-to-ledger evidence</h3><p className="text-sm text-muted-foreground">All {sources.length} registered source types are reviewed in 25-record batches: eligibility, mapping, automatic connection, journal and line-by-line reporting. Source types overlap; do not add their counts together. Missing mappings appear as findings, not newly created Posting Issues or accounting entries.</p>{sources.map(source=><HealthSourceCard key={source.entity} source={source} busy={busy} onContinue={onContinue}/>)}</section>;
+}

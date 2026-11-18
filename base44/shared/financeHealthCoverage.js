@@ -1,0 +1,11 @@
+import { mappingCatalogue, MAPPING_EVENTS } from './financeMappingCatalogue.js';
+import { HEALTH_SOURCES } from './financeHealthSources.js';
+import { healthPostingPath } from './financeHealthPostingPaths.js';
+const BRANCH_ENTITIES=['Return','KitchenReleaseSlip','ProductionOrder','CateringReturnedItem','WasteDeclaration','SalaryRecord','PayrollDisbursement','BalanceRecharge','CateringCostException','Expense','CashierSession'];
+export function healthCoverageTasks(ctx,company,scope){return BRANCH_ENTITIES.map(entity=>[`activity:${entity}`,()=>ctx.svc.entities[entity].count({...scope.branches,created_date:{$gte:`${scope.from}T00:00:00.000Z`,$lte:scope.cutoff<`${scope.to}T23:59:59.999Z`?scope.cutoff:`${scope.to}T23:59:59.999Z`}})]);}
+const patternSource=e=>({B05:'CateringPayment',B07:'CateringPayment',B08:'PurchaseInvoice',B09:'ProductionOrder',B10:'ProductionOrder'}[e.id]||e.source_entity);
+export function healthCoverage(company,evidence){
+ const catalogue=mappingCatalogue(),rules=evidence.rules?.value,groups=rules?.rows||[];
+ const coverage=MAPPING_EVENTS.map(e=>({id:e.id,name:e.name,module:e.module,source_entity:e.source_entity,approved:groups.filter(g=>g.event_type===e.id&&g.status==='approved').reduce((n,g)=>n+g.count,0),drafts:groups.filter(g=>g.event_type===e.id&&g.status!=='approved').reduce((n,g)=>n+g.count,0),mapping_adapter:healthPostingPath(company,patternSource(e)).adapter,alternative_path:`${healthPostingPath(company,patternSource(e)).note} Full pattern treatment is not certified by a source-level connection.`,activity:evidence[`activity:${e.source_entity}`]?.value??null,activity_error:evidence[`activity:${e.source_entity}`]?.error||'',assessment:'Requires policy and source-adapter review'}));
+ return {coverage,modules:catalogue.modules.map(m=>({name:m.name,domain:m.domain,registered_events:MAPPING_EVENTS.filter(e=>e.module===m.id).length,assessment:m.finance_status})),source_definitions:HEALTH_SOURCES.map(s=>({entity:s.entity,name:s.name})),rules_error:evidence.rules?.error||(rules?.truncated?'Rule summary was truncated. Counts are incomplete.':'')};
+}

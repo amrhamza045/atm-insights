@@ -1,0 +1,191 @@
+{
+  "name": "CashbackDistributionPending",
+  "type": "object",
+  "properties": {
+    "order_id": {
+      "type": "string",
+      "description": "ID of the order being processed"
+    },
+    "customer_id": {
+      "type": "string",
+      "description": "ID of the customer"
+    },
+    "customer_name": {
+      "type": "string",
+      "description": "Name of the customer"
+    },
+    "order_total": {
+      "type": "number",
+      "description": "Total amount of the order"
+    },
+    "order_type": {
+      "type": "string",
+      "enum": [
+        "dine_in",
+        "takeaway",
+        "delivery"
+      ],
+      "description": "Type of order"
+    },
+    "payment_method": {
+      "type": "string",
+      "description": "Payment method used"
+    },
+    "cashback_amount": {
+      "type": "number",
+      "description": "Total cashback amount to distribute"
+    },
+    "cashback_to_customer": {
+      "type": "number",
+      "description": "Cashback allocated to customer"
+    },
+    "payout_to_customer": {
+      "type": "number",
+      "description": "Payout allocated to customer"
+    },
+    "referral_cashback_details": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "referrer_id": {
+            "type": "string"
+          },
+          "referrer_name": {
+            "type": "string"
+          },
+          "referral_level": {
+            "type": "number"
+          },
+          "cashback_amount": {
+            "type": "number"
+          },
+          "cashback_rate": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Details of cashback to distribute to referrers"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending_approval",
+        "approved",
+        "executed",
+        "rejected"
+      ],
+      "default": "pending_approval",
+      "description": "Status of the pending distribution"
+    },
+    "rejection_reason": {
+      "type": "string",
+      "description": "Reason for rejection if applicable"
+    },
+    "approved_by": {
+      "type": "string",
+      "description": "Email of admin who approved"
+    },
+    "executed_by": {
+      "type": "string",
+      "description": "Email of admin who executed"
+    },
+    "execution_timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the distribution was executed"
+    }
+  },
+  "required": [
+    "order_id",
+    "customer_id",
+    "order_total",
+    "cashback_amount"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashback_dist_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        },
+        {
+          "data.customer_id": "{{user.data.perm_client_id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashback_dist_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_actions": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashback_dist_approve": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    }
+  }
+}

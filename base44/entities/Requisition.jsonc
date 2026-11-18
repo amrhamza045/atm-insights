@@ -1,0 +1,446 @@
+{
+  "name": "Requisition",
+  "type": "object",
+  "description": "Kitchen stock requisition for a catering event: the Requisition / Stock Permit Trail between the head chef and inventory. Supports the initial primary requisition and subsequent additional requisitions once the primary requisition is confirmed. Written only by backend functions.",
+  "properties": {
+    "branch_id": {
+      "type": "string"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string"
+    },
+    "event_name": {
+      "type": "string"
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "requisition_number": {
+      "type": "string",
+      "description": "REQ-<event code>, with -2, -3\u2026 for subsequent or reopened requisitions. Unique per event, assigned by the backend function."
+    },
+    "requisition_sequence": {
+      "type": "number",
+      "default": 1,
+      "description": "1 for the event's first (primary) requisition; 2, 3\u2026 for additional requisitions created after the first is confirmed."
+    },
+    "is_additional": {
+      "type": "boolean",
+      "default": false,
+      "description": "False on the event's first requisition (free for editing without money cap); true on additional requisitions (subject to the event's remaining money allowance and CEO/Approval Center approval once exhausted)."
+    },
+    "allowance_configured_at_check": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Configured additional requisition allowance (EGP) when this requisition was last checked."
+    },
+    "allowance_remaining_before": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Remaining event allowance (EGP) available before this additional requisition."
+    },
+    "allowance_deducted_amount": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Agreed cost (agreed qty \u00d7 item cost) deducted from the event's additional requisition allowance upon mutual confirmation."
+    },
+    "allowance_deducted_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "description": "Timestamp when this additional requisition's agreed cost was deducted from the event allowance (idempotency guard)."
+    },
+    "created_from_quote_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "pending_approval",
+        "submitted",
+        "replied",
+        "confirmed",
+        "scheduled",
+        "fulfilled",
+        "rejected",
+        "cancelled"
+      ],
+      "default": "draft",
+      "description": "A draft, pending_approval, submitted, replied, confirmed or scheduled requisition is cancelled when the event's reservations are released (its unreleased batch slips are voided, released ones kept); with no batch released it is reopened as a clean draft by the next planning run, otherwise it is cancelled as 'stock_issued' and planning is refused. At event closeout a draft is cancelled, pending_approval/submitted/replied blocks the closeout, and scheduled with an unreleased batch blocks it until the batch is released or 'close anyway' voids it (with a reason). Confirmed = every active line agreed; it immediately becomes scheduled with batch 1 on the event date. Fulfilled = the last batch was released (or close anyway voided the rest after some were released). pending_approval = the chef's submission or counter went over the extra-items limit; nobody but an approver can act on it."
+    },
+    "awaiting_side": {
+      "type": "string",
+      "enum": [
+        "chef",
+        "inventory",
+        "approver",
+        "none"
+      ],
+      "default": "chef",
+      "description": "Whose turn it is. While scheduled: the side that must answer the open batch plan proposal, else none."
+    },
+    "current_revision": {
+      "type": "number",
+      "default": 0,
+      "description": "Revision counter. Each new RequisitionRevision claims current_revision + 1 with a conditional (compare-and-swap) update, so simultaneous writers never share a number. Chef, inventory and approver actions (including batch release and receipt) must send the revision they were looking at; a moved counter rejects the action as stale."
+    },
+    "counter_round": {
+      "type": "number",
+      "default": 0,
+      "description": "Informational only: how many times the chef has sent lines back to inventory (counters or new extras). There is no round limit and the count never escalates anything. Reset on reopen."
+    },
+    "planned_estimated_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Sum over active, costed planned lines only. Uncosted lines are excluded (see uncosted_line_count), never counted as zero."
+    },
+    "extras_estimated_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Sum over active, costed extra lines only."
+    },
+    "uncosted_line_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Active lines with no comparable cost (unit differs from the item's cost unit, the item has no cost, or an extra line whose item cost is 0). Excluded from the estimated totals."
+    },
+    "line_counts": {
+      "type": "object",
+      "description": "Active-line counts, rewritten with the cost totals on every requisition write (lists read this instead of the lines).",
+      "properties": {
+        "active": {
+          "type": "number"
+        },
+        "planned": {
+          "type": "number"
+        },
+        "extra": {
+          "type": "number"
+        },
+        "pending": {
+          "type": "number"
+        },
+        "confirmed": {
+          "type": "number"
+        },
+        "edited": {
+          "type": "number"
+        },
+        "declined": {
+          "type": "number"
+        },
+        "agreed": {
+          "type": "number"
+        }
+      }
+    },
+    "approval_status": {
+      "type": "string",
+      "enum": [
+        "not_required",
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "not_required"
+    },
+    "approved_by": {
+      "type": "string"
+    },
+    "approved_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "approval_reason": {
+      "type": "string",
+      "description": "Why the last extra-items check asked for approval."
+    },
+    "approved_extras_cost": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Extras total at the last approval. Later checks need approval again only when the extras total rises above it, a new uncosted extra appears, or an approved uncosted extra rises above its approved quantity. Cleared on reopen."
+    },
+    "approved_uncosted_extra_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Uncosted extra lines covered by the last approval."
+    },
+    "approved_uncosted_quantities": {
+      "type": "array",
+      "default": [],
+      "description": "Quantity approved for each uncosted extra line at the last approval. A later counter above it needs approval again. Cleared on reopen.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "line_id": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "rejection_reason": {
+      "type": "string",
+      "description": "The approver's reason for the last rejection (shown to the chef)."
+    },
+    "rejected_by": {
+      "type": "string"
+    },
+    "rejected_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "approval_restore": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "While pending approval: the requisition and line state just before the submission or counter that triggered approval. A rejection restores it exactly; cleared on approve, reject or cancel.",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "awaiting_side": {
+          "type": "string"
+        },
+        "counter_round": {
+          "type": "number"
+        },
+        "submitted_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "limit_percent_applied": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Values used by the last extra-items check (also stored on each revision it wrote)."
+    },
+    "limit_amount_applied": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "planned_food_cost_applied": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "planned_food_cost_source": {
+      "type": "string",
+      "enum": [
+        "quote_food_cost",
+        "requisition_planned_estimate"
+      ]
+    },
+    "extras_total_applied": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "uncosted_extras_count": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "chef_user_id": {
+      "type": "string"
+    },
+    "chef_name": {
+      "type": "string"
+    },
+    "submitted_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "last_action_by": {
+      "type": "string"
+    },
+    "last_action_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "cancelled_by": {
+      "type": "string"
+    },
+    "cancelled_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "cancel_reason": {
+      "type": "string"
+    },
+    "cancel_source": {
+      "type": "string",
+      "description": "Why it was cancelled: 'reservations_released' (the next planning run reopens it), 'stock_issued' (reservations released after at least one batch was released: never reopened, planning refused), 'duplicate' or 'event_closeout' (a draft, or close anyway with no batch released). Only 'reservations_released' is ever reopened. Cleared on reopen."
+    },
+    "batch_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of non-void batch slips in the current plan (released ones included). Cleared on cancel and reopen."
+    },
+    "saved_reply_comment": {
+      "type": "string",
+      "description": "Inventory's draft reply comment saved when a reply attempt was blocked by stock shortages."
+    },
+    "batch_proposal": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "The one open batch plan proposal (split / move / date change of the unreleased quantities; released batches are locked). The other side accepts, declines (reason) or proposes a different plan (replaces it); the proposer can withdraw. Cleared on accept, decline, withdraw, batch release, cancel, closeout and reopen.",
+      "properties": {
+        "side": {
+          "type": "string",
+          "enum": [
+            "chef",
+            "inventory"
+          ]
+        },
+        "proposed_by": {
+          "type": "string"
+        },
+        "proposed_by_id": {
+          "type": "string"
+        },
+        "proposed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "comment": {
+          "type": "string"
+        },
+        "batches": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "batch_number": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "slip_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "slip_number": {
+                "type": "string"
+              },
+              "needed_by_date": {
+                "type": "string"
+              },
+              "lines": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "line_id": {
+                      "type": "string"
+                    },
+                    "inventory_item_name": {
+                      "type": "string"
+                    },
+                    "unit": {
+                      "type": "string"
+                    },
+                    "quantity": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "branch_id",
+    "event_id",
+    "requisition_number"
+  ],
+  "rls": {
+    "read": {
+      "$and": [
+        {
+          "user_condition": {
+            "data.perm_requisition_view": true
+          }
+        },
+        {
+          "$or": [
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

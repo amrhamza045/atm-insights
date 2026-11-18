@@ -1,0 +1,132 @@
+{
+  "name": "InventoryCategory",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this inventory category belongs to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this inventory category belongs to"
+    },
+    "name": {
+      "type": "string",
+      "description": "Category name (e.g., Produce, Dairy, Meats, Dry Goods)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Category description"
+    },
+    "color": {
+      "type": "string",
+      "description": "Color code for UI display"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this category is active"
+    },
+    "dish_output_default": {
+      "type": "boolean",
+      "default": false,
+      "description": "Category given to new dish stock items created from menu recipes, so their production can post to finished goods. Keep it on one category."
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        }
+      ]
+    }
+  }
+}

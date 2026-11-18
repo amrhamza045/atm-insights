@@ -1,0 +1,133 @@
+{
+  "name": "CateringProcurementSettings",
+  "type": "object",
+  "properties": {
+    "setting_key": {
+      "type": "string",
+      "default": "default",
+      "description": "Singleton key so one settings record governs catering procurement",
+      "unique": true
+    },
+    "planning_horizon_days": {
+      "type": "number",
+      "default": 14,
+      "description": "Events further away than this many days may be ordered for proactively (bulk / long-lead items) even without a detected shortfall"
+    },
+    "urgent_threshold_days": {
+      "type": "number",
+      "default": 5,
+      "description": "Purchase orders raised for an event this close (or closer) are flagged urgent in the purchasing queue"
+    },
+    "default_delivery_buffer_days": {
+      "type": "number",
+      "default": 2,
+      "description": "How many days before the event the expected delivery date is set to"
+    }
+  },
+  "required": [
+    "setting_key"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_approve": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_approve": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    }
+  }
+}

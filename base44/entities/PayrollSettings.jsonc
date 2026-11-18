@@ -1,0 +1,91 @@
+{
+  "name": "PayrollSettings",
+  "type": "object",
+  "description": "Company payroll settings (single record, setting_key = payroll_settings). Stores the monthly cut-off day only.",
+  "properties": {
+    "setting_key": {
+      "type": "string"
+    },
+    "payroll_cutoff_day": {
+      "type": "string",
+      "description": "'1' to '31', or 'last' for the last day of the month"
+    }
+  },
+  "required": [
+    "setting_key"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

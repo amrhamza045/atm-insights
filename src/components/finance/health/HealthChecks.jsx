@@ -1,0 +1,7 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+export default function HealthChecks({checks}){
+ const [issuesOnly,setIssuesOnly]=useState(false);
+ const group=section=>['accounts','mapping','automatic','controls'].includes(section)?'configuration':section==='company_definition'?'legal_company':'reporting';
+ return <section className="space-y-3"><div className="flex flex-wrap items-center justify-between gap-3"><h3 className="font-semibold">Setup & reflection controls</h3><label className="text-sm flex gap-2 items-center"><input type="checkbox" checked={issuesOnly} onChange={e=>setIssuesOnly(e.target.checked)}/>Only issues / missing evidence</label></div>{checks.filter(c=>!issuesOnly||c.status!=='Pass').map(c=><article key={c.id} className="border rounded-lg p-4 space-y-2"><div className="flex flex-wrap justify-between gap-2"><h4 className="text-sm font-semibold">{c.title}</h4><strong className={c.status==='Fail'?'text-sm text-destructive':'text-sm'}>{c.status}</strong></div><p className="text-sm">{c.actual}</p>{c.status!=='Pass'&&<p className="text-sm text-muted-foreground">Next step: {c.recommendation}</p>}{c.section!=='health'&&<Link className="inline-block text-sm text-primary underline" to={`/Finance?finance_view=${group(c.section)}&tab=${encodeURIComponent(c.section)}`}>Open relevant Finance settings</Link>}</article>)}</section>;
+}

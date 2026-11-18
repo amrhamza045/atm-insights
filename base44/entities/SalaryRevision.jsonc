@@ -1,0 +1,119 @@
+{
+  "name": "SalaryRevision",
+  "type": "object",
+  "description": "Salary revision proposal with independent review. Written only by the employeeLifecycle function; approved revisions are applied to EmployeePrivate.",
+  "properties": {
+    "employee_record_id": {
+      "type": "string"
+    },
+    "employee_name": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "effective_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "prior_hourly_rate": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "prior_fixed_salary": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "new_hourly_rate": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "new_fixed_salary": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "proposed_by": {
+      "type": "string"
+    },
+    "proposed_by_id": {
+      "type": "string"
+    },
+    "proposed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "decided_by": {
+      "type": "string"
+    },
+    "decided_by_id": {
+      "type": "string"
+    },
+    "decided_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "decision_note": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "employee_record_id",
+    "effective_date",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_approve": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

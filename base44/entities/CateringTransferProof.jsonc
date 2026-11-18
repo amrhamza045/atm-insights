@@ -1,0 +1,247 @@
+{
+  "name": "CateringTransferProof",
+  "type": "object",
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "data.client_id": "{{user.data.portal_client_id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "data.client_id": "{{user.data.portal_client_id}}"
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "Branch of the event"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "CateringEvent the transfer relates to"
+    },
+    "event_name": {
+      "type": "string"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Client who submitted the proof \u2014 the field portal access is keyed on"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "transfer_type": {
+      "type": "string",
+      "enum": [
+        "deposit",
+        "full_amount"
+      ],
+      "default": "deposit",
+      "description": "Whether the customer transferred the deposit only or the full event amount"
+    },
+    "amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount the customer says was transferred"
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "bank_transfer",
+        "instapay",
+        "wallet",
+        "cash",
+        "card"
+      ],
+      "default": "bank_transfer",
+      "description": "How the money was sent"
+    },
+    "reference": {
+      "type": "string",
+      "description": "Transfer/transaction reference for staff to match against the statement"
+    },
+    "screenshot_url": {
+      "type": "string",
+      "description": "Uploaded screenshot or receipt image of the transfer"
+    },
+    "transfer_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the customer made the transfer"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "verified",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Staff verification state \u2014 nothing is treated as paid until a payment record is created by staff"
+    },
+    "submitted_by": {
+      "type": "string",
+      "description": "Email of the person who uploaded the proof"
+    },
+    "reviewed_by": {
+      "type": "string"
+    },
+    "reviewed_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "review_note": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Customer note about the transfer"
+    }
+  },
+  "required": [
+    "event_id",
+    "client_id",
+    "transfer_type"
+  ]
+}

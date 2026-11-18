@@ -1,0 +1,92 @@
+{
+  "name": "Finance Inventory on Movement",
+  "description": "Post immutable actual-cost movement evidence once. Prepared or ambiguous stock operations remain exceptions; never repeat physical stock deductions.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "InventoryAccountingMovement",
+      "events": [
+        "create",
+        "update"
+      ]
+    },
+    "condition": "${ .trigger.event_type == \"create\" or .trigger.data.status != .trigger.old_data.status }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "finance_inventory_on_movement",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "settle": {
+          "wait": "PT30S",
+          "then": "post",
+          "x-base44": {
+            "title": "Let the stock operation finish"
+          }
+        }
+      },
+      {
+        "post": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeAutoPost",
+            "args": {
+              "inventory_entity": "InventoryAccountingMovement",
+              "source_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "retry_check",
+          "x-base44": {
+            "title": "Post actual stock cost once"
+          }
+        }
+      },
+      {
+        "retry_check": {
+          "switch": [
+            {
+              "when": "${ .post.retry == true }",
+              "then": "retry_delay"
+            },
+            {
+              "when": "${ true }",
+              "then": "end"
+            }
+          ],
+          "x-base44": {
+            "title": "Retry temporary posting contention?"
+          }
+        }
+      },
+      {
+        "retry_delay": {
+          "wait": "PT15S",
+          "then": "retry",
+          "x-base44": {
+            "title": "Wait for accounting lock"
+          }
+        }
+      },
+      {
+        "retry": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeAutoPost",
+            "args": {
+              "inventory_entity": "InventoryAccountingMovement",
+              "source_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Retry inventory posting once"
+          }
+        }
+      }
+    ]
+  }
+}

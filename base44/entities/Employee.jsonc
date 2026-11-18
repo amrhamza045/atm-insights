@@ -1,0 +1,364 @@
+{
+  "name": "Employee",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this employee is assigned to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this employee is assigned to"
+    },
+    "name": {
+      "type": "string",
+      "description": "Full name of employee"
+    },
+    "email": {
+      "type": "string",
+      "description": "Employee email"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Employee phone number"
+    },
+    "employee_id": {
+      "type": "string",
+      "description": "Unique employee ID",
+      "unique": true
+    },
+    "position": {
+      "type": "string",
+      "description": "Legacy job title. No longer captured by the HR forms and no longer required \u2014 kept only so historical records keep their value."
+    },
+    "department": {
+      "type": "string",
+      "description": "Department (references a Department record)"
+    },
+    "invite_sent_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When a sign-up invitation was last emailed to this employee. Set only by the explicit Send Invite action."
+    },
+    "employment_type": {
+      "type": "string",
+      "enum": [
+        "regular",
+        "temporary",
+        "freelance",
+        "system_account"
+      ],
+      "default": "regular",
+      "description": "Regular payroll staff, temporary/freelance staff engaged per event, or a system account (an HR record that exists only so an account can hold a role \u2014 created by central admins only, excluded from payroll, attendance, labor cost and staffing)."
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Skills and certifications \u2014 used to rank candidates for specialised catering roles"
+    },
+    "catering_events_worked": {
+      "type": "number",
+      "default": 0,
+      "description": "How many catering events this person has been staffed on"
+    },
+    "largest_event_guests": {
+      "type": "number",
+      "default": 0,
+      "description": "Largest guest count this person has worked"
+    },
+    "hire_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of hiring"
+    },
+    "salary_type": {
+      "type": "string",
+      "enum": [
+        "hourly",
+        "fixed",
+        "both"
+      ],
+      "default": "hourly",
+      "description": "Type of salary payment. Pay amounts, bonus, face photo and earnings live in EmployeePrivate."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "on_leave",
+        "terminated"
+      ],
+      "default": "active",
+      "description": "Employment status"
+    },
+    "left_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Company day the person left, saved when HR removes their access (status Terminated). Empty for people still employed and for terminations made before leaving days were saved. Read by the Executive Dashboard Workforce report for leavers and turnover."
+    }
+  },
+  "required": [
+    "name",
+    "employee_id",
+    "salary_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "data.email": "{{user.email}}"
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_approve": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_users_manage": true
+              }
+            },
+            {
+              "data.employment_type": {
+                "$ne": "system_account"
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            },
+            {
+              "data.employment_type": {
+                "$ne": "system_account"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_users_manage": true
+              }
+            },
+            {
+              "data.employment_type": {
+                "$ne": "system_account"
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            },
+            {
+              "data.employment_type": {
+                "$ne": "system_account"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            },
+            {
+              "data.employment_type": {
+                "$ne": "system_account"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

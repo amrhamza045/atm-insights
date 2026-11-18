@@ -1,0 +1,169 @@
+{
+  "name": "ClientSegment",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Display name of the saved segment (e.g. Dormant 90+ days)"
+    },
+    "description": {
+      "type": "string",
+      "description": "What this segment is for"
+    },
+    "min_total_spent": {
+      "type": "number",
+      "description": "Only clients whose lifetime total_spent is at or above this amount"
+    },
+    "max_total_spent": {
+      "type": "number",
+      "description": "Only clients whose lifetime total_spent is at or below this amount"
+    },
+    "min_visits": {
+      "type": "number",
+      "description": "Only clients with at least this many recorded visits"
+    },
+    "dormant_days": {
+      "type": "number",
+      "description": "Only clients with no order and no catering event in the last N days. Clients with no activity at all count as dormant."
+    },
+    "registered_within_days": {
+      "type": "number",
+      "description": "Only clients created in the last N days (e.g. 30 for 'new this month')"
+    },
+    "client_source": {
+      "type": "string",
+      "enum": [
+        "web",
+        "pos"
+      ],
+      "description": "Only clients registered through this channel. Empty = any source."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "pending"
+      ],
+      "description": "Only clients in this status. Empty = any status."
+    },
+    "loyalty_tier_name": {
+      "type": "string",
+      "description": "Only clients on this loyalty tier. Empty = any tier."
+    },
+    "owner_employee_id": {
+      "type": "string",
+      "description": "Only clients whose relationship owner is this employee. '__none__' = only unassigned clients. Empty = any owner."
+    },
+    "owner_filter_name": {
+      "type": "string",
+      "description": "Snapshot of the owner's name for display of the saved segment"
+    },
+    "created_by_email": {
+      "type": "string",
+      "description": "Email of the staff member who saved the segment"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_marketing_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        }
+      ]
+    }
+  }
+}

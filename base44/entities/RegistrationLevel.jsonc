@@ -1,0 +1,145 @@
+{
+  "name": "RegistrationLevel",
+  "type": "object",
+  "properties": {
+    "level_name": {
+      "type": "string",
+      "description": "Name of the registration level (e.g., Basic, Premium, VIP)"
+    },
+    "registration_fee": {
+      "type": "number",
+      "description": "Registration fee for this level"
+    },
+    "welcome_cashback_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Fixed welcome cashback amount given upon registration approval"
+    },
+    "permanent_discount_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Permanent discount percentage for clients in this level on purchases"
+    },
+    "delivery_discount_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Delivery discount percentage for clients in this level"
+    },
+    "self_cashback_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Cashback percentage clients earn on their own purchases"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this level is available for registration"
+    },
+    "is_default": {
+      "type": "boolean",
+      "default": false,
+      "description": "The level clients without an assigned level are treated as (only one level should be default)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the level benefits"
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0,
+      "description": "Order for display"
+    }
+  },
+  "required": [
+    "level_name",
+    "registration_fee"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        }
+      ]
+    }
+  }
+}

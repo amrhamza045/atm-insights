@@ -1,0 +1,92 @@
+{
+  "name": "FinanceLedgerLine",
+  "type": "object",
+  "description": "Rebuildable scalar reporting projection of immutable posted FinanceJournal snapshots. Reports run under the company lock and are blocked until all journals are indexed.",
+  "properties": {
+    "line_key": {
+      "type": "string"
+    },
+    "company_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "journal_id": {
+      "type": "string"
+    },
+    "entry_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "account_code": {
+      "type": "string"
+    },
+    "account_name": {
+      "type": "string"
+    },
+    "classification": {
+      "type": "string"
+    },
+    "debit_units": {
+      "type": "number"
+    },
+    "credit_units": {
+      "type": "number"
+    },
+    "cash_units": {
+      "type": "number"
+    },
+    "cash_operating": {
+      "type": "number"
+    },
+    "cash_investing": {
+      "type": "number"
+    },
+    "cash_financing": {
+      "type": "number"
+    },
+    "cash_unclassified": {
+      "type": "number"
+    },
+    "cash_opening": {
+      "type": "number"
+    },
+    "service_type": {
+      "type": "string"
+    },
+    "order_origin": {
+      "type": "string"
+    },
+    "delivery_partner_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "line_key",
+    "company_id",
+    "branch_id",
+    "journal_id",
+    "entry_date",
+    "account_code",
+    "classification",
+    "debit_units",
+    "credit_units"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

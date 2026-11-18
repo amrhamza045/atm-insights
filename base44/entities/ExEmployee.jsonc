@@ -1,0 +1,195 @@
+{
+  "name": "ExEmployee",
+  "type": "object",
+  "description": "Archived snapshot of an employee deleted from HR employee management.",
+  "properties": {
+    "original_employee_id": {
+      "type": "string"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "position": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "employment_type": {
+      "type": "string"
+    },
+    "hire_date": {
+      "type": "string"
+    },
+    "salary_type": {
+      "type": "string"
+    },
+    "hourly_rate": {
+      "type": "number"
+    },
+    "fixed_salary": {
+      "type": "number"
+    },
+    "last_status": {
+      "type": "string"
+    },
+    "left_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Day the person left, copied from their HR record when it had one (access removed before the record was deleted). Empty when they were removed while still employed: the day of deleted_at is then the leaving day."
+    },
+    "deleted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "deleted_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "deleted_at"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

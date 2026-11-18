@@ -1,0 +1,360 @@
+{
+  "name": "EmployeeBorrowing",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this borrowing belongs to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this borrowing belongs to"
+    },
+    "employee_id": {
+      "type": "string",
+      "description": "ID of the employee"
+    },
+    "employee_name": {
+      "type": "string",
+      "description": "Name of the employee"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Total amount borrowed"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Reason for borrowing"
+    },
+    "borrow_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the advance was requested / effective"
+    },
+    "repayment_type": {
+      "type": "string",
+      "enum": [
+        "lump_sum",
+        "installments"
+      ],
+      "default": "installments",
+      "description": "How repayment is structured"
+    },
+    "installment_months": {
+      "type": "number",
+      "default": 1,
+      "description": "Number of months to repay over"
+    },
+    "amount_per_installment": {
+      "type": "number",
+      "description": "Monthly deduction amount"
+    },
+    "start_repayment_month": {
+      "type": "string",
+      "format": "date",
+      "description": "First month deduction applies (YYYY-MM-01)"
+    },
+    "total_repaid": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount repaid so far"
+    },
+    "remaining_balance": {
+      "type": "number",
+      "description": "Balance remaining to be repaid"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "cancelled"
+      ],
+      "default": "active",
+      "description": "Borrowing repayment status"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "payout_status": {
+      "type": "string",
+      "enum": [
+        "unpaid",
+        "paid"
+      ],
+      "enumColors": [
+        "yellow",
+        "green"
+      ],
+      "default": "unpaid",
+      "description": "unpaid until Finance approves the advance journal and disburses it from a payment method or custody in Payouts."
+    },
+    "payout_source_type": {
+      "type": "string",
+      "enum": [
+        "payment_method",
+        "custody"
+      ],
+      "enumColors": [
+        "blue",
+        "purple"
+      ],
+      "description": "Selected in Finance Payouts after approval: payment_method or custody."
+    },
+    "payment_method": {
+      "type": "string",
+      "description": "Code of the payment method (Finance \u203a Payment methods) chosen in Payouts after Finance approval."
+    },
+    "payment_method_name": {
+      "type": "string"
+    },
+    "custody_id": {
+      "type": "string",
+      "description": "FinanceCustody ID chosen in Payouts after Finance approval."
+    },
+    "custody_holder_name": {
+      "type": "string"
+    },
+    "paid_by": {
+      "type": "string"
+    },
+    "paid_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "payout_journal_id": {
+      "type": "string",
+      "description": "Posted settlement FinanceJournal created when Finance disburses the advance."
+    },
+    "request_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "description": "Only set on employee-submitted requests. Empty means an HR-recorded borrowing (treated as HR-approved)."
+    },
+    "requested_by_employee": {
+      "type": "boolean",
+      "description": "True when the employee submitted this request themselves"
+    },
+    "decision_by": {
+      "type": "string",
+      "description": "Email of the reviewer who approved or rejected the request"
+    },
+    "decision_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rejection_reason": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "employee_id",
+    "amount",
+    "borrow_date"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "data.employee_id": "{{user.data.perm_employee_id}}"
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_view": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_view": true
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

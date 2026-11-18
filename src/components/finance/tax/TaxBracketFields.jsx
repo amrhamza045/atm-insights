@@ -1,0 +1,6 @@
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+export default function TaxBracketFields({brackets,onChange,step=0.01}){
+ const set=(i,key,value)=>onChange(brackets.map((b,n)=>n===i?{...b,[key]:value}:b));
+ return <section className="space-y-2"><p className="text-sm font-medium">Progressive annual taxable-income bands</p><p className="text-xs text-muted-foreground">Bands start at zero and increase in order. Leave the final upper limit blank for an unlimited band; enter any zero-rate band explicitly.</p>{brackets.map((b,i)=><div key={i} className="flex gap-2"><Input aria-label={`Band ${i+1} annual upper limit`} type="number" min="0" step={step} placeholder="Annual upper limit; final blank = unlimited" value={b.up_to} onChange={e=>set(i,'up_to',e.target.value)}/><Input aria-label={`Band ${i+1} rate`} type="number" min="0" max="100" step="0.0001" required placeholder="Rate %" value={b.rate} onChange={e=>set(i,'rate',e.target.value)}/><Button type="button" variant="outline" disabled={brackets.length===1} onClick={()=>onChange(brackets.filter((_,n)=>n!==i))}>Remove</Button></div>)}<Button type="button" variant="outline" onClick={()=>onChange([...brackets,{up_to:'',rate:''}])}>Add band</Button></section>;
+}

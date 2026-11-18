@@ -1,0 +1,275 @@
+{
+  "name": "ExpiryReport",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "Branch holding the expiring stock"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch"
+    },
+    "inventory_item_id": {
+      "type": "string",
+      "description": "ID of the raw material (InventoryItem) that will expire"
+    },
+    "inventory_item_name": {
+      "type": "string",
+      "description": "Snapshot of the raw material name at reporting time"
+    },
+    "category_id": {
+      "type": "string",
+      "description": "Inventory category of the raw material"
+    },
+    "category_name": {
+      "type": "string",
+      "description": "Snapshot of the inventory category name"
+    },
+    "batch_ref": {
+      "type": "string",
+      "description": "Batch / lot reference of the specific stock that expires. One raw material can have several batches with different expiry dates."
+    },
+    "expiry_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date this batch expires"
+    },
+    "quantity_at_risk": {
+      "type": "number",
+      "default": 0,
+      "description": "Quantity of this batch that will expire, in the item's selling unit"
+    },
+    "unit": {
+      "type": "string",
+      "description": "Unit of the reported quantity"
+    },
+    "estimated_value": {
+      "type": "number",
+      "default": 0,
+      "description": "Estimated money at risk (quantity \u00d7 cost per unit at reporting time)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "used",
+        "wasted"
+      ],
+      "default": "open",
+      "description": "open = still at risk; used = consumed before expiry; wasted = expired and written off"
+    },
+    "resolved_quantity": {
+      "type": "number",
+      "default": 0,
+      "description": "Quantity actually used or wasted at resolution time"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the report was resolved"
+    },
+    "resolved_by_email": {
+      "type": "string",
+      "description": "Email of the person who resolved the report"
+    },
+    "resolution_notes": {
+      "type": "string",
+      "description": "What was done with the batch"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notes from the reporter (storage condition, smell, packaging damage\u2026)"
+    },
+    "photo_url": {
+      "type": "string",
+      "description": "Optional photo evidence of the batch / its expiry label"
+    },
+    "reported_by_email": {
+      "type": "string",
+      "description": "Email of the head chef / head barista / manager who reported it"
+    },
+    "reported_by_name": {
+      "type": "string",
+      "description": "Name of the reporter"
+    }
+  },
+  "required": [
+    "inventory_item_name",
+    "expiry_date"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.reported_by_email": "{{user.email}}"
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_expiry_manage": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_inventory_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_inventory_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_expiry_manage": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_inventory_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    }
+  }
+}

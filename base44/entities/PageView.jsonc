@@ -1,0 +1,106 @@
+{
+  "name": "PageView",
+  "type": "object",
+  "description": "Website traffic: one record per page visit, written from every visitor's browser (signed in or not), so create stays open on purpose. Only staff with report access read it.",
+  "properties": {
+    "page_name": {
+      "type": "string",
+      "description": "Name of the page viewed"
+    },
+    "page_url": {
+      "type": "string",
+      "description": "Full URL of the page"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "ID of the user (if logged in)"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user (if logged in)"
+    },
+    "user_role": {
+      "type": "string",
+      "description": "Role of the user (admin/user)"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Browser session identifier"
+    },
+    "is_guest": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the visitor is a guest"
+    },
+    "duration_seconds": {
+      "type": "number",
+      "description": "Time spent on page in seconds"
+    },
+    "device_type": {
+      "type": "string",
+      "description": "Device type (mobile/desktop/tablet)"
+    },
+    "browser": {
+      "type": "string",
+      "description": "Browser information"
+    }
+  },
+  "required": [
+    "page_name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_marketing_view": true
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,318 @@
+{
+  "name": "KitchenReleaseSlip",
+  "type": "object",
+  "description": "Stock release slip. Every slip is written only by backend functions: the data rules refuse every client create, update or delete, so the retired release-slip-only flow can't create or fulfil slips. Legacy slips (no requisition_id) are read-only history of that retired flow: fulfilled ones stay as history; the open ones were voided when their events moved to Stock Release Slip Requisitions (migrated_to_requisition true). Requisition batch slips (requisition_id + batch_number, is_requisition_batch true): one per dated release batch, released through releaseRequisitionBatch and received through receiveRequisitionBatch.",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "Branch whose inventory will be released"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "Catering event."
+    },
+    "event_name": {
+      "type": "string"
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "slip_number": {
+      "type": "string",
+      "unique": true
+    },
+    "needed_by_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "scheduled",
+        "released",
+        "received",
+        "fulfilled",
+        "void"
+      ],
+      "default": "open",
+      "description": "Legacy slips: open / fulfilled / void. Batch slips: scheduled (not released) \u2192 released (stock issued; counts as actual food cost like a fulfilled legacy slip) \u2192 received (chef confirmed), or void."
+    },
+    "shortfall_count": {
+      "type": "number",
+      "default": 0
+    },
+    "lines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "reservation_id": {
+            "type": "string"
+          },
+          "inventory_item_id": {
+            "type": "string"
+          },
+          "inventory_item_name": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "stock_pull",
+              "production_input"
+            ]
+          },
+          "produced_item_name": {
+            "type": "string"
+          },
+          "quantity_reserved": {
+            "type": "number",
+            "default": 0
+          },
+          "shortfall_quantity": {
+            "type": "number",
+            "default": 0
+          },
+          "needed_by_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "actual_quantity": {
+            "type": "number"
+          },
+          "variance_quantity": {
+            "type": "number"
+          },
+          "requisition_line_id": {
+            "type": "string",
+            "description": "Batch slips only: the RequisitionLine this batch quantity belongs to."
+          },
+          "line_type": {
+            "type": "string",
+            "enum": [
+              "planned",
+              "extra"
+            ]
+          }
+        },
+        "required": [
+          "reservation_id",
+          "inventory_item_id",
+          "quantity_reserved"
+        ]
+      }
+    },
+    "created_from_quote_id": {
+      "type": "string"
+    },
+    "fulfilled_by": {
+      "type": "string",
+      "description": "Legacy: who fulfilled the slip. Batch slips: who released the batch."
+    },
+    "fulfilled_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Legacy: when the slip was fulfilled. Batch slips: when the batch was released."
+    },
+    "received_by": {
+      "type": "string",
+      "description": "Batch slips: email of the chef who confirmed receipt."
+    },
+    "received_by_name": {
+      "type": "string"
+    },
+    "received_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "receipt_comment": {
+      "type": "string",
+      "description": "The chef's optional receipt comment (e.g. a shortage note)."
+    },
+    "not_received_at_closeout": {
+      "type": "boolean",
+      "default": false,
+      "description": "Batch slips: the event was closed out while this batch was released but not received (recorded once in the requisition history)."
+    },
+    "voided_by": {
+      "type": "string"
+    },
+    "voided_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "void_reason": {
+      "type": "string"
+    },
+    "migrated_to_requisition": {
+      "type": "boolean",
+      "default": false,
+      "description": "Legacy slip whose event was moved to Stock Release Slip Requisitions by the completed one-time migration, so the event isn't held on the retired flow. Set only by backend functions.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "migrated_date": {
+      "type": "string",
+      "format": "date-time",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "requisition_id": {
+      "type": "string",
+      "description": "Requisition this batch slip belongs to. Empty on every legacy slip. Set only by backend functions.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "requisition_number": {
+      "type": "string",
+      "description": "REQ number of the requisition (batch slips only), for labels."
+    },
+    "batch_number": {
+      "type": "number",
+      "description": "Release batch number within its requisition (batch slips only)."
+    },
+    "is_requisition_batch": {
+      "type": "boolean",
+      "default": false,
+      "description": "True on requisition batch slips. Set only by backend functions.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "required": [
+    "branch_id",
+    "event_id",
+    "event_name",
+    "slip_number",
+    "lines"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_requisition_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_kds_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

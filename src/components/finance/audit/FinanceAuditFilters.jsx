@@ -1,0 +1,7 @@
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+const types=['FinanceCompany','FinanceAccount','FinanceProposal','FinanceJournal','FinanceBudget','FinanceTaxRule','FinanceTaxAssessment','FinanceTaxConfig','FinanceTaxDocument','FinanceVarianceAlertConfig','CateringPayment'];
+export default function FinanceAuditFilters({value,onChange}){
+ const set=(key,next)=>onChange({...value,[key]:next});
+ return <div className="flex flex-wrap items-end gap-3"><Label className="flex-1 min-w-48">Actor name, email or ID<Input maxLength={200} value={value.actor} onChange={e=>set('actor',e.target.value)} placeholder="Search actor"/></Label><Label>Action<select className="block border rounded-md p-2 mt-1 bg-background" value={value.action_filter} onChange={e=>set('action_filter',e.target.value)}><option value="">All actions</option>{['create','update','approve','reject','reversal'].map(a=><option key={a} value={a}>{a}</option>)}</select></Label><Label>Record type<select className="block border rounded-md p-2 mt-1 bg-background" value={value.entity_type} onChange={e=>set('entity_type',e.target.value)}><option value="">All financial records</option>{types.map(t=><option key={t} value={t}>{t.replace('Finance','').replace(/([a-z])([A-Z])/g,'$1 $2')}</option>)}</select></Label></div>;
+}

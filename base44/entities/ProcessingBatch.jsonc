@@ -1,0 +1,176 @@
+{
+  "name": "ProcessingBatch",
+  "type": "object",
+  "properties": {
+    "batch_number": {
+      "type": "string",
+      "description": "Batch number",
+      "unique": true
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Processing date"
+    },
+    "branch_id": {
+      "type": "string",
+      "description": "Branch ID"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Branch name"
+    },
+    "animal_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of animals in this batch"
+    },
+    "animal_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of animals"
+    },
+    "labor_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Shared labor cost"
+    },
+    "overhead_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Shared overhead cost"
+    },
+    "disposal_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Shared disposal fees"
+    },
+    "total_shared_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Sum of shared costs"
+    },
+    "cost_allocation_method": {
+      "type": "string",
+      "enum": [
+        "weight",
+        "value"
+      ],
+      "default": "weight",
+      "description": "Default allocation method for this batch"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "in_progress",
+        "completed",
+        "cancelled"
+      ],
+      "default": "open",
+      "description": "Batch status"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "batch_number"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

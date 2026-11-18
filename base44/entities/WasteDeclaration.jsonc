@@ -1,0 +1,290 @@
+{
+  "name": "WasteDeclaration",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this waste declaration belongs to"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "Explicit catering event attribution; blank remains general branch waste and is never allocated by date or name."
+    },
+    "catering_cost_treatment": {
+      "type": "string",
+      "enum": [
+        "additional",
+        "included_in_release"
+      ],
+      "description": "additional: positive event food-cost adjustment for discarded stock NOT included in a fulfilled release. included_in_release: already in gross released cost, zero additional adjustment. Missing treatment is incomplete and excluded."
+    },
+    "waste_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Business date waste occurred; older records fall back to created_date."
+    },
+    "inventory_item_id": {
+      "type": "string"
+    },
+    "inventory_item_name": {
+      "type": "string"
+    },
+    "category_id": {
+      "type": "string"
+    },
+    "category_name": {
+      "type": "string"
+    },
+    "quantity_wasted": {
+      "type": "number"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "expired",
+        "damaged",
+        "spoiled",
+        "overproduction",
+        "preparation_error",
+        "other"
+      ],
+      "default": "other"
+    },
+    "waste_reason_id": {
+      "type": "string",
+      "description": "FinanceWasteReason chosen in the waste popup. Empty on older declarations, which use the built-in reason only."
+    },
+    "waste_reason_code": {
+      "type": "string",
+      "description": "Snapshot of the configured reason code at declaration time."
+    },
+    "waste_reason_name": {
+      "type": "string",
+      "description": "Snapshot of the configured reason name at declaration time, so renames never change history."
+    },
+    "notes": {
+      "type": "string"
+    },
+    "waste_image_url": {
+      "type": "string"
+    },
+    "cost_impact": {
+      "type": "number",
+      "description": "Existing inventory waste valuation; catering actuals independently use historical invoice unit costs."
+    },
+    "declared_by": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "approved_by": {
+      "type": "string"
+    },
+    "rejection_reason": {
+      "type": "string"
+    },
+    "is_tasting": {
+      "type": "boolean",
+      "default": false,
+      "description": "Declared with a Food tasting reason. Kept out of waste reports; posting reads the reason itself."
+    }
+  },
+  "required": [
+    "inventory_item_id",
+    "quantity_wasted"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_waste_approve": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_inventory_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_inventory_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_waste_approve": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "created_by_id": "{{user.id}}"
+            },
+            {
+              "data.status": "pending"
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    }
+  }
+}

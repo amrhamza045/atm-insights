@@ -1,0 +1,43 @@
+{
+  "name": "VendorSupportInfo",
+  "type": "object",
+  "properties": {
+    "setting_key": {
+      "type": "string",
+      "default": "vendor_support",
+      "description": "Single settings record key"
+    },
+    "support_email": {
+      "type": "string",
+      "description": "Vendor support email shown in manual footers"
+    },
+    "website": {
+      "type": "string",
+      "description": "Vendor website shown in manual footers"
+    },
+    "mobile": {
+      "type": "string",
+      "description": "Vendor mobile shown in manual footers"
+    },
+    "updated_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "setting_key"
+  ],
+  "rls": {
+    "read": {
+      "id": "__service_role_only__"
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "name": "DeliveryBonusTier",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the bonus milestone (e.g., '50 Deliveries Bonus')"
+    },
+    "milestone_count": {
+      "type": "number",
+      "description": "Number of deliveries required to earn this bonus"
+    },
+    "bonus_amount": {
+      "type": "number",
+      "description": "Bonus amount paid when milestone is reached"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this bonus tier is currently active"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description of this bonus tier"
+    },
+    "recurrence_type": {
+      "type": "string",
+      "enum": [
+        "one_time",
+        "recurring"
+      ],
+      "default": "one_time",
+      "description": "one_time: bonus earned once when milestone first reached. recurring: bonus earned every time the milestone count is reached again (e.g., every 50 deliveries)"
+    }
+  },
+  "required": [
+    "name",
+    "milestone_count",
+    "bonus_amount"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    }
+  }
+}

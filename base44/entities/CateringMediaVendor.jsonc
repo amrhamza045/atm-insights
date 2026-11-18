@@ -1,0 +1,180 @@
+{
+  "name": "CateringMediaVendor",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Studio or freelancer name"
+    },
+    "service_type": {
+      "type": "string",
+      "enum": [
+        "photographer",
+        "videographer",
+        "both"
+      ],
+      "default": "photographer",
+      "description": "What this vendor covers"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "budget",
+        "mid_range",
+        "premium"
+      ],
+      "default": "mid_range",
+      "description": "Market tier the vendor sits in"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "instagram": {
+      "type": "string",
+      "description": "Portfolio / social handle or link"
+    },
+    "price_basis": {
+      "type": "string",
+      "enum": [
+        "per_event",
+        "per_hour",
+        "per_day"
+      ],
+      "default": "per_event",
+      "description": "How the vendor charges"
+    },
+    "price": {
+      "type": "number",
+      "default": 0,
+      "description": "Quoted price in EGP for the chosen basis"
+    },
+    "coverage_hours": {
+      "type": "number",
+      "default": 0,
+      "description": "Hours of coverage included"
+    },
+    "deliverables": {
+      "type": "string",
+      "description": "What is delivered (edited photos, highlight reel, full film, album\u2026)"
+    },
+    "branch_id": {
+      "type": "string",
+      "description": "Empty = available to all branches"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "service_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

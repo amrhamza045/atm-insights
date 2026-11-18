@@ -1,0 +1,11 @@
+import { useState } from 'react';
+import { useMutation,useQueryClient } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
+import { financeCall,financeError } from '@/components/finance/financeApi';
+// Cash and bank keys resolve from Payment methods; their old rules stay only as history.
+const PAYMENT_KEYS=['PAYMENT_METHOD_ACC','BANK_CASH_ACCOUNT'];
+export default function BindingRow({binding,company,can,onEdit}){
+ const [confirm,setConfirm]=useState(false),qc=useQueryClient(),paymentKey=PAYMENT_KEYS.includes(binding.mapping_key);
+ const remove=useMutation({mutationFn:()=>financeCall({action:'mapping_binding_delete',company_id:company.id,id:binding.id,expected_updated_date:binding.updated_date}),onSuccess:()=>qc.invalidateQueries({queryKey:['finance']})});
+ return <article className="border rounded-lg p-3 space-y-2"><div className="flex flex-wrap justify-between gap-2"><div><h4 className="font-mono text-sm break-all">{binding.mapping_key}</h4><p className="text-sm">{binding.account_code} · {binding.account_name}</p>{binding.inventory_stage&&<p className="text-xs text-muted-foreground">Inventory type: {binding.inventory_stage.replace('_',' ')}</p>}</div>{can('finance_accounts_manage')&&<div className="flex gap-2">{!paymentKey&&<Button variant="outline" size="sm" onClick={()=>onEdit(binding)}>Edit</Button>}<Button variant={confirm?'destructive':'outline'} size="sm" disabled={remove.isPending} onClick={()=>confirm?remove.mutate():setConfirm(true)}>{confirm?'Confirm delete':'Delete'}</Button>{confirm&&<Button variant="ghost" size="sm" disabled={remove.isPending} onClick={()=>setConfirm(false)}>Cancel</Button>}</div>}</div><p className="text-xs text-muted-foreground">Priority {binding.priority} · {binding.effective_from} → {binding.effective_to||'No end date'}</p><p className="text-xs">{Object.entries(binding.conditions||{}).map(([k,v])=>`${k}: ${binding.condition_labels?.[k]||v}`).join(' · ')||'Default for all document contexts'}</p>{binding.notes&&<p className="text-xs">{binding.notes}</p>}{paymentKey&&<p className="text-xs text-amber-700">Not used any more: cash and bank accounts now come from Payment methods. Kept unchanged because posted journals refer to it.</p>}{remove.error&&<p role="alert" className="text-destructive text-sm">{financeError(remove.error)}</p>}</article>;
+}

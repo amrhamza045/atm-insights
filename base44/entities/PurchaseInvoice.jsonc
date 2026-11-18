@@ -1,0 +1,340 @@
+{
+  "name": "PurchaseInvoice",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this invoice belongs to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this invoice belongs to"
+    },
+    "invoice_number": {
+      "type": "string",
+      "description": "Unique invoice number",
+      "unique": true
+    },
+    "supplier_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^\\S+$",
+      "description": "Exactly one supplier ID is required; multi-supplier invoices must be split."
+    },
+    "supplier_name": {
+      "type": "string",
+      "description": "Name of the supplier"
+    },
+    "invoice_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the invoice was received"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "inventory_item_id": {
+            "type": "string",
+            "description": "ID of the inventory item"
+          },
+          "inventory_item_name": {
+            "type": "string",
+            "description": "Name of the inventory item"
+          },
+          "category_id": {
+            "type": "string",
+            "description": "ID of the inventory category"
+          },
+          "category_name": {
+            "type": "string",
+            "description": "Name of the inventory category"
+          },
+          "quantity": {
+            "type": "number",
+            "description": "Quantity received (weight in kg or piece count)"
+          },
+          "unit": {
+            "type": "string",
+            "description": "Unit of measurement (kg, pcs, etc.)"
+          },
+          "unit_type": {
+            "type": "string",
+            "enum": [
+              "pcs",
+              "weight"
+            ],
+            "description": "Type of unit (pieces or weight)"
+          },
+          "purchase_price": {
+            "type": "number",
+            "description": "Purchase price per unit (per pcs or per kg)"
+          },
+          "price_per_pcs": {
+            "type": "number",
+            "description": "Calculated price per piece (total cost / pieces count)"
+          },
+          "pieces_count": {
+            "type": "number",
+            "description": "Manual count of pieces received (for weight-based items, this is manually entered)"
+          },
+          "total_cost": {
+            "type": "number",
+            "description": "Total cost for this item (quantity \u00d7 purchase_price), before freight"
+          },
+          "allocated_freight": {
+            "type": "number",
+            "default": 0,
+            "description": "This line's share of the invoice freight, split by line value. Set by the server; added to the item's stock value (landed cost)."
+          },
+          "expiry_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Expiry date of the received batch"
+          }
+        },
+        "required": [
+          "inventory_item_id",
+          "quantity",
+          "purchase_price",
+          "price_per_pcs"
+        ]
+      },
+      "description": "List of items in the invoice"
+    },
+    "freight_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Freight / delivery charged on this invoice. Capitalized into stock value across the lines (landed cost) and included in the invoice total owed to the supplier."
+    },
+    "total_amount": {
+      "type": "number",
+      "description": "Total invoice amount: line costs plus freight"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes about the invoice"
+    },
+    "receipt_url": {
+      "type": "string",
+      "description": "URL of uploaded receipt scan"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "posted"
+      ],
+      "description": "draft = saved, stock not moved yet; posted = a manager posted it and stock/cost were applied. Missing on older invoices, which were posted at creation."
+    },
+    "posted_by": {
+      "type": "string",
+      "description": "Email of the manager who posted the invoice"
+    },
+    "posted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the invoice was posted"
+    }
+  },
+  "required": [
+    "invoice_number",
+    "supplier_id",
+    "invoice_date",
+    "items"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_purchase_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_purchase_edit": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_purchase_approve": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_purchases_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_purchases_approve": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_inventory_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_inventory_edit": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_finance_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_analytics_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_catering_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_menu_edit": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_manufacturing_view": true
+                  }
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchases_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchases_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchases_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    }
+  }
+}

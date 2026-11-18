@@ -1,0 +1,8 @@
+import { useMutation } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
+import { financeCall,financeError } from '@/components/finance/financeApi';
+export default function MappingPolicyChecks({company,rule,can}){
+ const query=useMutation({mutationFn:()=>financeCall({action:'mapping_policy_checks',company_id:company.id,id:rule.id})});
+ if(!(can('finance_accounts_manage')||can('finance_journal_approve')))return null;
+ return <section className="border rounded-lg p-4 space-y-3"><h3 className="font-semibold">Accounting-policy sample checks</h3><p className="text-sm text-muted-foreground">Run repeatable guardrail checks against this saved version and its saved sample, including branch isolation, precision, missing data and negative amounts. These do not replace an accountant’s policy approval.</p><Button type="button" variant="outline" disabled={query.isPending} onClick={()=>query.mutate()}>{query.isPending?'Checking saved samples…':'Run saved-version checks'}</Button>{query.error&&<p role="alert" className="text-sm text-destructive">{financeError(query.error)}</p>}{query.data&&<div aria-live="polite" className="space-y-2"><p className="font-medium">{query.data.passed?'All checks passed':'Some checks failed'} · Version {query.data.rule_version}</p>{query.data.checks.map(c=><div key={c.name} className="border-t pt-2 text-sm"><p>{c.passed?'Passed':'Failed'} · {c.name}</p><p className="text-xs text-muted-foreground">Expected: {c.expected} · Result: {c.actual} · {c.message}</p></div>)}<p className="text-xs text-muted-foreground">{query.data.note}</p></div>}</section>;
+}

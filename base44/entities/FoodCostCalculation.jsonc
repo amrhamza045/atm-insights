@@ -1,0 +1,211 @@
+{
+  "name": "FoodCostCalculation",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this calculation belongs to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this calculation belongs to"
+    },
+    "order_id": {
+      "type": "string",
+      "description": "ID of the order"
+    },
+    "order_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Order date"
+    },
+    "menu_item_id": {
+      "type": "string",
+      "description": "ID of the menu item"
+    },
+    "menu_item_name": {
+      "type": "string",
+      "description": "Name of the menu item"
+    },
+    "menu_item_category": {
+      "type": "string",
+      "description": "Category of menu item (Food/Beverage)"
+    },
+    "quantity_ordered": {
+      "type": "number",
+      "description": "Quantity of items sold"
+    },
+    "selling_price": {
+      "type": "number",
+      "description": "Price charged to customer"
+    },
+    "total_selling_price": {
+      "type": "number",
+      "description": "Quantity \u00d7 Selling Price"
+    },
+    "recipe_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "inventory_item_id": {
+            "type": "string"
+          },
+          "inventory_item_name": {
+            "type": "string"
+          },
+          "quantity_used": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "unit_cost": {
+            "type": "number"
+          },
+          "total_cost": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Recipe breakdown with costs"
+    },
+    "total_food_cost": {
+      "type": "number",
+      "description": "Sum of all ingredient costs for this item \u00d7 quantity"
+    },
+    "food_cost_percentage": {
+      "type": "number",
+      "description": "Food cost as % of selling price (total_food_cost / total_selling_price * 100)"
+    },
+    "contribution_margin": {
+      "type": "number",
+      "description": "Selling price - Food cost per unit"
+    },
+    "contribution_margin_percentage": {
+      "type": "number",
+      "description": "Contribution margin as % of selling price"
+    }
+  },
+  "required": [
+    "order_id",
+    "menu_item_id",
+    "menu_item_name",
+    "quantity_ordered",
+    "selling_price",
+    "total_food_cost"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

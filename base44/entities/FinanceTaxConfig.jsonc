@@ -1,0 +1,40 @@
+{
+  "name": "FinanceTaxConfig",
+  "type": "object",
+  "description": "Explicit company VAT reconciliation account mappings. Does not configure rates or create ledger postings.",
+  "properties": {
+    "company_id": {
+      "type": "string"
+    },
+    "output_account_id": {
+      "type": "string"
+    },
+    "input_account_id": {
+      "type": "string"
+    },
+    "configured_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "company_id",
+    "output_account_id",
+    "input_account_id"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

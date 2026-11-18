@@ -1,0 +1,129 @@
+{
+  "name": "UserPermissions",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user. This row no longer stores a permission snapshot \u2014 permissions are resolved live from the assigned Role plus the sparse overrides below."
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Name of the user"
+    },
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this user is assigned to (null = all branches)"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this user is assigned to"
+    },
+    "role": {
+      "type": "string",
+      "default": "staff",
+      "description": "Role key pointing at a Role record. The Role's permissions are read LIVE at every check, so editing a role instantly changes everyone assigned to it. If no active Role record matches this key, the user is denied everything until an admin assigns a valid role."
+    },
+    "permission_overrides": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "default": {},
+      "description": "Sparse per-user deviations from the role's live permission set. Only keys that deviate are stored, each explicitly true (granted beyond the role) or false (denied despite the role). Keys absent here always follow the role, so they keep tracking future role edits."
+    },
+    "module_overrides": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "default": {},
+      "description": "Sparse per-user module-access deviations from the role's live disabled_modules list. true = allowed for this user even though the role denies it; false = denied for this user even though the role allows it. Absent keys follow the role."
+    },
+    "tab_overrides": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "default": {},
+      "description": "Sparse per-user tab and sub-tab deviations from the role's live disabled_tabs list, keyed '<Screen>:<tab key>'. true = open for this user even though the role closes it; false = closed for this user even though the role opens it. Absent keys follow the role."
+    },
+    "is_ex_employee": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this user is a former employee. When true the resolver denies everything before role or overrides are even considered."
+    },
+    "login_disabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, this user cannot sign in: any re-created public-app session is immediately deleted on the server and logged out."
+    },
+    "previous_role": {
+      "type": "string",
+      "description": "The user's previous role before permissions were revoked (stored for historical reference)"
+    }
+  },
+  "required": [
+    "user_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    }
+  }
+}

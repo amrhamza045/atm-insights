@@ -1,0 +1,128 @@
+{
+  "name": "Redemption",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "ID of the client who redeemed"
+    },
+    "reward_id": {
+      "type": "string",
+      "description": "ID of the reward redeemed"
+    },
+    "reward_name": {
+      "type": "string",
+      "description": "Name of the reward at time of redemption"
+    },
+    "cashback_spent": {
+      "type": "number",
+      "description": "Amount of cashback spent"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "used",
+        "expired"
+      ],
+      "default": "pending",
+      "description": "Status of the redemption"
+    },
+    "redemption_code": {
+      "type": "string",
+      "description": "Unique code for this redemption"
+    }
+  },
+  "required": [
+    "client_id",
+    "reward_id",
+    "cashback_spent"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_redemptions_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_redemptions_view": true
+          }
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.client_id": "{{user.data.perm_client_id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        },
+        {
+          "data.client_id": "{{user.data.perm_client_id}}"
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_redemptions_approve": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    }
+  }
+}

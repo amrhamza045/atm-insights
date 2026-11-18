@@ -1,0 +1,180 @@
+{
+  "name": "DeliveryCompany",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this delivery company belongs to (null = shared across branches)"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this delivery company belongs to"
+    },
+    "name": {
+      "type": "string",
+      "description": "Company name (e.g., Talabat, Noon Food, Elmenus)"
+    },
+    "delivery_type": {
+      "type": "string",
+      "enum": [
+        "direct",
+        "indirect"
+      ],
+      "default": "indirect",
+      "description": "Direct = restaurant delivers, Indirect = third-party platform delivery"
+    },
+    "contact_phone": {
+      "type": "string",
+      "description": "Contact phone number"
+    },
+    "contact_email": {
+      "type": "string",
+      "description": "Contact email"
+    },
+    "commission_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Commission percentage charged by company"
+    },
+    "is_subject_to_tax": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this delivery company's orders are subject to tax"
+    },
+    "additional_fee_type": {
+      "type": "string",
+      "enum": [
+        "none",
+        "fixed",
+        "percentage"
+      ],
+      "default": "none",
+      "description": "Type of additional fee"
+    },
+    "additional_fee_value": {
+      "type": "number",
+      "default": 0,
+      "description": "Additional fee value (fixed amount or percentage based on fee type)"
+    },
+    "allow_manual_discount": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether manual discounts are allowed in POS for this company"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this company is active"
+    },
+    "color": {
+      "type": "string",
+      "description": "Color code for UI display"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,198 @@
+{
+  "name": "JournalEntry",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this journal entry belongs to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this journal entry belongs to"
+    },
+    "entry_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date of journal entry"
+    },
+    "reference_type": {
+      "type": "string",
+      "enum": [
+        "order",
+        "cashier_session",
+        "expense",
+        "deposit",
+        "adjustment",
+        "purchase",
+        "catering_payment",
+        "catering_credit_note",
+        "catering_payment_void"
+      ],
+      "description": "Type of transaction that created this entry"
+    },
+    "reference_id": {
+      "type": "string",
+      "description": "ID of the source document (Order, CashierSession, CateringPayment, etc.)"
+    },
+    "revenue_source": {
+      "type": "string",
+      "enum": [
+        "pos",
+        "catering",
+        "other"
+      ],
+      "default": "pos",
+      "description": "Which side of the business the entry belongs to"
+    },
+    "catering_event_id": {
+      "type": "string",
+      "description": "CateringEvent this entry relates to (catering entries only)"
+    },
+    "catering_event_name": {
+      "type": "string",
+      "description": "Name of the catering event"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the journal entry"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "gl_account_id": {
+            "type": "string",
+            "description": "GL Account ID"
+          },
+          "account_number": {
+            "type": "string",
+            "description": "GL Account number"
+          },
+          "debit": {
+            "type": "number",
+            "default": 0,
+            "description": "Debit amount"
+          },
+          "credit": {
+            "type": "number",
+            "default": 0,
+            "description": "Credit amount"
+          }
+        }
+      },
+      "description": "Array of debit/credit entries"
+    },
+    "total_debit": {
+      "type": "number",
+      "description": "Sum of all debits"
+    },
+    "total_credit": {
+      "type": "number",
+      "description": "Sum of all credits"
+    },
+    "is_balanced": {
+      "type": "boolean",
+      "description": "Whether debit total equals credit total"
+    },
+    "posted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether entry has been posted to GL"
+    }
+  },
+  "required": [
+    "entry_date",
+    "reference_type",
+    "description",
+    "entries"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_finance_view": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_finance_view": true
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_finance_edit": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_finance_edit": true
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

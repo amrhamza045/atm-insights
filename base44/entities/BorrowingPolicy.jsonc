@@ -1,0 +1,84 @@
+{
+  "name": "BorrowingPolicy",
+  "type": "object",
+  "description": "Company salary-advance policy (single record, setting_key = borrowing_policy). Written only by the employeeBorrowing function.",
+  "properties": {
+    "setting_key": {
+      "type": "string"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "max_percent_of_salary": {
+      "type": "number",
+      "default": 50
+    },
+    "min_notice_hours": {
+      "type": "number",
+      "default": 48
+    },
+    "windows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "number"
+          },
+          "percent": {
+            "type": "number"
+          },
+          "cutoff_days_before": {
+            "type": "number"
+          },
+          "cutoff_time": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "day",
+          "percent"
+        ]
+      }
+    }
+  },
+  "required": [
+    "setting_key"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

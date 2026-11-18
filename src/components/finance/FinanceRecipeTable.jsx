@@ -1,0 +1,5 @@
+import { financeAmount } from '@/components/finance/financeApi';
+export default function FinanceRecipeTable({rows,company}){
+ const money=v=>v===null?'Not available':financeAmount(v,company);
+ return <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr>{['Menu item','Quantity in snapshots','Saved cost / unit','Current standard / unit','Saved total cost','Repriced total cost','Estimated change','Change %'].map(h=><th className="p-2 text-right first:text-left whitespace-nowrap" key={h}>{h}</th>)}</tr></thead><tbody>{rows.map(r=><tr key={r.id} className="border-t"><th className="p-2 text-left font-normal">{r.name}{r.reason&&<span className="block text-xs text-muted-foreground">{r.reason}</span>}</th><td className="p-2 text-right">{r.quantity}</td>{['saved_unit_cost','current_unit_cost','saved_cost','repriced_cost','variance'].map(k=><td key={k} className="p-2 text-right tabular-nums whitespace-nowrap">{money(r[k])}</td>)}<td className="p-2 text-right">{r.variance_percent===null?'Not available':`${r.variance_percent.toFixed(1)}%`}</td></tr>)}</tbody></table></div>;
+}

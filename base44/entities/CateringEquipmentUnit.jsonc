@@ -1,0 +1,195 @@
+{
+  "name": "CateringEquipmentUnit",
+  "type": "object",
+  "properties": {
+    "equipment_id": {
+      "type": "string",
+      "description": "CateringEquipment catalog item this unit belongs to"
+    },
+    "equipment_name": {
+      "type": "string",
+      "description": "Name of the catalog item"
+    },
+    "unit_code": {
+      "type": "string",
+      "description": "Human reference for this specific unit (e.g. GEN-01)"
+    },
+    "serial_number": {
+      "type": "string",
+      "description": "Manufacturer serial number, if any"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "available",
+        "in_use",
+        "maintenance",
+        "damaged",
+        "retired"
+      ],
+      "default": "available",
+      "description": "Live state of the unit. maintenance/damaged/retired units can never be reserved; in_use means physically out at an event. Date-specific reservations are tracked on CateringEquipmentReservation."
+    },
+    "current_location_type": {
+      "type": "string",
+      "enum": [
+        "branch",
+        "warehouse",
+        "event"
+      ],
+      "default": "branch",
+      "description": "Where the unit physically is right now"
+    },
+    "current_location_name": {
+      "type": "string",
+      "description": "Branch/warehouse name, or venue when out at an event"
+    },
+    "current_event_id": {
+      "type": "string",
+      "description": "CateringEvent the unit is currently out at (when location is event)"
+    },
+    "current_event_name": {
+      "type": "string",
+      "description": "Name of that event"
+    },
+    "purchase_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "equipment_id",
+    "unit_code"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

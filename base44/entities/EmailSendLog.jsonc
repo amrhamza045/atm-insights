@@ -1,0 +1,120 @@
+{
+  "name": "EmailSendLog",
+  "type": "object",
+  "description": "One record per automatic email send (and per Admin \u203a Email test), shown in Admin \u203a Email \u203a Recent activity. Written only by backend functions through the shared sendAndLog helper; account emails also use it to go out once.",
+  "properties": {
+    "email_key": {
+      "type": "string",
+      "description": "Admin \u203a Email switch key of the email (custody_emails_enabled for chain of custody emails)"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "context": {
+      "type": "string",
+      "description": "What the email was about, e.g. the event or client name"
+    },
+    "context_id": {
+      "type": "string",
+      "description": "Record the email was about (event, trip, invitation, client)"
+    },
+    "recipients": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Addresses it was sent to"
+    },
+    "recipient_count": {
+      "type": "number",
+      "default": 0
+    },
+    "sent_count": {
+      "type": "number",
+      "default": 0
+    },
+    "failed_count": {
+      "type": "number",
+      "default": 0
+    },
+    "failures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Addresses that didn't receive it, with the reason"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "sent",
+        "partial",
+        "failed",
+        "no_recipients"
+      ],
+      "enumColors": [
+        "green",
+        "yellow",
+        "red",
+        "gray"
+      ]
+    },
+    "is_test": {
+      "type": "boolean",
+      "default": false,
+      "description": "A test sent from Admin \u203a Email"
+    },
+    "triggered_by": {
+      "type": "string",
+      "description": "Email of the person who sent it, for tests"
+    }
+  },
+  "required": [
+    "email_key",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    }
+  }
+}

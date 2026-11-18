@@ -1,0 +1,16 @@
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import useFinanceList from '@/components/finance/useFinanceList';
+import FinanceListState from '@/components/finance/FinanceListState';
+import FinanceProposalForm from '@/components/finance/FinanceProposalForm';
+import FinanceJournalDetail from '@/components/finance/FinanceJournalDetail';
+import { financeAmount } from '@/components/finance/financeApi';
+import PrepareOperationalButton from '@/components/finance/PrepareOperationalButton';
+export default function FinanceJournals({company,branches,can,filters,view}) {
+ const query=useFinanceList({action:'read',view,company_id:company.id,...filters});
+ const [editor,setEditor]=useState(null),[detail,setDetail]=useState(null);
+ return <section className="space-y-4">{view==='legacy'?<p className="text-sm text-muted-foreground">Existing posted journals only. This is the first reconstruction source, not an audit of all sales, purchases or payroll. Original records remain unchanged; choose new accounts for every line and submit for independent review. Dates are preserved from the original journal.</p>:view==='proposals'?<p className="text-sm text-muted-foreground">Pending proposals have no effect on the ledger. Approvals require a different authorized person.</p>:<p className="text-sm text-muted-foreground">Posted journals are immutable. Corrections use a separately reviewed reversal followed by a new proposal; rejected decisions do not affect balances.</p>}
+ {can('finance_journal_create')&&view==='proposals'&&<div className="flex gap-2"><Button onClick={()=>setEditor({kind:'manual'})}>Prepare journal</Button><Button variant="outline" onClick={()=>setEditor({kind:'opening'})}>Opening balance proposal</Button><PrepareOperationalButton company={company}/></div>}
+ <div className="border rounded-lg overflow-x-auto"><table className="w-full text-sm"><thead className="bg-muted"><tr>{['Date','Description','Source / kind','Status','Debit','Actions'].map(h=><th key={h} className="text-left p-3">{h}</th>)}</tr></thead><tbody>{query.items.map(j=><tr key={j.id} className="border-t"><td className="p-3 whitespace-nowrap">{j.entry_date?.slice(0,10)}</td><td className="p-3">{j.description}</td><td className="p-3">{j.reference_type||j.kind}</td><td className="p-3">{view==='legacy'?(j.reconstructed?'Reconstructed':'Needs review'):j.status}</td><td className="p-3 tabular-nums">{financeAmount(j.total_debit,company)}</td><td className="p-3"><div className="flex gap-1">{view==='legacy'?<Button variant="outline" disabled={j.reconstructed} onClick={()=>setEditor({kind:'historical',source:j})}>Map & review</Button>:<Button variant="outline" onClick={()=>setDetail(j)}>Details</Button>}{view==='journals'&&j.status==='posted'&&can('finance_journal_create')&&<Button variant="ghost" onClick={()=>setEditor({kind:'reversal',source:j})}>Reverse</Button>}</div></td></tr>)}</tbody></table></div><FinanceListState query={query}/>
+ {editor&&<FinanceProposalForm company={company} branches={branches} {...editor} onClose={()=>setEditor(null)}/>} {detail&&<FinanceJournalDetail company={company} record={detail} canReview={can('finance_journal_approve')} onClose={()=>setDetail(null)}/>}</section>;
+}

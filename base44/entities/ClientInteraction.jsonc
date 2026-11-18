@@ -1,0 +1,165 @@
+{
+  "name": "ClientInteraction",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "ID of the Client this interaction is logged against"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Snapshot of the client name at logging time"
+    },
+    "interaction_type": {
+      "type": "string",
+      "enum": [
+        "call",
+        "email",
+        "meeting",
+        "note",
+        "whatsapp",
+        "complaint",
+        "other"
+      ],
+      "default": "note",
+      "description": "Kind of interaction that took place"
+    },
+    "note": {
+      "type": "string",
+      "description": "Free-text description of what happened"
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the interaction actually happened"
+    },
+    "follow_up_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Optional date a follow-up is due. Drives the personal My Follow-ups list."
+    },
+    "follow_up_completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "True once the person who logged the interaction marks the follow-up done. The interaction record itself is never deleted."
+    },
+    "follow_up_completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the follow-up was marked done"
+    },
+    "created_by_email": {
+      "type": "string",
+      "description": "Email of the staff member who logged the interaction \u2014 also the owner of any follow-up on it"
+    },
+    "created_by_name": {
+      "type": "string",
+      "description": "Name of the staff member who logged the interaction"
+    }
+  },
+  "required": [
+    "client_id",
+    "interaction_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

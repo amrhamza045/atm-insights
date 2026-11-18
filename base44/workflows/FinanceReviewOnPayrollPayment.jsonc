@@ -1,0 +1,50 @@
+{
+  "name": "Finance Review on Payroll Payment",
+  "description": "When a payroll disbursement is confirmed paid, prepare the payment journal for Finance review.",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "finance_review_on_payroll_payment",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "settle": {
+          "wait": "PT20S",
+          "then": "prepare",
+          "x-base44": {
+            "title": "Let the payment save finish"
+          }
+        }
+      },
+      {
+        "prepare": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeAutoPost",
+            "args": {
+              "operational_entity": "PayrollDisbursement",
+              "source_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Prepare payroll payment journal for review"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create",
+        "update"
+      ],
+      "entity_name": "PayrollDisbursement"
+    }
+  }
+}

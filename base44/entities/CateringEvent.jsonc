@@ -1,0 +1,1003 @@
+{
+  "name": "CateringEvent",
+  "type": "object",
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_catering_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_kds_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_analytics_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_purchase_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_purchase_edit": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_inventory_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_inventory_edit": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_requisition_view": true
+                  }
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "data.client_id": "{{user.data.portal_client_id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "properties": {
+    "branch_id": {
+      "type": "string"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "event_code": {
+      "type": "string"
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "client_phone": {
+      "type": "string"
+    },
+    "event_name": {
+      "type": "string"
+    },
+    "event_type": {
+      "type": "string"
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "start_time": {
+      "type": "string"
+    },
+    "end_time": {
+      "type": "string"
+    },
+    "duration_hours": {
+      "type": "number",
+      "default": 0
+    },
+    "location_type": {
+      "type": "string",
+      "enum": [
+        "on_site",
+        "off_site"
+      ],
+      "default": "on_site"
+    },
+    "venue_name": {
+      "type": "string"
+    },
+    "venue_address": {
+      "type": "string"
+    },
+    "venue_setting": {
+      "type": "string",
+      "enum": [
+        "indoor",
+        "outdoor",
+        "mixed"
+      ]
+    },
+    "venue_lat": {
+      "type": "number"
+    },
+    "venue_lng": {
+      "type": "number"
+    },
+    "theme": {
+      "type": "string"
+    },
+    "decoration_requirements": {
+      "type": "string"
+    },
+    "service_style": {
+      "type": "string"
+    },
+    "dress_code": {
+      "type": "string"
+    },
+    "special_requests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "dietary",
+              "allergy",
+              "accessibility",
+              "beverage",
+              "other"
+            ],
+            "default": "dietary"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "guest_reference": {
+            "type": "string"
+          },
+          "guest_count": {
+            "type": "number"
+          },
+          "kitchen_critical": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "detail"
+        ]
+      }
+    },
+    "onsite_contact_name": {
+      "type": "string"
+    },
+    "onsite_contact_phone": {
+      "type": "string"
+    },
+    "expected_guests": {
+      "type": "number"
+    },
+    "guaranteed_guests": {
+      "type": "number",
+      "default": 0
+    },
+    "guarantee_cutoff_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "guarantee_locked": {
+      "type": "boolean",
+      "default": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "enquiry",
+        "quoted",
+        "deposit_pending",
+        "deposit_pending_verification",
+        "confirmed",
+        "in_progress",
+        "completed",
+        "cancelled"
+      ],
+      "default": "enquiry"
+    },
+    "deposit_declared_method": {
+      "type": "string",
+      "enum": [
+        "bank_transfer",
+        "instapay",
+        "wallet"
+      ]
+    },
+    "deposit_declared_reference": {
+      "type": "string"
+    },
+    "deposit_declared_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "deposit_declared_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "active_quote_id": {
+      "type": "string"
+    },
+    "active_quote_revision": {
+      "type": "number",
+      "default": 0
+    },
+    "quote_total": {
+      "type": "number",
+      "default": 0
+    },
+    "deposit_percentage": {
+      "type": "number",
+      "default": 50
+    },
+    "required_deposit_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "deposit_paid_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "total_paid": {
+      "type": "number",
+      "default": 0
+    },
+    "balance_due": {
+      "type": "number",
+      "default": 0
+    },
+    "deposit_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "partial",
+        "paid",
+        "retained",
+        "refundable",
+        "refunded"
+      ],
+      "default": "none"
+    },
+    "inventory_reserved": {
+      "type": "boolean",
+      "default": false
+    },
+    "reservation_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "pending_approval",
+        "reserved",
+        "shortfall",
+        "released"
+      ],
+      "default": "none"
+    },
+    "reservation_requested_by": {
+      "type": "string"
+    },
+    "reservation_requested_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reservation_approved_by": {
+      "type": "string"
+    },
+    "reservation_approved_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reservation_rejection_reason": {
+      "type": "string"
+    },
+    "reservation_shortfall_count": {
+      "type": "number",
+      "default": 0
+    },
+    "reservation_last_run": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "procurement_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "po_raised",
+        "partially_delivered",
+        "covered"
+      ],
+      "default": "none"
+    },
+    "procurement_po_count": {
+      "type": "number",
+      "default": 0
+    },
+    "open_shortfall_count": {
+      "type": "number",
+      "default": 0
+    },
+    "production_plan_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "planned",
+        "released"
+      ],
+      "default": "none"
+    },
+    "production_plan_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "production_planned_from_quote_id": {
+      "type": "string"
+    },
+    "production_batch_count": {
+      "type": "number",
+      "default": 0
+    },
+    "staffing_requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role_id": {
+            "type": "string"
+          },
+          "role_name": {
+            "type": "string"
+          },
+          "required_count": {
+            "type": "number",
+            "default": 0
+          },
+          "suggested_count": {
+            "type": "number",
+            "default": 0
+          },
+          "is_critical": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "role_name"
+        ]
+      }
+    },
+    "staffing_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "planned",
+        "partially_staffed",
+        "fully_staffed"
+      ],
+      "default": "none"
+    },
+    "staffing_assigned_count": {
+      "type": "number",
+      "default": 0
+    },
+    "staffing_required_count": {
+      "type": "number",
+      "default": 0
+    },
+    "staffing_unfilled_critical_count": {
+      "type": "number",
+      "default": 0
+    },
+    "estimated_labor_cost": {
+      "type": "number",
+      "default": 0
+    },
+    "labor_cost_locked": {
+      "type": "boolean",
+      "default": false
+    },
+    "labor_cost_locked_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "labor_cost_locked_by": {
+      "type": "string"
+    },
+    "labor_cost_breakdown": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role_name": {
+            "type": "string"
+          },
+          "pay_basis": {
+            "type": "string",
+            "enum": [
+              "hourly",
+              "flat_event"
+            ],
+            "default": "hourly"
+          },
+          "required_count": {
+            "type": "number",
+            "default": 0
+          },
+          "filled_count": {
+            "type": "number",
+            "default": 0
+          },
+          "rate": {
+            "type": "number",
+            "default": 0
+          },
+          "hours": {
+            "type": "number",
+            "default": 0
+          },
+          "subtotal": {
+            "type": "number",
+            "default": 0
+          }
+        }
+      }
+    },
+    "cancellation_policy_id": {
+      "type": "string"
+    },
+    "cancelled_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "cancelled_by": {
+      "type": "string"
+    },
+    "cancellation_reason": {
+      "type": "string"
+    },
+    "cancellation_penalty_percentage": {
+      "type": "number",
+      "default": 0
+    },
+    "cancellation_penalty_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "reschedule_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "previous_date": {
+            "type": "string"
+          },
+          "new_date": {
+            "type": "string"
+          },
+          "changed_by": {
+            "type": "string"
+          },
+          "changed_date": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "string"
+    },
+    "actual_food_cost": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "actual_labor_cost": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "actual_equipment_cost": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "actual_total_cost": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "actual_revenue": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "actual_revenue_basis": {
+      "type": "string",
+      "enum": [
+        "finalized_reconciliation",
+        "total_paid",
+        "skipped_cancelled"
+      ]
+    },
+    "actual_margin": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "actual_margin_percentage": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "actual_cost_status": {
+      "type": "string",
+      "enum": [
+        "not_computed",
+        "complete",
+        "incomplete",
+        "skipped_cancelled"
+      ],
+      "default": "not_computed"
+    },
+    "actual_cost_warning_codes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "actual_food_cost_implausible": {
+      "type": "boolean"
+    },
+    "actual_cost_computed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "actual_cost_version": {
+      "type": "string"
+    },
+    "actual_cost_run_id": {
+      "type": "string"
+    },
+    "loss_analysis_status": {
+      "type": "string",
+      "enum": [
+        "insufficient_data",
+        "loss",
+        "underperforming",
+        "on_target"
+      ],
+      "description": "Benchmark classification refreshed with actual-cost recomputation"
+    },
+    "applicable_target_margin_percentage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "applicable_target_margin_source": {
+      "type": "string",
+      "enum": [
+        "package",
+        "event-type",
+        "catering-default",
+        "restaurant-default"
+      ]
+    },
+    "requisition_baseline_quote_id": {
+      "type": "string",
+      "description": "Quote ID from which the system-calculated minimum requisition baseline was last snapshotted."
+    },
+    "requisition_baseline_quote_revision": {
+      "type": "number",
+      "description": "Revision number of the quote that produced the latest system-calculated minimum baseline."
+    },
+    "requisition_baseline_updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the system-calculated minimum requisition baseline was last snapshotted."
+    },
+    "requisition_baseline_items": {
+      "type": "array",
+      "default": [],
+      "description": "Latest approved quote's system-calculated minimum quantities by item, preserved independently from kitchen edits and inventory replies.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "inventory_item_id": {
+            "type": "string"
+          },
+          "inventory_item_name": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "produced_item_name": {
+            "type": "string"
+          },
+          "minimum_quantity": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "additional_requisition_allowance_used": {
+      "type": "number",
+      "default": 0,
+      "description": "Cumulative agreed cost (agreed quantity \u00d7 recorded item cost) deducted across mutually confirmed additional requisitions for this event."
+    },
+    "payment_policy_id": {
+      "type": "string",
+      "description": "Payment policy (Catering \u203a Settings \u203a Payment Policies) the event was booked under, or re-applied after a reschedule. Empty on events booked before payment policies applied. Set only by backend functions.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "payment_policy_name": {
+      "type": "string",
+      "description": "Name of the applied payment policy, for labels. Set only by backend functions.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "payment_policy": {
+      "type": "object",
+      "description": "Snapshot of the applied payment policy (booking window, payment steps, approval rule), so later edits to the policy don't change booked events. Set only by backend functions.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "payment_policy_booked_on": {
+      "type": "string",
+      "format": "date",
+      "description": "Company-local day the policy was applied: the booking day, or the reschedule day after a reschedule. Due dates count from it. Set only by backend functions.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "payment_policy_event_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Event date the policy was applied for. A different event_date means the event was rescheduled and the policy is re-applied. Set only by backend functions.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "payment_policy_days_ahead": {
+      "type": "number",
+      "description": "Days between the booking day and the event date when the policy was applied. Set only by backend functions.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "policy_approval_status": {
+      "type": "string",
+      "enum": [
+        "not_required",
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "enumColors": [
+        "gray",
+        "yellow",
+        "green",
+        "red"
+      ],
+      "description": "Approval the payment policy asks for. pending + a policy that holds until approved, or rejected, blocks confirming the event, Confirm & Start and stock release. Decided in Approvals \u203a Booking Approvals; set only by backend functions.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "policy_approval_decided_by": {
+      "type": "string",
+      "description": "Email of who approved or rejected the booking. Set only by backend functions.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "policy_approval_decided_at": {
+      "type": "string",
+      "description": "When the booking was approved or rejected (ISO date-time). Set only by backend functions.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "policy_approval_note": {
+      "type": "string",
+      "description": "The approver's note; required when a booking is rejected. Set only by backend functions.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "required": [
+    "branch_id",
+    "client_id",
+    "event_name",
+    "event_date",
+    "expected_guests"
+  ]
+}

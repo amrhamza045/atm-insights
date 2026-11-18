@@ -1,0 +1,131 @@
+{
+  "name": "Department",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Department display name shown in the employee Department dropdown. This entity is the single source of truth \u2014 departments are no longer hardcoded in the app."
+    },
+    "positions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Job positions that belong to this department. Used to narrow the Position dropdown when this department is selected. Empty = show all known positions."
+    },
+    "user_roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "System permission roles that can be granted to someone in this department. Drives the Role dropdown on the Invite User form once a department is picked. Empty = every role is offered."
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Inactive departments stay on historical employee records but are hidden from new selections"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal note about what this department covers"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_users_manage": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_users_manage": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_users_manage": true
+          }
+        }
+      ]
+    }
+  }
+}

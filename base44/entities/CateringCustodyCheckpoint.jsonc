@@ -1,0 +1,212 @@
+{
+  "name": "CateringCustodyCheckpoint",
+  "type": "object",
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "data.reported_by_email": "{{user.email}}"
+        },
+        {
+          "data.responsible_email": "{{user.email}}"
+        }
+      ]
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_approve": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "properties": {
+    "trip_id": {
+      "type": "string",
+      "description": "CateringTrip this checkpoint belongs to"
+    },
+    "trip_label": {
+      "type": "string",
+      "description": "Snapshot of the trip label"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "CateringEvent the trip serves"
+    },
+    "event_name": {
+      "type": "string"
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Event date \u2014 used for date-range shortage reporting"
+    },
+    "branch_id": {
+      "type": "string",
+      "description": "Branch of the event"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "dispatched",
+        "delivered",
+        "collected",
+        "returned"
+      ],
+      "description": "Which custody handoff this record confirms: dispatched (warehouse \u2192 driver), delivered (driver \u2192 event site), collected (event site \u2192 driver), returned (driver \u2192 warehouse). Strictly sequential \u2014 enforced by createCustodyCheckpoint."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "confirmed_complete",
+        "shortage"
+      ],
+      "default": "confirmed_complete",
+      "description": "Derived automatically from the item quantities: shortage when any actual_quantity is below its expected_quantity, otherwise confirmed_complete."
+    },
+    "reported_by_employee_id": {
+      "type": "string",
+      "description": "Employee ID of the person confirming this checkpoint"
+    },
+    "reported_by_name": {
+      "type": "string",
+      "description": "Name of the person confirming this checkpoint"
+    },
+    "reported_by_email": {
+      "type": "string",
+      "description": "Email of the person confirming this checkpoint"
+    },
+    "responsible_employee_id": {
+      "type": "string",
+      "description": "Employee ID of the actor who confirmed the immediately preceding checkpoint"
+    },
+    "responsible_name": {
+      "type": "string",
+      "description": "Name of the preceding custodian"
+    },
+    "responsible_email": {
+      "type": "string",
+      "description": "Email of the preceding custodian"
+    },
+    "confirmed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the checkpoint was confirmed. Immutable."
+    },
+    "item_details": {
+      "type": "array",
+      "description": "Per-item expected vs actual quantities checked at this handoff",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item_key": {
+            "type": "string",
+            "description": "Checklist item key on the trip (source:ref_id)"
+          },
+          "item_name": {
+            "type": "string"
+          },
+          "expected_quantity": {
+            "type": "number",
+            "default": 0
+          },
+          "actual_quantity": {
+            "type": "number",
+            "default": 0
+          },
+          "unit": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "item_name"
+        ]
+      }
+    },
+    "discrepancy_notes": {
+      "type": "string",
+      "description": "Optional context on what is short or damaged"
+    },
+    "photo_url": {
+      "type": "string",
+      "description": "Optional photo evidence"
+    },
+    "feedback_id": {
+      "type": "string",
+      "description": "Linked CateringStaffFeedback record logged when a shortage was detected"
+    }
+  },
+  "required": [
+    "trip_id",
+    "stage",
+    "status"
+  ]
+}

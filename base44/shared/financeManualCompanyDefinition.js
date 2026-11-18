@@ -1,0 +1,7 @@
+export const financeManualCompanyDefinition=[{
+ id:'company_definition',title:'Legal company Definition',
+ description:'Select an existing legal company and maintain its legal name, registration number and test or production designation without replacing its ledger.',
+ steps:['Open Finance workspace → Legal company Definition.','Select the existing company. Authorized company managers can edit its legal name and registration number.','To change the test designation, review the warning and explicitly confirm that all existing accounts, journals and balances remain attached.','Save company definition. The company selector and workspace heading refresh with the saved name. Use Add legal company only for a separate legal entity.'],
+ checks:['Use the real registered legal name and registration number.','Renaming preserves the company record, branches, accounts, mappings and financial history.','Changing a test company to production does not remove test transactions or reconcile balances. Review existing data first.','Company-definition changes require company management permission and unrestricted branch access. Branch collisions in the target environment are refused.'],
+ recommendations:['Rename the existing record instead of creating a duplicate company for the same customer.','Keep currency, branch membership, posting settings and company access unchanged when updating legal identity.'],reports:[]
+}];

@@ -1,0 +1,181 @@
+{
+  "name": "TableFeedback",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "Branch the feedback was collected at"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch"
+    },
+    "table_number": {
+      "type": "string",
+      "description": "Table the feedback relates to"
+    },
+    "captain_email": {
+      "type": "string",
+      "description": "Email of the captain who collected the feedback"
+    },
+    "captain_name": {
+      "type": "string",
+      "description": "Name of the captain who collected the feedback"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Client record if the guest is a known customer"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Guest name as given at the table"
+    },
+    "client_phone": {
+      "type": "string",
+      "description": "Guest phone if provided"
+    },
+    "food_rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Food quality rating from 1 to 5"
+    },
+    "service_rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Service rating from 1 to 5"
+    },
+    "comment": {
+      "type": "string",
+      "description": "What the guest said"
+    },
+    "would_recommend": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the guest would recommend the restaurant"
+    },
+    "follow_up_needed": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when the guest was unhappy and a manager should follow up"
+    }
+  },
+  "required": [
+    "food_rating",
+    "service_rating"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_review_moderate": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_review_moderate": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_review_moderate": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    }
+  }
+}

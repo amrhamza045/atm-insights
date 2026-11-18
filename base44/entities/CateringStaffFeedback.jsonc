@@ -1,0 +1,187 @@
+{
+  "name": "CateringStaffFeedback",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "Branch of the event"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "CateringEvent the person worked"
+    },
+    "event_name": {
+      "type": "string"
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "assignment_id": {
+      "type": "string",
+      "description": "CateringAssignment being rated"
+    },
+    "employee_id": {
+      "type": "string",
+      "description": "Employee being rated"
+    },
+    "employee_name": {
+      "type": "string"
+    },
+    "role_name": {
+      "type": "string",
+      "description": "Role the person filled at this event"
+    },
+    "rating": {
+      "type": "number",
+      "default": 0,
+      "description": "Performance rating from 1 (poor) to 5 (excellent). 0 while a custody shortage is pending manager review \u2014 excluded from rating analytics until reviewed."
+    },
+    "comment": {
+      "type": "string",
+      "description": "Written feedback about this person's performance at the event"
+    },
+    "reviewed_by": {
+      "type": "string",
+      "description": "Email of the manager who gave the feedback"
+    },
+    "reviewed_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "custody_shortage"
+      ],
+      "default": "manual",
+      "description": "manual = entered by a manager after an event; custody_shortage = auto-created by the chain-of-custody shortage flow"
+    },
+    "custody_checkpoint_id": {
+      "type": "string",
+      "description": "CateringCustodyCheckpoint that triggered this feedback (custody_shortage source only)"
+    },
+    "review_status": {
+      "type": "string",
+      "enum": [
+        "not_applicable",
+        "pending_manager_review",
+        "reviewed"
+      ],
+      "default": "not_applicable",
+      "description": "custody_shortage feedback must be manager-reviewed (accountable person confirmed) before it counts toward performance ratings"
+    }
+  },
+  "required": [
+    "event_id",
+    "employee_id",
+    "rating"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

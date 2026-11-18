@@ -1,0 +1,79 @@
+{
+  "name": "FinancePaymentMethod",
+  "type": "object",
+  "description": "Company payment-method master and the only source of cash and bank accounts: every flow posts to the account of the method used. Finance service validates accounts and serializes changes. Used methods can only be deactivated; has_transactions is a durable deletion guard set before referencing a method.",
+  "properties": {
+    "method_key": {
+      "type": "string"
+    },
+    "company_id": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "account_id": {
+      "type": "string"
+    },
+    "account_code": {
+      "type": "string"
+    },
+    "account_name": {
+      "type": "string"
+    },
+    "legacy_codes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Older codes recorded on transactions before this method existed (for example cash). Transactions carrying them post to this method's account. A code on recorded transactions cannot be removed."
+    },
+    "is_default": {
+      "type": "boolean",
+      "default": false,
+      "description": "Used only when a payment record does not say how it was paid (for example an older payroll payment); the journal says so for review. One per company, and it must stay active."
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "has_transactions": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "method_key",
+    "company_id",
+    "code",
+    "name",
+    "account_id",
+    "is_active"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    }
+  }
+}

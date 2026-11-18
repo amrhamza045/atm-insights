@@ -1,0 +1,88 @@
+{
+  "name": "GLAccount",
+  "type": "object",
+  "properties": {
+    "account_number": {
+      "type": "string",
+      "description": "Unique GL account code (e.g., 4100-Sales, 5100-COGS)"
+    },
+    "account_name": {
+      "type": "string",
+      "description": "Account name"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "assets",
+        "liabilities",
+        "equity",
+        "revenue",
+        "cogs",
+        "operating_expenses",
+        "other_income",
+        "other_expenses"
+      ],
+      "description": "Account category for financial reporting"
+    },
+    "sub_category": {
+      "type": "string",
+      "description": "Sub-category (e.g., 'Food Sales', 'Beverage Sales', 'Food COGS', 'Labor')"
+    },
+    "account_type": {
+      "type": "string",
+      "enum": [
+        "asset",
+        "liability",
+        "equity",
+        "revenue",
+        "expense"
+      ],
+      "description": "Account type for balance sheet"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether account is in use"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the account"
+    }
+  },
+  "required": [
+    "account_number",
+    "account_name",
+    "category",
+    "account_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

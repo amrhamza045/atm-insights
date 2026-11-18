@@ -1,0 +1,157 @@
+{
+  "name": "LeadSourceMapping",
+  "type": "object",
+  "properties": {
+    "lead_source": {
+      "type": "string",
+      "enum": [
+        "facebook",
+        "instagram",
+        "linkedin"
+      ],
+      "description": "Social platform the leads arrive from"
+    },
+    "brand_name": {
+      "type": "string",
+      "description": "Brand / product / customer name leads from this source are categorized under"
+    },
+    "brand_type": {
+      "type": "string",
+      "enum": [
+        "company",
+        "product",
+        "restaurant",
+        "end_customer",
+        "other"
+      ],
+      "default": "other",
+      "description": "What kind of entity the brand is"
+    },
+    "description": {
+      "type": "string",
+      "description": "Notes about this mapping"
+    },
+    "color": {
+      "type": "string",
+      "description": "Hex color used for the UI badge"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Inactive mappings are ignored when categorizing new leads"
+    }
+  },
+  "required": [
+    "lead_source",
+    "brand_name",
+    "brand_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_marketing_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_systems": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_systems": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_systems": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_systems": true
+          }
+        }
+      ]
+    }
+  }
+}

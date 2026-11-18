@@ -1,0 +1,10 @@
+import { useMutation,useQueryClient } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
+import useFinanceList from '@/components/finance/useFinanceList';
+import FinanceListState from '@/components/finance/FinanceListState';
+import { financeCall,financeError } from '@/components/finance/financeApi';
+export default function FinancePostingIssues({company,can}) {
+ const query=useFinanceList({action:'read',view:'posting_issues',company_id:company.id}),qc=useQueryClient();
+ const retry=useMutation({mutationFn:id=>financeCall({action:'retry_auto',company_id:company.id,id}),onSuccess:()=>qc.invalidateQueries({queryKey:['finance']})});
+ return <section className="space-y-3"><h3 className="font-semibold">Blocked automatic postings</h3><p className="text-sm text-muted-foreground">Fix account mappings or source problems, then retry. Closed-period entries require a correcting journal in an open period; they are never silently moved to another date.</p>{query.items.map(issue=><div className="border rounded-lg p-3 space-y-2" key={issue.id}><p className="text-sm font-medium">{issue.entry_date} · {issue.source_description}</p><p className="text-sm text-destructive">{issue.message}</p><p className="text-xs text-muted-foreground">Source: {issue.source_entity||'JournalEntry'} · {issue.source_id}</p>{can('finance_journal_approve')&&<Button variant="outline" disabled={retry.isPending||!(issue.source_entity?(company.module_policy?.inventory?.enabled||company.module_policy?.enabled):company.auto_post_enabled)} onClick={()=>retry.mutate(issue.id)}>Retry posting</Button>}</div>)}<FinanceListState query={query}/>{retry.error&&<p role="alert" className="text-destructive text-sm">{financeError(retry.error)}</p>}{retry.data?.blocked&&<p role="alert" className="text-destructive text-sm">{retry.data.message}</p>}</section>;
+}

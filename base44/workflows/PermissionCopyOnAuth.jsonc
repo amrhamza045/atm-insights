@@ -1,0 +1,40 @@
+{
+  "name": "Permission Copy on Sign-up and Sign-in",
+  "description": "Syncs the permission copy when a user signs up from an invite and on every sign-in (fallback)",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "app_user_auth",
+      "events": [
+        "signup",
+        "login"
+      ]
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "permission_copy_on_auth",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "sync_user": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "syncPermissionCopy",
+            "args": {
+              "trigger": "${ if .trigger.event_type == \"signup\" then \"signup\" else \"sign_in\" end }",
+              "user_id": "${ .trigger.user_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Sync user's copy"
+          }
+        }
+      }
+    ]
+  }
+}

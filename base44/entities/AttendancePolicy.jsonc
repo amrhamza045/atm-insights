@@ -1,0 +1,233 @@
+{
+  "name": "AttendancePolicy",
+  "type": "object",
+  "properties": {
+    "policy_name": {
+      "type": "string",
+      "description": "Name of this policy (e.g., Default Policy)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this is the currently active policy"
+    },
+    "overtime_rate_multiplier": {
+      "type": "number",
+      "default": 1.5,
+      "description": "Multiplier for overtime hours (e.g., 1.5x hourly rate)"
+    },
+    "late_grace_minutes": {
+      "type": "number",
+      "default": 10,
+      "description": "Grace period in minutes before late arrival penalty applies"
+    },
+    "late_deduction_mode": {
+      "type": "string",
+      "enum": [
+        "fixed_hourly",
+        "gradual_tiers",
+        "no_penalty"
+      ],
+      "default": "gradual_tiers",
+      "description": "How late arrival deductions are calculated"
+    },
+    "late_deduction_per_hour": {
+      "type": "number",
+      "default": 0,
+      "description": "For fixed_hourly mode: EGP deducted per hour of lateness"
+    },
+    "late_deduction_tiers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "max_minutes": {
+            "type": "number"
+          },
+          "deduction_amount": {
+            "type": "number"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "max_minutes",
+          "deduction_amount"
+        ]
+      },
+      "description": "Gradual deduction tiers for late arrival. Evaluated in order; first tier whose max_minutes >= actual late minutes applies."
+    },
+    "early_leave_deduction_mode": {
+      "type": "string",
+      "enum": [
+        "fixed_hourly",
+        "gradual_tiers",
+        "no_penalty"
+      ],
+      "default": "gradual_tiers",
+      "description": "How early leave deductions are calculated"
+    },
+    "early_leave_deduction_per_hour": {
+      "type": "number",
+      "default": 0,
+      "description": "For fixed_hourly mode: EGP deducted per hour of early leave"
+    },
+    "early_leave_deduction_tiers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "max_minutes": {
+            "type": "number"
+          },
+          "deduction_amount": {
+            "type": "number"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "max_minutes",
+          "deduction_amount"
+        ]
+      },
+      "description": "Gradual deduction tiers for early leave"
+    },
+    "absence_penalty_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Fixed EGP penalty for a full-day absence (no show)"
+    },
+    "shift_presets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "start_time": {
+            "type": "string"
+          },
+          "end_time": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "start_time",
+          "end_time"
+        ]
+      },
+      "description": "Predefined shift schedules available in the approval dropdown"
+    },
+    "require_approval_for_payroll": {
+      "type": "boolean",
+      "default": true,
+      "description": "If true, only approved attendance records are included in payroll calculations"
+    }
+  },
+  "required": [
+    "policy_name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_approve": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,133 @@
+{
+  "name": "Reward",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the reward"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of what the reward offers"
+    },
+    "cashback_cost": {
+      "type": "number",
+      "description": "Amount of cashback required to redeem this reward (ignored for variable cost rewards)"
+    },
+    "is_redeemable": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this reward is currently available for redemption"
+    },
+    "category": {
+      "type": "string",
+      "description": "Category of the reward"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Image URL for the reward"
+    },
+    "is_variable_cost": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this reward accepts custom amounts (e.g., Full Payment)"
+    }
+  },
+  "required": [
+    "name",
+    "cashback_cost"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_rewards_manage": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_rewards_manage": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_rewards_manage": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        }
+      ]
+    }
+  }
+}

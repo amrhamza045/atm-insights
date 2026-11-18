@@ -1,0 +1,45 @@
+{
+  "name": "Catering Actual Costs on Damage",
+  "description": "Refresh event actual costs after linked repair costs change.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "CateringEquipmentMaintenance",
+      "events": [
+        "create",
+        "update",
+        "delete"
+      ]
+    },
+    "condition": "${ (.trigger.data.event_id // .trigger.old_data.event_id // \"\") != \"\" or .trigger.payload_too_large == true }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "catering_actual_costs_damage",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "recompute": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "recomputeCateringActualCosts",
+            "args": {
+              "event_id": "${ .trigger.data.event_id // .trigger.old_data.event_id // \"\" }",
+              "previous_event_id": "${ .trigger.old_data.event_id // \"\" }",
+              "source_type": "CateringEquipmentMaintenance",
+              "source_id": "${ .trigger.entity_id }",
+              "source_deleted": "${ .trigger.event_type == \"delete\" }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Recompute actual event costs"
+          }
+        }
+      }
+    ]
+  }
+}

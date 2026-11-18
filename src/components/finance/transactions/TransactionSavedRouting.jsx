@@ -1,0 +1,4 @@
+export default function TransactionSavedRouting({result}){
+ const b=result.binding;
+ return <section role="status" className="border rounded-md p-3 space-y-2 text-sm"><p>{result.message||'Routing saved.'}</p>{b&&<><p className="font-medium">Actual {result.reused?'reused':'saved'} rule: {b.account_code} · {b.account_name}</p><p>{b.effective_from} to {b.effective_to||'no end date'} · Priority {b.priority}</p><p>{Object.entries(b.conditions||{}).map(([key,value])=>`${key.replaceAll('_',' ')}: ${value}`).join(' · ')||'Any supported condition (company-wide)'}</p>{result.reused&&<p className="text-muted-foreground">The existing rule above remains unchanged and may cover more transactions than the proposed filters. No narrower duplicate or override was created.</p>}</>}</section>;
+}

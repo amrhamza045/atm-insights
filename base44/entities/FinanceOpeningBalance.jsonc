@@ -1,0 +1,182 @@
+{
+  "name": "FinanceOpeningBalance",
+  "type": "object",
+  "description": "One opening balance at the company cut-off (Finance \u203a Opening balances): stock (B01), customer advances (B02), cash and bank (B04) or fixed assets and equipment. Each line posts one opening journal against the mapped opening balance equity account and is never overwritten. Supplier openings (B03) live in Supplier accounts. Written only by backend functions.",
+  "properties": {
+    "entry_key": {
+      "type": "string",
+      "description": "One record per item, event, payment method and branch, or asset request; retries reuse it."
+    },
+    "company_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "inventory",
+        "customer_advance",
+        "cash",
+        "fixed_asset"
+      ],
+      "enumColors": [
+        "blue",
+        "purple",
+        "green",
+        "yellow"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "posted"
+      ],
+      "enumColors": [
+        "yellow",
+        "green"
+      ],
+      "description": "pending = started but not finished; the same entry resumes it."
+    },
+    "cutoff_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Company opening cut-off. The first opening entry fixes it for the company."
+    },
+    "amount": {
+      "type": "number",
+      "description": "Opening value posted to the ledger. For fixed assets, the cost before accumulated depreciation."
+    },
+    "inventory_item_id": {
+      "type": "string"
+    },
+    "inventory_item_name": {
+      "type": "string"
+    },
+    "category_id": {
+      "type": "string"
+    },
+    "quantity": {
+      "type": "number",
+      "description": "Counted opening quantity in the item's stock unit."
+    },
+    "unit": {
+      "type": "string"
+    },
+    "unit_cost": {
+      "type": "number",
+      "description": "Approved opening weighted-average cost per cost unit."
+    },
+    "before_quantity": {
+      "type": "number",
+      "description": "Stock on the item when the opening was applied."
+    },
+    "before_cost": {
+      "type": "number"
+    },
+    "payment_method_id": {
+      "type": "string"
+    },
+    "payment_method_code": {
+      "type": "string"
+    },
+    "payment_method_name": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string"
+    },
+    "event_name": {
+      "type": "string"
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "catering_payment_id": {
+      "type": "string",
+      "description": "Completed opening deposit on the event, so its balance due is right."
+    },
+    "asset_name": {
+      "type": "string",
+      "description": "Fixed asset or asset group, e.g. Kitchen equipment."
+    },
+    "asset_account_id": {
+      "type": "string"
+    },
+    "asset_account_code": {
+      "type": "string"
+    },
+    "asset_account_name": {
+      "type": "string"
+    },
+    "accumulated_depreciation": {
+      "type": "number",
+      "default": 0,
+      "description": "Depreciation already charged on the asset at the cut-off; equity takes the net book value."
+    },
+    "depreciation_account_id": {
+      "type": "string"
+    },
+    "depreciation_account_code": {
+      "type": "string"
+    },
+    "account_snapshot": {
+      "type": "object",
+      "description": "Checked journal lines and mappings captured when the entry started."
+    },
+    "journal_id": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Evidence reference: count sheet, bank statement, asset register or client ledger."
+    },
+    "actor_email": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "entry_key",
+    "company_id",
+    "branch_id",
+    "kind",
+    "status",
+    "cutoff_date",
+    "amount",
+    "actor_email"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    }
+  }
+}

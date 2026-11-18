@@ -1,0 +1,299 @@
+{
+  "name": "CateringReservation",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "ID of the CateringEvent this reservation is committed to"
+    },
+    "event_name": {
+      "type": "string",
+      "description": "Name of the event"
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the reserved stock is needed"
+    },
+    "quote_id": {
+      "type": "string",
+      "description": "Quote revision the reservation was calculated from"
+    },
+    "inventory_item_id": {
+      "type": "string",
+      "description": "Reserved InventoryItem"
+    },
+    "inventory_item_name": {
+      "type": "string",
+      "description": "Name of the reserved item"
+    },
+    "unit": {
+      "type": "string",
+      "description": "Unit of measure of the reserved quantity"
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "stock_pull",
+        "production_input"
+      ],
+      "default": "stock_pull",
+      "description": "stock_pull = finished/bought item taken straight from stock; production_input = raw ingredient committed to a catering production batch"
+    },
+    "production_order_id": {
+      "type": "string",
+      "description": "Production batch this input belongs to"
+    },
+    "produced_item_name": {
+      "type": "string",
+      "description": "Finished item this input is being produced into"
+    },
+    "quantity_reserved": {
+      "type": "number",
+      "default": 0,
+      "description": "Quantity committed to this event"
+    },
+    "actual_quantity": {
+      "type": "number",
+      "description": "Quantity physically pulled when the Kitchen Release Slip was fulfilled"
+    },
+    "custody_quantity": {
+      "type": "number",
+      "default": 0,
+      "description": "Quantity currently held in event-specific kitchen custody after a requisition batch release, awaiting production consumption"
+    },
+    "custody_consumed_quantity": {
+      "type": "number",
+      "default": 0,
+      "description": "Quantity consumed from event kitchen custody by completed production batches"
+    },
+    "available_at_reservation": {
+      "type": "number",
+      "default": 0,
+      "description": "Free stock when this reservation was made"
+    },
+    "shortfall_quantity": {
+      "type": "number",
+      "default": 0
+    },
+    "needed_by_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "at_risk": {
+      "type": "boolean",
+      "default": false
+    },
+    "purchase_order_id": {
+      "type": "string"
+    },
+    "purchase_order_number": {
+      "type": "string"
+    },
+    "procurement_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "po_pending",
+        "po_approved",
+        "po_delivered",
+        "po_cancelled"
+      ],
+      "default": "none"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "reserved",
+        "released",
+        "consumed"
+      ],
+      "default": "reserved"
+    },
+    "reserved_by": {
+      "type": "string"
+    },
+    "released_by": {
+      "type": "string"
+    },
+    "released_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "release_reason": {
+      "type": "string"
+    },
+    "consumed_by": {
+      "type": "string",
+      "description": "Kitchen Head who fulfilled the release slip"
+    },
+    "consumed_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id",
+    "inventory_item_id",
+    "quantity_reserved"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_requisition_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_kds_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

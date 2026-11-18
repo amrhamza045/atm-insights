@@ -1,0 +1,36 @@
+{
+  "name": "CateringPaymentReviewLock",
+  "type": "object",
+  "description": "Server-maintained event payment serialization. A failed rollback leaves the lock held for administrative review.",
+  "properties": {
+    "event_id": {
+      "type": "string"
+    },
+    "token": {
+      "type": "string",
+      "default": ""
+    },
+    "started_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

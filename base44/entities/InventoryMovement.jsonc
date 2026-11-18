@@ -1,0 +1,170 @@
+{
+  "name": "InventoryMovement",
+  "type": "object",
+  "description": "One stock movement in or out of an inventory item, recorded when the stock-changing operation runs. movement_key makes each movement unique so retries never duplicate history.",
+  "properties": {
+    "movement_key": {
+      "type": "string",
+      "description": "type:source:line key \u2014 one record per real movement"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "inventory_item_id": {
+      "type": "string"
+    },
+    "inventory_item_name": {
+      "type": "string"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "in",
+        "out"
+      ],
+      "enumColors": [
+        "green",
+        "red"
+      ]
+    },
+    "movement_type": {
+      "type": "string",
+      "enum": [
+        "purchase",
+        "opening",
+        "adjustment",
+        "sale",
+        "catering_release",
+        "production_consumption",
+        "production_output",
+        "waste",
+        "expiry",
+        "supplier_return",
+        "butchery_input",
+        "butchery_output",
+        "transfer"
+      ],
+      "enumColors": [
+        "green",
+        "blue",
+        "yellow",
+        "purple",
+        "pink",
+        "gray",
+        "green",
+        "red",
+        "red",
+        "yellow",
+        "gray",
+        "green",
+        "blue"
+      ]
+    },
+    "quantity": {
+      "type": "number",
+      "description": "Positive quantity moved, in the item's stock unit"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "quantity_before": {
+      "type": "number"
+    },
+    "quantity_after": {
+      "type": "number"
+    },
+    "unit_cost": {
+      "type": "number",
+      "description": "Item average cost (per cost unit) at the time of the movement"
+    },
+    "cost_impact": {
+      "type": "number",
+      "description": "Value of the quantity moved"
+    },
+    "source_entity": {
+      "type": "string"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "source_label": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string"
+    },
+    "event_name": {
+      "type": "string"
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "actor_email": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "movement_key",
+    "inventory_item_id",
+    "direction",
+    "movement_type",
+    "quantity"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "name": "Finance Sales on Paid Order",
+  "description": "Post confirmed paid sales once using saved company mappings, with one retry for temporary company contention. Unreconciled sources remain visible as exceptions.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "Order",
+      "events": [
+        "create",
+        "update"
+      ]
+    },
+    "condition": "${ .trigger.data.status == \"paid\" or .trigger.old_data.status == \"paid\" }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "finance_sales_on_paid_order",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "settle": {
+          "wait": "PT30S",
+          "then": "post_source",
+          "x-base44": {
+            "title": "Let the payment finish"
+          }
+        }
+      },
+      {
+        "post_source": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeAutoPost",
+            "args": {
+              "source_entity": "Order",
+              "source_id": "${ .trigger.entity_id }",
+              "paid_at": "${ if .trigger.data.status == \"paid\" then (.trigger.data.updated_date // .trigger.data.created_date) else (.trigger.old_data.updated_date // .trigger.old_data.created_date) end }",
+              "confirmed_paid": true
+            }
+          },
+          "then": "check_retry",
+          "x-base44": {
+            "title": "Validate and post paid sale"
+          }
+        }
+      },
+      {
+        "check_retry": {
+          "switch": [
+            {
+              "when": "${ .post_source.retry == true }",
+              "then": "retry_delay"
+            },
+            {
+              "when": "${ true }",
+              "then": "end"
+            }
+          ],
+          "x-base44": {
+            "title": "Retry temporary contention?"
+          }
+        }
+      },
+      {
+        "retry_delay": {
+          "wait": "PT15S",
+          "then": "retry_source",
+          "x-base44": {
+            "title": "Wait for company posting lock"
+          }
+        }
+      },
+      {
+        "retry_source": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeAutoPost",
+            "args": {
+              "source_entity": "Order",
+              "source_id": "${ .trigger.entity_id }",
+              "paid_at": "${ if .trigger.data.status == \"paid\" then (.trigger.data.updated_date // .trigger.data.created_date) else (.trigger.old_data.updated_date // .trigger.old_data.created_date) end }",
+              "confirmed_paid": true,
+              "attempt": 1
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Retry sale posting once"
+          }
+        }
+      }
+    ]
+  }
+}

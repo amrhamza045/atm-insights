@@ -1,0 +1,209 @@
+{
+  "name": "CateringStaffingRole",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Role name used when staffing an event (e.g. Waiter, Chef, Driver). Matched against Employee.position where possible."
+    },
+    "matches_positions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Employee position/title values that qualify for this role (case-insensitive). Empty = any employee may be assigned."
+    },
+    "department": {
+      "type": "string",
+      "description": "Department this role sits in (Kitchen, Front-of-House, Logistics, Management)"
+    },
+    "guests_per_staff": {
+      "type": "number",
+      "default": 0,
+      "description": "Suggestion ratio: one person of this role per this many guests (0 = do not scale with guests)"
+    },
+    "min_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Minimum number suggested regardless of guest count"
+    },
+    "is_critical": {
+      "type": "boolean",
+      "default": false,
+      "description": "Critical roles being unfilled close to the event date raises an alert"
+    },
+    "required_skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Skills or certifications preferred for this role \u2014 used to rank candidates, never to block assignment"
+    },
+    "pay_basis": {
+      "type": "string",
+      "enum": [
+        "hourly",
+        "flat_event"
+      ],
+      "default": "hourly",
+      "description": "hourly = cost scales with the event's hours; flat_event = a fixed fee per person per event regardless of duration"
+    },
+    "default_hourly_rate": {
+      "type": "number",
+      "default": 0,
+      "description": "Role-level default hourly rate, used for labor cost estimates on unfilled slots and for assignees with no rate on record (e.g. freelancers)"
+    },
+    "default_flat_rate": {
+      "type": "number",
+      "default": 0,
+      "description": "Role-level default flat fee per person per event, used when pay_basis is flat_event"
+    },
+    "applies_to_event_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Limit the suggestion to these event types (empty = all event types)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Inactive roles stay on historical events but are hidden from new staffing plans"
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

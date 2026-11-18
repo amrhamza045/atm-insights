@@ -1,0 +1,91 @@
+{
+  "name": "Finance Inventory on Custody Release",
+  "description": "Finalize original stock issue-cost evidence after requisition release. Stock stays in its category asset account until production consumption or confirmed delivery.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "KitchenReleaseSlip",
+      "events": [
+        "update"
+      ]
+    },
+    "condition": "${ .trigger.data.status == \"released\" and .trigger.old_data.status != \"released\" }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "finance_inventory_on_custody_release",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "settle": {
+          "wait": "PT30S",
+          "then": "post",
+          "x-base44": {
+            "title": "Let the requisition release finish"
+          }
+        }
+      },
+      {
+        "post": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeAutoPost",
+            "args": {
+              "inventory_entity": "KitchenReleaseSlip",
+              "source_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "check_retry",
+          "x-base44": {
+            "title": "Finalize original issue-cost evidence"
+          }
+        }
+      },
+      {
+        "check_retry": {
+          "switch": [
+            {
+              "when": "${ .post.retry == true }",
+              "then": "delay"
+            },
+            {
+              "when": "${ true }",
+              "then": "end"
+            }
+          ],
+          "x-base44": {
+            "title": "Retry temporary contention?"
+          }
+        }
+      },
+      {
+        "delay": {
+          "wait": "PT15S",
+          "then": "retry",
+          "x-base44": {
+            "title": "Wait for company posting lock"
+          }
+        }
+      },
+      {
+        "retry": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeAutoPost",
+            "args": {
+              "inventory_entity": "KitchenReleaseSlip",
+              "source_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Retry cost capture finalization once"
+          }
+        }
+      }
+    ]
+  }
+}

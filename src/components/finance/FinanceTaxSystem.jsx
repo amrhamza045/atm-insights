@@ -1,0 +1,13 @@
+import { Tabs,TabsList,TabsTrigger,TabsContent } from '@/components/ui/tabs';
+import useOpenTab from '@/hooks/useOpenTab';
+import ClosedTabsNotice from '@/components/modules/ClosedTabsNotice';
+import TaxRulesPanel from '@/components/finance/tax/TaxRulesPanel';
+import TaxReturnPanel from '@/components/finance/tax/TaxReturnPanel';
+const RETURNS=[['withholding','Withholding return'],['payroll','Payroll return'],['corporate','Corporate return']];
+export default function FinanceTaxSystem({company,filters,can,mode='all'}){
+ // Each tab can be closed in Admin › Modules, per role or per user.
+ const tab=useOpenTab('FinanceTax',['lines',...(mode==='all'?['rules']:[]),...RETURNS.map(([kind])=>kind)]);
+ if(mode==='configuration')return <section className="space-y-4"><h2 className="font-semibold text-lg">Configured tax rules</h2><p className="text-sm text-muted-foreground">Manage accountant-reviewed tax profiles, rates, effective dates and legal references. Tax assessments and returns are available under Reporting.</p><TaxRulesPanel company={company} can={can}/></section>;
+ return <section className="space-y-4"><h2 className="font-semibold text-lg">{mode==='reporting'?'Individual line details & draft returns':'Tax rules, individual line details & draft returns'}</h2><p className="text-sm text-muted-foreground">Configure accountant-reviewed profiles under Configuration → Tax rules first, then assess source transactions and payroll or company-ledger profit. No statutory rates, exemptions, recoverability or missing tax amounts are assumed; calculations do not change invoice totals, salaries or accounting postings.</p>
+ {!tab.value?<ClosedTabsNotice/>:<Tabs value={tab.value} onValueChange={tab.setValue}><div className="overflow-x-auto"><TabsList className="w-max">{tab.isOpen('lines')&&<TabsTrigger value="lines">Sales / purchase line taxes</TabsTrigger>}{mode==='all'&&tab.isOpen('rules')&&<TabsTrigger value="rules">Configured tax rules</TabsTrigger>}{RETURNS.filter(([kind])=>tab.isOpen(kind)).map(([kind,label])=><TabsTrigger key={kind} value={kind}>{label}</TabsTrigger>)}</TabsList></div><TabsContent value="lines"><TaxReturnPanel company={company} filters={filters} can={can} kind="withholding" linesOnly/></TabsContent>{mode==='all'&&<TabsContent value="rules"><TaxRulesPanel company={company} can={can}/></TabsContent>}{RETURNS.map(([kind])=><TabsContent key={kind} value={kind}><TaxReturnPanel company={company} filters={filters} can={can} kind={kind}/></TabsContent>)}</Tabs>}</section>;
+}

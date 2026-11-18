@@ -1,0 +1,188 @@
+{
+  "name": "WasteByProduct",
+  "type": "object",
+  "properties": {
+    "slaughter_event_id": {
+      "type": "string",
+      "description": "ID of slaughter event"
+    },
+    "primal_cut_id": {
+      "type": "string",
+      "description": "ID of primal cut (if linked to breakdown step)"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "disposal",
+        "by_product"
+      ],
+      "default": "disposal",
+      "description": "Disposal (cost only) or by-product (has recovery value)"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "blood",
+        "gut_contents",
+        "hide",
+        "bone",
+        "fat",
+        "offal",
+        "condemned_tissue",
+        "other"
+      ],
+      "default": "other",
+      "description": "Category"
+    },
+    "name": {
+      "type": "string",
+      "description": "Item name"
+    },
+    "weight": {
+      "type": "number",
+      "description": "Weight"
+    },
+    "weight_unit": {
+      "type": "string",
+      "default": "kg",
+      "description": "Weight unit"
+    },
+    "disposal_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Disposal cost (for disposal type)"
+    },
+    "hauler_method": {
+      "type": "string",
+      "description": "Hauler / disposal method"
+    },
+    "recovery_value": {
+      "type": "number",
+      "default": 0,
+      "description": "Recovery value (actual or estimated) for by-product"
+    },
+    "recovery_value_source": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "last_market",
+        "rolling_avg",
+        "global_default"
+      ],
+      "default": "manual",
+      "description": "How recovery value was determined"
+    },
+    "is_estimated": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether value is estimated with no historical data"
+    },
+    "raw_material_id": {
+      "type": "string",
+      "description": "ID of raw material SKU created from this by-product"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "slaughter_event_id",
+    "type",
+    "category",
+    "weight"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,187 @@
+{
+  "name": "CashbackRule",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the cashback rule"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of what this rule applies to"
+    },
+    "rule_type": {
+      "type": "string",
+      "enum": [
+        "order_type",
+        "customer_tier",
+        "promotional"
+      ],
+      "description": "Type of rule: based on order type, customer tier, or promotional period"
+    },
+    "order_type": {
+      "type": "string",
+      "enum": [
+        "dine_in",
+        "takeaway",
+        "delivery",
+        "all"
+      ],
+      "description": "Which order types this rule applies to"
+    },
+    "customer_tier": {
+      "type": "string",
+      "description": "Which customer tier this rule applies to (e.g., bronze, silver, gold)"
+    },
+    "promotional_period_name": {
+      "type": "string",
+      "description": "Name of promotional period (e.g., Summer 2026, Black Friday)"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this rule becomes active"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this rule expires"
+    },
+    "self_cashback_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Cashback percentage for customer's own purchase"
+    },
+    "level1_cashback_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Cashback percentage for level 1 referrer"
+    },
+    "level2_cashback_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Cashback percentage for level 2 referrer"
+    },
+    "level3_cashback_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Cashback percentage for level 3 referrer"
+    },
+    "payout_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Percentage of cashback allocated as payout"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this rule is currently active"
+    },
+    "priority": {
+      "type": "number",
+      "default": 0,
+      "description": "Priority for rule matching (higher number = higher priority)"
+    },
+    "created_by": {
+      "type": "string",
+      "description": "Email of admin who created this rule"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal notes about the rule"
+    }
+  },
+  "required": [
+    "name",
+    "rule_type",
+    "self_cashback_percentage"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        }
+      ]
+    }
+  }
+}

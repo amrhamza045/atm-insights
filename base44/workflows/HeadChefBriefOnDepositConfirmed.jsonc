@@ -1,0 +1,40 @@
+{
+  "name": "Head Chef Brief on Deposit Confirmed",
+  "description": "When a catering event's deposit becomes paid, sends the Head Chef a price-free kitchen brief by email, WhatsApp and in-app notification (once per event).",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "CateringEvent",
+      "events": [
+        "update"
+      ]
+    },
+    "condition": "${ .trigger.data.deposit_status == \"paid\" and .trigger.old_data.deposit_status != \"paid\" }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "head_chef_brief_on_deposit",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "notify_head_chef": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "notifyHeadChefEventConfirmed",
+            "args": {
+              "event_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Notify Head Chef",
+            "description": "Email, WhatsApp, in-app"
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "name": "ATM Insights",
+  "name": "Referral Rewards",
   "site": {
     "installCommand": "npm install",
     "buildCommand": "npm run build",

@@ -1,0 +1,171 @@
+{
+  "name": "RequisitionLine",
+  "type": "object",
+  "description": "One requested item on a Requisition. Planned lines mirror a CateringReservation; extra lines are ad-hoc requests. Lines are deactivated (is_active false), never deleted. Written only by backend functions.",
+  "properties": {
+    "requisition_id": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "line_type": {
+      "type": "string",
+      "enum": [
+        "planned",
+        "extra"
+      ]
+    },
+    "inventory_item_id": {
+      "type": "string"
+    },
+    "inventory_item_name": {
+      "type": "string"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "stock_pull",
+        "production_input",
+        "extra_request"
+      ]
+    },
+    "produced_item_name": {
+      "type": "string"
+    },
+    "production_order_id": {
+      "type": "string"
+    },
+    "system_minimum_quantity": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Original system-generated minimum quantity calculated from the latest approved quote for this line (preserved independently when the kitchen edits requested_quantity or inventory edits agreed_quantity)."
+    },
+    "requested_quantity": {
+      "type": "number",
+      "description": "What the chef is asking for now: the planned/extra quantity, replaced by the chef's counter quantity on a counter."
+    },
+    "agreed_quantity": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Inventory's quantity for the latest decision (null when declined or awaiting a decision)."
+    },
+    "reservation_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The CateringReservation this line holds. Planned lines start with one; extra lines get one when inventory confirms or edits them. Cleared when inventory declines the line (the reservation is released)."
+    },
+    "estimated_unit_cost": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "InventoryItem cost_per_unit at the time of the request, only when the line is in the item's cost unit (purchase unit, else unit); otherwise null and the line is uncosted."
+    },
+    "estimated_cost_status": {
+      "type": "string",
+      "enum": [
+        "costed",
+        "uncosted"
+      ],
+      "description": "uncosted when the line's unit differs from the item's cost unit (no unit conversion data exists) or the item has no cost. Uncosted lines are excluded from every estimated total."
+    },
+    "uncosted_reason": {
+      "type": "string",
+      "description": "Why the line is uncosted; empty when costed."
+    },
+    "needed_by_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "inventory_decision": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "edited",
+        "declined"
+      ],
+      "default": "pending"
+    },
+    "chef_response": {
+      "type": "string",
+      "enum": [
+        "none",
+        "accepted",
+        "countered"
+      ],
+      "default": "none"
+    },
+    "is_agreed": {
+      "type": "boolean",
+      "default": false,
+      "description": "True once inventory confirms the line, or the chef accepts inventory's edit or decline. Agreed lines are locked for both sides; the requisition is confirmed when every active line is agreed. Reset when a release cancels the requisition and planning reopens it."
+    },
+    "decision_reason": {
+      "type": "string"
+    },
+    "chef_comment": {
+      "type": "string"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "sort_order": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "requisition_id",
+    "event_id",
+    "branch_id",
+    "line_type",
+    "inventory_item_id",
+    "requested_quantity"
+  ],
+  "rls": {
+    "read": {
+      "$and": [
+        {
+          "user_condition": {
+            "data.perm_requisition_view": true
+          }
+        },
+        {
+          "$or": [
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

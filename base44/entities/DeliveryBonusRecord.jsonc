@@ -1,0 +1,166 @@
+{
+  "name": "DeliveryBonusRecord",
+  "type": "object",
+  "properties": {
+    "delivery_person_id": {
+      "type": "string",
+      "description": "ID of the delivery person who earned the bonus"
+    },
+    "delivery_person_name": {
+      "type": "string",
+      "description": "Name of the delivery person"
+    },
+    "bonus_tier_id": {
+      "type": "string",
+      "description": "ID of the bonus tier that was achieved"
+    },
+    "bonus_tier_name": {
+      "type": "string",
+      "description": "Name of the bonus tier"
+    },
+    "milestone_count": {
+      "type": "number",
+      "description": "The milestone count that was reached"
+    },
+    "bonus_amount": {
+      "type": "number",
+      "description": "Bonus amount earned"
+    },
+    "total_deliveries_at_time": {
+      "type": "number",
+      "description": "Total deliveries the person had when this bonus was earned"
+    },
+    "trigger_order_id": {
+      "type": "string",
+      "description": "ID of the order that triggered this milestone"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "paid",
+        "cancelled"
+      ],
+      "default": "pending",
+      "description": "Payment status of this bonus"
+    },
+    "earned_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the bonus was earned"
+    },
+    "paid_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the bonus was paid"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "delivery_person_id",
+    "delivery_person_name",
+    "bonus_tier_id",
+    "bonus_tier_name",
+    "milestone_count",
+    "bonus_amount"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_delivery_bonus_approve": true
+          }
+        },
+        {
+          "data.delivery_person_id": "{{user.data.perm_delivery_person_id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_delivery_bonus_approve": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_hr_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

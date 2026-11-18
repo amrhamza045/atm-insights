@@ -1,0 +1,45 @@
+{
+  "description": "Refresh event damage and replacement costs. Computed snapshot writes use bulk updates to avoid recursive triggers.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create",
+        "update",
+        "delete"
+      ],
+      "entity_name": "CateringEquipmentReservation"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "catering_actual_costs_equipment_returns",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "recompute": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "recomputeCateringActualCosts",
+            "args": {
+              "event_id": "${ .trigger.data.event_id // .trigger.old_data.event_id // \"\" }",
+              "previous_event_id": "${ .trigger.old_data.event_id // \"\" }",
+              "source_type": "CateringEquipmentReservation",
+              "source_id": "${ .trigger.entity_id }",
+              "source_deleted": "${ .trigger.event_type == \"delete\" }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Recompute actual event costs"
+          }
+        }
+      }
+    ]
+  },
+  "name": "Catering Actual Costs on Equipment Returns"
+}

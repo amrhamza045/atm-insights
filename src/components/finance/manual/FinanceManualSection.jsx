@@ -1,0 +1,7 @@
+export default function FinanceManualSection({section}) {
+ return <article className="space-y-5">
+  <header><h3 className="text-xl font-semibold">{section.title}</h3><p className="mt-2 text-sm text-muted-foreground">{section.description}</p></header>
+  {[['How to use it','steps'],['Accuracy checks','checks'],['Advisory & recommendations','recommendations']].map(([title,key])=><section key={key} className="rounded-lg border bg-card p-4"><h4 className="font-semibold text-sm">{title}</h4>{key==='steps'?<ol className="mt-2 list-decimal pl-5 space-y-2 text-sm">{section[key].map(text=><li key={text}>{text}</li>)}</ol>:<ul className="mt-2 list-disc pl-5 space-y-2 text-sm">{section[key].map(text=><li key={text}>{text}</li>)}</ul>}</section>)}
+  {section.reports.length>0&&<section className="space-y-3"><h4 className="font-semibold">Reports & interpretation</h4>{section.reports.map(report=><div key={report.title} className="border rounded-lg bg-card p-4 space-y-2 text-sm"><h5 className="font-semibold">{report.title}</h5><p>{report.description}</p><p><strong>Accurate data: </strong>{report.accuracy}</p><p><strong>Recommendation: </strong>{report.recommendation}</p></div>)}</section>}
+ </article>;
+}

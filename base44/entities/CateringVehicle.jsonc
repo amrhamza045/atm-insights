@@ -1,0 +1,182 @@
+{
+  "name": "CateringVehicle",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Vehicle name/label (e.g. Van 1, Refrigerated Truck)"
+    },
+    "plate_number": {
+      "type": "string",
+      "description": "License plate"
+    },
+    "vehicle_type": {
+      "type": "string",
+      "enum": [
+        "van",
+        "truck",
+        "refrigerated_truck",
+        "car",
+        "motorbike",
+        "other"
+      ],
+      "default": "van",
+      "description": "Type of vehicle"
+    },
+    "capacity_notes": {
+      "type": "string",
+      "description": "What it can carry (e.g. 1.5 tons, 20 crates + 2 chafing racks)"
+    },
+    "home_branch_id": {
+      "type": "string",
+      "description": "Branch that operates this vehicle (empty = shared fleet)"
+    },
+    "home_branch_name": {
+      "type": "string",
+      "description": "Name of the operating branch"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "available",
+        "maintenance",
+        "retired"
+      ],
+      "default": "available",
+      "description": "Vehicles under maintenance or retired can never be assigned to a trip"
+    },
+    "cost_basis": {
+      "type": "string",
+      "enum": [
+        "per_km",
+        "per_day"
+      ],
+      "default": "per_km",
+      "description": "How this vehicle is costed on a trip: per_km multiplies distance by cost_per_km; per_day multiplies days used by cost_per_day (typical for hired vehicles charged by the day)"
+    },
+    "cost_per_km": {
+      "type": "number",
+      "default": 0,
+      "description": "Estimated operating cost per km (fuel + wear) \u2014 used when cost_basis is per_km"
+    },
+    "cost_per_day": {
+      "type": "number",
+      "default": 0,
+      "description": "Cost of using the vehicle for one day \u2014 used when cost_basis is per_day"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

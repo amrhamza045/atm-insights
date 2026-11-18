@@ -1,0 +1,74 @@
+{
+  "name": "Permission Copy on Role Edit",
+  "description": "Re-syncs every user holding a role when that role's permissions or active state change",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "Role",
+      "events": [
+        "update",
+        "delete"
+      ]
+    },
+    "condition": "${ .trigger.event_type == \"delete\" or ((.trigger.changed_fields // []) | any(. == \"permissions\" or . == \"is_active\" or . == \"role_key\")) }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "permission_copy_on_role_edit",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "sync_role_holders": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "syncPermissionCopy",
+            "args": {
+              "trigger": "role_edit",
+              "role_key": "${ .trigger.data.role_key // .trigger.old_data.role_key }"
+            }
+          },
+          "then": "sync_old_key",
+          "x-base44": {
+            "title": "Sync role holders"
+          }
+        }
+      },
+      {
+        "sync_old_key": {
+          "switch": [
+            {
+              "when": "${ (.trigger.old_data.role_key // null) != null and .trigger.old_data.role_key != .trigger.data.role_key }",
+              "then": "sync_old_holders"
+            },
+            {
+              "when": "${ true }",
+              "then": "end"
+            }
+          ],
+          "x-base44": {
+            "title": "Role key renamed?"
+          }
+        }
+      },
+      {
+        "sync_old_holders": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "syncPermissionCopy",
+            "args": {
+              "trigger": "role_edit",
+              "role_key": "${ .trigger.old_data.role_key }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Sync old-key holders"
+          }
+        }
+      }
+    ]
+  }
+}

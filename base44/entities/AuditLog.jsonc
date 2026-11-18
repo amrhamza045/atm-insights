@@ -1,0 +1,110 @@
+{
+  "name": "AuditLog",
+  "type": "object",
+  "properties": {
+    "admin_id": {
+      "type": "string",
+      "description": "ID of the admin who performed the action"
+    },
+    "admin_email": {
+      "type": "string",
+      "description": "Email of the admin who performed the action"
+    },
+    "action_type": {
+      "type": "string",
+      "enum": [
+        "create",
+        "update",
+        "delete",
+        "approve",
+        "reject",
+        "export",
+        "apply_discount"
+      ],
+      "description": "Type of action performed"
+    },
+    "entity_type": {
+      "type": "string",
+      "description": "Type of entity affected (e.g., Order)"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID of the entity that was modified"
+    },
+    "entity_name": {
+      "type": "string",
+      "description": "Name or description of the entity"
+    },
+    "action_description": {
+      "type": "string",
+      "description": "Detailed description of the action"
+    },
+    "changes": {
+      "type": "object",
+      "description": "Object containing before/after values for updates"
+    },
+    "ip_address": {
+      "type": "string",
+      "description": "IP address of the admin"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "success",
+        "failed"
+      ],
+      "default": "success",
+      "description": "Whether the action succeeded or failed"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Error message if the action failed"
+    }
+  },
+  "required": [
+    "admin_id",
+    "admin_email",
+    "action_type",
+    "entity_type",
+    "action_description"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_audit": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.admin_email": "{{user.email}}"
+        }
+      ]
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "name": "SMSNotificationPreferences",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "ID of the user"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user"
+    },
+    "phone_number": {
+      "type": "string",
+      "description": "Phone number for SMS notifications"
+    },
+    "order_confirmations": {
+      "type": "boolean",
+      "default": true,
+      "description": "Receive order confirmation SMS"
+    },
+    "delivery_assignments": {
+      "type": "boolean",
+      "default": true,
+      "description": "Receive delivery assignment SMS (for drivers)"
+    },
+    "low_stock_alerts": {
+      "type": "boolean",
+      "default": true,
+      "description": "Receive low stock alerts SMS (for admins)"
+    },
+    "promotional_messages": {
+      "type": "boolean",
+      "default": false,
+      "description": "Receive promotional SMS"
+    }
+  },
+  "required": [
+    "user_id",
+    "phone_number"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

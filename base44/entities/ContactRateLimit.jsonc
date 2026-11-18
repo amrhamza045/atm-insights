@@ -1,0 +1,33 @@
+{
+  "name": "ContactRateLimit",
+  "type": "object",
+  "description": "Server-maintained submission slots for public contact forms, keyed by a hashed per-browser ID.",
+  "properties": {
+    "visitor_key": {
+      "type": "string",
+      "description": "SHA-256 hash of the visitor's browser ID"
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "visitor_key",
+    "submitted_at"
+  ],
+  "rls": {
+    "read": {
+      "id": "__service_role_only__"
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

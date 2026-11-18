@@ -1,0 +1,91 @@
+{
+  "name": "CustomerAccount",
+  "type": "object",
+  "description": "Saved receivables statement per catering customer (server-maintained). Only accepted quotes whose event has at least one completed incoming payment count. Kept current from quote, payment and event changes; never edited by hand.",
+  "properties": {
+    "client_id": {
+      "type": "string"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "client_phone": {
+      "type": "string"
+    },
+    "client_email": {
+      "type": "string"
+    },
+    "search_text": {
+      "type": "string",
+      "description": "Lower-case name, phone and email for search"
+    },
+    "branch_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "event_count": {
+      "type": "number",
+      "default": 0
+    },
+    "total_quoted": {
+      "type": "number",
+      "default": 0,
+      "description": "Debit: accepted quotes with a deposit (cancelled events: the amount kept)"
+    },
+    "total_paid": {
+      "type": "number",
+      "default": 0,
+      "description": "Credit: completed payments net of refunds, withdrawals and penalties"
+    },
+    "balance": {
+      "type": "number",
+      "default": 0,
+      "description": "total_quoted minus total_paid"
+    },
+    "first_quote_date": {
+      "type": "string"
+    },
+    "last_activity_date": {
+      "type": "string"
+    },
+    "events": {
+      "type": "array",
+      "description": "Each qualifying event with its dated account entries",
+      "items": {
+        "type": "object"
+      }
+    },
+    "synced_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "client_id",
+    "client_name"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    }
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "name": "FinanceAccount",
+  "type": "object",
+  "properties": {
+    "account_key": {
+      "type": "string"
+    },
+    "company_id": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "name_ar": {
+      "type": "string",
+      "description": "Optional Arabic account name. Blank until manually entered or explicitly supplied in an import."
+    },
+    "parent_code": {
+      "type": "string"
+    },
+    "classification": {
+      "type": "string",
+      "enum": [
+        "assets",
+        "liabilities",
+        "equity",
+        "revenue",
+        "cogs",
+        "operating_expenses",
+        "other_result",
+        "income_tax"
+      ]
+    },
+    "normal_balance": {
+      "type": "string",
+      "enum": [
+        "debit",
+        "credit"
+      ]
+    },
+    "posting": {
+      "type": "boolean"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "effective_from": {
+      "type": "string"
+    },
+    "effective_to": {
+      "type": "string"
+    },
+    "management_mapping": {
+      "type": "string"
+    },
+    "statutory_mapping": {
+      "type": "string"
+    },
+    "template_version": {
+      "type": "string"
+    },
+    "report_cash_equivalent": {
+      "type": "string",
+      "enum": [
+        "auto",
+        "yes",
+        "no"
+      ],
+      "default": "auto"
+    },
+    "report_cash_flow_section": {
+      "type": "string",
+      "enum": [
+        "auto",
+        "operating",
+        "investing",
+        "financing",
+        "unclassified"
+      ],
+      "default": "auto"
+    }
+  },
+  "required": [
+    "account_key",
+    "company_id",
+    "code",
+    "name",
+    "classification",
+    "normal_balance",
+    "posting"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

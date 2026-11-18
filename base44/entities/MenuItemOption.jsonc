@@ -1,0 +1,109 @@
+{
+  "name": "MenuItemOption",
+  "type": "object",
+  "properties": {
+    "menu_item_id": {
+      "type": "string",
+      "description": "ID of the menu item"
+    },
+    "menu_item_name": {
+      "type": "string",
+      "description": "Name of the menu item"
+    },
+    "option_id": {
+      "type": "string",
+      "description": "ID of the menu option"
+    },
+    "option_name": {
+      "type": "string",
+      "description": "Name of the option"
+    },
+    "required_for_item": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this option is required for this specific item"
+    }
+  },
+  "required": [
+    "menu_item_id",
+    "option_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

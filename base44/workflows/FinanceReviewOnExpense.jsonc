@@ -1,0 +1,50 @@
+{
+  "name": "Finance Review on Cash Expense",
+  "description": "When a cash / petty-cash expense is approved, prepare its journal for Finance review.",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "finance_review_on_expense",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "settle": {
+          "wait": "PT20S",
+          "then": "prepare",
+          "x-base44": {
+            "title": "Let the expense save finish"
+          }
+        }
+      },
+      {
+        "prepare": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeAutoPost",
+            "args": {
+              "operational_entity": "Expense",
+              "source_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Prepare expense journal for review"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create",
+        "update"
+      ],
+      "entity_name": "Expense"
+    }
+  }
+}

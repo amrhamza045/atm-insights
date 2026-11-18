@@ -1,0 +1,16 @@
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import useFinanceList from '@/components/finance/useFinanceList';
+import FinanceListState from '@/components/finance/FinanceListState';
+import BindingEditor from '@/components/finance/mapping/BindingEditor';
+import BindingRow from '@/components/finance/mapping/BindingRow';
+export default function MappingDrivers({company,catalogue,can}){
+ const [selected,setSelected]=useState(null),[key,setKey]=useState('');
+ const query=useFinanceList({action:'mapping_bindings',company_id:company.id,mapping_key:key||undefined});
+ return <div className="space-y-5"><div className="overflow-x-auto border rounded-lg"><table className="w-full text-sm text-left"><thead className="bg-muted"><tr>{['Transaction','Primary driver','Sub-driver','Account key'].map(h=><th className="p-3" key={h}>{h}</th>)}</tr></thead><tbody>{catalogue.blueprint_drivers.map(d=><tr className="border-t" key={d.name}><td className="p-3">{d.name}</td><td className="p-3">{d.primary}</td><td className="p-3">{d.secondary}</td><td className="p-3 font-mono text-xs">{d.keys.join(' / ')}</td></tr>)}</tbody></table></div>
+ <p className="text-sm text-muted-foreground">PAYMENT_METHOD_ACC and BANK_CASH_ACCOUNT are not set here: they always take the account of the payment method used (Payment methods tab), or the default method when a record does not say. CUSTODY_CONTROL_ACC is mapped here (e.g. to Petty Cash) to provide the unified summary account for all detailed Staff custodies. HR and Payroll obligations (Salaries, External Labor, Advances) are paid out flexibly from Payment Methods or Custodies in Payouts after Finance approval. Other keys may route to different accounts by event type, category, warehouse or return reason. Missing, expired or equal-priority mappings are blocked.</p>
+ <div className="flex flex-wrap gap-2 items-center"><select aria-label="Filter account mapping key" className="border rounded-md bg-background p-2 text-sm max-w-full" value={key} onChange={e=>setKey(e.target.value)}><option value="">All keys (including custom keys)</option>{catalogue.blueprint_keys.map(k=><option key={k}>{k}</option>)}</select>{can('finance_accounts_manage')&&<Button variant="outline" onClick={()=>setSelected({mapping_key:key})}>Add routing</Button>}</div>
+ {!selected&&<details><summary className="cursor-pointer text-sm">Default account keys from the specification</summary><div className="flex flex-wrap gap-2 mt-3">{catalogue.blueprint_keys.map(k=><Button key={k} variant="outline" size="sm" className="max-w-full text-xs" disabled={!can('finance_accounts_manage')} onClick={()=>setSelected({mapping_key:k})}>{k}</Button>)}</div></details>}
+ {selected&&<BindingEditor key={selected.id||selected.mapping_key||'new'} company={company} catalogue={catalogue} binding={selected} onClose={()=>setSelected(null)}/>}
+ {query.items.map(binding=><BindingRow key={binding.id} binding={binding} company={company} can={can} onEdit={setSelected}/>)}<FinanceListState query={query}/></div>;
+}

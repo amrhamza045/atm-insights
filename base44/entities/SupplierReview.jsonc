@@ -1,0 +1,142 @@
+{
+  "name": "SupplierReview",
+  "type": "object",
+  "properties": {
+    "supplier_id": {
+      "type": "string",
+      "description": "ID of the supplier"
+    },
+    "supplier_name": {
+      "type": "string",
+      "description": "Name of the supplier"
+    },
+    "purchase_order_id": {
+      "type": "string",
+      "description": "Related purchase order ID"
+    },
+    "delivery_rating": {
+      "type": "number",
+      "description": "Delivery performance rating (1-5)"
+    },
+    "quality_rating": {
+      "type": "number",
+      "description": "Product quality rating (1-5)"
+    },
+    "overall_rating": {
+      "type": "number",
+      "description": "Overall rating (1-5)"
+    },
+    "comments": {
+      "type": "string",
+      "description": "Review comments"
+    },
+    "reviewed_by": {
+      "type": "string",
+      "description": "User who reviewed"
+    }
+  },
+  "required": [
+    "supplier_id",
+    "delivery_rating",
+    "quality_rating",
+    "overall_rating"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        }
+      ]
+    }
+  }
+}

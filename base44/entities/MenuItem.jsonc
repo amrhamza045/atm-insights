@@ -1,0 +1,278 @@
+{
+  "name": "MenuItem",
+  "type": "object",
+  "description": "Menu catalogue. Staff only: visitors and customers no longer open the menu; only menu, stock and support-customization staff change items.",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this menu item belongs to (null = shared across all branches)"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this menu item belongs to"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of the menu item"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the item"
+    },
+    "price": {
+      "type": "number",
+      "description": "Direct price (for Dine In, Takeaway, own Direct Delivery)"
+    },
+    "indirect_price": {
+      "type": "number",
+      "description": "Indirect price (for other delivery companies)"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "URL to item image"
+    },
+    "category": {
+      "type": "string",
+      "description": "Category of the item"
+    },
+    "available": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether item is available for sale"
+    },
+    "sell_priority": {
+      "type": "string",
+      "enum": [
+        "none",
+        "push",
+        "slow"
+      ],
+      "default": "none",
+      "description": "Selling guidance set by the head chef / head barista: push = promote this item to guests, slow = avoid selling it, none = normal"
+    },
+    "steering_note": {
+      "type": "string",
+      "description": "Short note from the head chef / head barista explaining the push or slow instruction, shown to captains"
+    },
+    "steering_updated_by": {
+      "type": "string",
+      "description": "Email of the head chef / head barista who last set the selling guidance"
+    },
+    "steering_updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the selling guidance was last changed"
+    },
+    "preparation_station": {
+      "type": "string",
+      "default": "kitchen",
+      "description": "Where this item is prepared \u2014 references the key field of a PreparationArea record (e.g., kitchen, bar, shisha)"
+    },
+    "recipe": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "inventory_item_id": {
+            "type": "string",
+            "description": "ID of the inventory item"
+          },
+          "inventory_item_name": {
+            "type": "string",
+            "description": "Name of the inventory item"
+          },
+          "category_id": {
+            "type": "string",
+            "description": "ID of the inventory category"
+          },
+          "quantity_needed": {
+            "type": "number",
+            "description": "Quantity needed per menu item unit"
+          },
+          "unit": {
+            "type": "string",
+            "description": "Unit of measurement"
+          }
+        },
+        "required": [
+          "inventory_item_id",
+          "quantity_needed"
+        ]
+      },
+      "description": "Default recipe ingredients"
+    },
+    "manufacturing_recipe_id": {
+      "type": "string",
+      "description": "ID of the linked Manufacturing Recipe automatically maintained from this MenuItem recipe"
+    },
+    "output_inventory_item_id": {
+      "type": "string",
+      "description": "ID of the finished InventoryItem produced by the linked Manufacturing Recipe"
+    },
+    "size_recipes": {
+      "type": "object",
+      "description": "Per-size recipe ingredients. Keys are size names, values are arrays of recipe ingredients."
+    },
+    "target_margin_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Target margin percentage for this item"
+    },
+    "total_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Total cost of all recipe ingredients"
+    },
+    "sizes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Size name (e.g., Small, Medium, Large)"
+          },
+          "price": {
+            "type": "number",
+            "description": "Direct price for this size"
+          },
+          "indirect_price": {
+            "type": "number",
+            "description": "Indirect price for this size (for delivery companies)"
+          }
+        },
+        "required": [
+          "name",
+          "price"
+        ]
+      },
+      "description": "Available sizes with prices"
+    },
+    "visible_website": {
+      "type": "boolean",
+      "default": true,
+      "description": "Visible on customer website menu"
+    },
+    "visible_pos": {
+      "type": "boolean",
+      "default": true,
+      "description": "Visible in POS system"
+    },
+    "tax_exempt": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this item is exempt from tax"
+    },
+    "service_exempt": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this item is exempt from service charge"
+    },
+    "manual_entry_id": {
+      "type": "string",
+      "description": "ID of the KitchenManual entry (recipe card) for this item"
+    },
+    "manual_complete": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the manual recipe card is 100% complete and approved"
+    }
+  },
+  "required": [
+    "name",
+    "price"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_support_customization": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_systems": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,148 @@
+{
+  "name": "PurchaseSubmission",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "ID of the client submitting"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Name of the client"
+    },
+    "receipt_number": {
+      "type": "string",
+      "description": "Unique receipt number",
+      "unique": true
+    },
+    "amount": {
+      "type": "number",
+      "description": "Purchase amount"
+    },
+    "receipt_url": {
+      "type": "string",
+      "description": "URL to receipt scan"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Submission status"
+    },
+    "rejection_reason": {
+      "type": "string",
+      "description": "Reason for rejection if applicable"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "client_id",
+    "receipt_number",
+    "amount",
+    "receipt_url"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_submission_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchases_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchases_view": true
+          }
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.client_id": "{{user.data.perm_client_id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        },
+        {
+          "data.client_id": "{{user.data.perm_client_id}}"
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchase_submission_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_purchases_approve": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    }
+  }
+}

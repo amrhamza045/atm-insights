@@ -1,0 +1,237 @@
+{
+  "name": "CateringReturnedItem",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "Branch of the event"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "Event the unused item came back from"
+    },
+    "event_name": {
+      "type": "string"
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "inventory_item_id": {
+      "type": "string",
+      "description": "Stock item the event received: a dish its production batches made, or stock released to it. Required: the return is valued at the cost the event received it at, and restocked into that item's own inventory account."
+    },
+    "item_name": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "food",
+        "beverage",
+        "raw_material",
+        "packaging",
+        "other"
+      ],
+      "default": "food"
+    },
+    "quantity": {
+      "type": "number",
+      "default": 0
+    },
+    "unit": {
+      "type": "string",
+      "default": "kg"
+    },
+    "unit_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Cost per unit the event received the item at, shown when the return was logged."
+    },
+    "total_value": {
+      "type": "number",
+      "default": 0,
+      "description": "quantity \u00d7 unit_cost"
+    },
+    "condition": {
+      "type": "string",
+      "enum": [
+        "reusable",
+        "damaged",
+        "spoiled"
+      ],
+      "default": "reusable"
+    },
+    "disposition": {
+      "type": "string",
+      "enum": [
+        "returned_to_stock",
+        "staff_meal",
+        "wasted",
+        "pending"
+      ],
+      "default": "pending"
+    },
+    "recorded_by": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "original_unit_cost": {
+      "type": "number",
+      "description": "Unit cost the item reached the event at (stock release or production batch). Set by the finance review service.",
+      "rls": {
+        "update": {
+          "user_condition": {
+            "collaborator_role": "editor"
+          }
+        }
+      }
+    },
+    "return_value": {
+      "type": "number",
+      "description": "quantity \u00d7 original_unit_cost, the amount in the review journal. Set by the finance review service.",
+      "rls": {
+        "update": {
+          "user_condition": {
+            "collaborator_role": "editor"
+          }
+        }
+      }
+    },
+    "stock_restored_journal_id": {
+      "type": "string",
+      "description": "Approved journal that put this returned item back in stock, so it is never restocked twice. Set by the finance review service.",
+      "rls": {
+        "update": {
+          "user_condition": {
+            "collaborator_role": "editor"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "event_id",
+    "inventory_item_id",
+    "item_name",
+    "quantity"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

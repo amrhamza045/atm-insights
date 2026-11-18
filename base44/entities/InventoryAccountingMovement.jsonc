@@ -1,0 +1,124 @@
+{
+  "name": "InventoryAccountingMovement",
+  "type": "object",
+  "description": "Server-captured stock cost evidence. Snapshot and recognition policy never overwritten; application and posting progress are server-managed. Company finance lock serializes capture and posting.",
+  "properties": {
+    "movement_key": {
+      "type": "string"
+    },
+    "company_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "source_entity": {
+      "type": "string"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "resource_id": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "production",
+        "sale",
+        "delivery",
+        "custody_issue"
+      ],
+      "enumColors": [
+        "blue",
+        "green",
+        "purple",
+        "gray"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "prepared",
+        "applied"
+      ],
+      "enumColors": [
+        "yellow",
+        "green"
+      ]
+    },
+    "entry_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "quantity": {
+      "type": "number"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "recognition": {
+      "type": "string"
+    },
+    "snapshot": {
+      "type": "object"
+    },
+    "binding_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "journal_id": {
+      "type": "string"
+    },
+    "actor_email": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string",
+      "description": "Readable label for Finance \u203a Transaction Audit, e.g. the closed event's name."
+    }
+  },
+  "required": [
+    "movement_key",
+    "company_id",
+    "branch_id",
+    "source_entity",
+    "source_id",
+    "kind",
+    "status",
+    "entry_date",
+    "currency",
+    "snapshot"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    }
+  }
+}

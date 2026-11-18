@@ -1,0 +1,228 @@
+{
+  "name": "Recipe",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Recipe name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the recipe and how the product is made"
+    },
+    "menu_item_id": {
+      "type": "string",
+      "description": "ID of the authoritative MenuItem this manufacturing recipe is synced from (empty for standalone manufacturing recipes)"
+    },
+    "menu_item_name": {
+      "type": "string",
+      "description": "Name of the linked authoritative MenuItem"
+    },
+    "recipe_source": {
+      "type": "string",
+      "enum": [
+        "menu_item",
+        "manufacturing"
+      ],
+      "default": "manufacturing",
+      "description": "Whether this recipe is governed by a MenuItem recipe or is a standalone manufacturing/sub-recipe"
+    },
+    "last_synced_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this recipe was last synced from its linked MenuItem"
+    },
+    "output_item_id": {
+      "type": "string",
+      "description": "ID of the finished product (InventoryItem) that this recipe produces"
+    },
+    "output_item_name": {
+      "type": "string",
+      "description": "Name of the finished product"
+    },
+    "output_quantity": {
+      "type": "number",
+      "default": 1,
+      "description": "Quantity of finished product produced per batch"
+    },
+    "output_unit": {
+      "type": "string",
+      "description": "Unit of measurement for the output (kg, liters, pieces, etc.)"
+    },
+    "ingredients": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "inventory_item_id": {
+            "type": "string",
+            "description": "ID of the raw material inventory item"
+          },
+          "inventory_item_name": {
+            "type": "string",
+            "description": "Name of the raw material"
+          },
+          "quantity_needed": {
+            "type": "number",
+            "description": "Quantity needed per batch"
+          },
+          "unit": {
+            "type": "string",
+            "description": "Unit of measurement (kg, grams, liters, etc.)"
+          }
+        },
+        "required": [
+          "inventory_item_id",
+          "quantity_needed"
+        ]
+      },
+      "description": "List of raw materials required to produce one batch"
+    },
+    "product_owner_id": {
+      "type": "string",
+      "description": "ID of the employee responsible for this product (kitchen or bar staff)"
+    },
+    "product_owner_name": {
+      "type": "string",
+      "description": "Name of the product owner"
+    },
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this recipe belongs to (null = all branches)"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active",
+      "description": "Recipe status"
+    },
+    "total_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Calculated total cost of ingredients per batch"
+    },
+    "created_by": {
+      "type": "string",
+      "description": "Email of who created this recipe"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional preparation notes"
+    }
+  },
+  "required": [
+    "name",
+    "output_item_id",
+    "output_quantity"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_manufacturing_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_manufacturing_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_manufacturing_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

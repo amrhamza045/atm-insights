@@ -1,0 +1,19 @@
+import { useState } from 'react';
+import { useQuery,useMutation,useQueryClient } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { financeError } from '@/components/finance/financeApi';
+import financePreparedCall from '@/components/finance/financePreparedCall';
+import FinanceForecastTable from '@/components/finance/FinanceForecastTable';
+import FinanceBudgetEditor from '@/components/finance/FinanceBudgetEditor';
+export default function FinancePlanning({company,filters,can}) {
+ const [year,setYear]=useState(Number(filters.to?.slice(0,4)||new Date().getFullYear())),[asOf,setAsOf]=useState(filters.to||''),[editing,setEditing]=useState(false),qc=useQueryClient();
+ const payload={company_id:company.id,branch_id:filters.branch_id,year,as_of:asOf};
+ const query=useQuery({queryKey:['finance','planning',payload],queryFn:({signal})=>financePreparedCall({...payload,action:'planning'},signal),retry:false,staleTime:60000});
+ const generate=useMutation({mutationFn:()=>financePreparedCall({...payload,action:'generate_budget'}),onSuccess:data=>{if(data.ready!==false)qc.invalidateQueries({queryKey:['finance']});}}),data=query.data;
+ return <section className="space-y-4"><div className="flex flex-wrap justify-between items-center gap-3"><h2 className="text-lg font-semibold">Budget and forecast</h2><Button variant="outline" disabled={query.isFetching||generate.isPending} onClick={()=>query.refetch()}>Refresh forecast</Button></div><p className="text-sm text-muted-foreground">Monthly P&L planning uses the year and forecast date below, with the authorized branch selected above; the general From filter does not limit this annual plan.</p><div className="flex flex-wrap gap-3"><label className="text-sm">Budget year<Input type="number" min="2000" max="2100" value={year} onChange={e=>{setYear(Number(e.target.value));setEditing(false);}}/></label><label className="text-sm">Forecast as of<Input type="date" value={asOf||data?.as_of||''} onChange={e=>{setAsOf(e.target.value);setEditing(false);}}/></label></div>
+ {query.isPending&&<p className="text-sm">Preparing historical budget and run-rate forecast…</p>}{(query.error||generate.error)&&<p role="alert" className="text-sm text-destructive">{financeError(generate.error||query.error)}</p>}
+ {(data?.ready===false||generate.data?.ready===false)&&<p className="text-sm">Reporting preparation needs another batch; refresh or retry draft creation to continue.</p>}
+ {data?.ready&&<><div className="border rounded-lg p-4 space-y-3"><h3 className="font-semibold">{data.budget?`${data.budget.status==='approved'?'Approved':'Draft'} ${year} budget`:'Historical budget draft'}</h3><p className="text-sm">{data.branch_id?'Authorized branch budget':'Company-wide budget'} · Based on {year-1} posted monthly results. {data.missing_history_months.length} historical months lack complete recorded coverage and will not be guessed.</p>{data.budget?<Button variant="outline" onClick={()=>setEditing(true)}>{data.budget.status==='approved'?'View approved budget':'Review / edit draft'}</Button>:can('finance_journal_create')?<Button disabled={generate.isPending||query.isFetching} onClick={()=>generate.mutate()}>{generate.isPending?'Creating draft…':'Create historical draft'}</Button>:<p className="text-sm text-muted-foreground">Ask an authorized finance preparer to create the draft budget.</p>}</div><FinanceForecastTable data={data} company={company}/><div className="text-xs text-muted-foreground space-y-1">{data.notes.map(note=><p key={note}>{note}</p>)}<p>Updated {new Date(data.refreshed_at).toLocaleString()}</p></div>{editing&&data.budget&&<FinanceBudgetEditor key={data.budget.id+':'+data.budget.revision} company={company} data={data} can={can} onClose={()=>setEditing(false)}/>}</>}
+ </section>;
+}

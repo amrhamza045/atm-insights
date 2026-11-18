@@ -1,0 +1,6 @@
+export default function downloadComparison(report){
+ const rows=[['Finance entity comparison',report.currency],['From',report.from,'To',report.to],['Generated',report.refreshed_at],[],['Metric','Basis','Unit',...report.rows.map(r=>r.label)],...report.metrics.map(m=>[m.label,m.basis,m.format==='percent'?'%':report.currency,...report.rows.map(r=>r.values[m.key]===null?'Not available':r.values[m.key])]),[],['Coverage'],...report.rows.map(r=>[r.label,'Included companies',r.members.join('; '),'Pending proposals',r.pending,'Blocked postings',r.posting_issues,'Recorded period lines',r.recorded_lines]),[],['Limitations'],...report.notes.map(note=>[note])];
+ const cell=value=>{let text=String(value??'');if(typeof value==='string'&&/^[=+\-@\t\r]/.test(text))text="'"+text;return '"'+text.replaceAll('"','""')+'"';};
+ const url=URL.createObjectURL(new Blob(['\uFEFF'+rows.map(row=>row.map(cell).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8;'}));
+ const a=document.createElement('a');a.href=url;a.download=`finance-comparison-${report.from}-${report.to}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}

@@ -1,0 +1,373 @@
+{
+  "name": "CateringPackage",
+  "type": "object",
+  "description": "Catering packages. Staff only; the public landing page gets its packages through a server step that returns display details only (never costs or margins). Only catering staff change packages; Support Customization may also edit them.",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "package_category": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "pricing_mode": {
+      "type": "string",
+      "enum": [
+        "itemized",
+        "per_guest",
+        "flat"
+      ],
+      "default": "itemized"
+    },
+    "base_price_per_guest": {
+      "type": "number",
+      "default": 0
+    },
+    "flat_price": {
+      "type": "number",
+      "default": 0
+    },
+    "min_guests": {
+      "type": "number",
+      "default": 0
+    },
+    "target_margin_percentage": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 100
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "cover_image_url": {
+      "type": "string",
+      "description": "Primary 16:9 cover image URL displayed on the public landing page and package cards."
+    },
+    "cover_video_url": {
+      "type": "string",
+      "description": "Primary 16:9 cover video URL displayed on the public landing page and package cards."
+    },
+    "media_gallery": {
+      "type": "array",
+      "description": "Ordered gallery of additional images and videos for the package.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "image",
+              "video"
+            ],
+            "default": "image"
+          },
+          "url": {
+            "type": "string"
+          },
+          "caption": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ]
+      }
+    },
+    "line_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item_type": {
+            "type": "string",
+            "enum": [
+              "menu_item",
+              "custom"
+            ],
+            "default": "menu_item"
+          },
+          "cost_category": {
+            "type": "string",
+            "enum": [
+              "food",
+              "other"
+            ],
+            "default": "food",
+            "description": "Classifies the cost when this package becomes a quote."
+          },
+          "menu_item_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "scaling": {
+            "type": "string",
+            "enum": [
+              "per_guest",
+              "fixed"
+            ],
+            "default": "per_guest"
+          },
+          "quantity": {
+            "type": "number",
+            "default": 1
+          },
+          "unit_price": {
+            "type": "number",
+            "default": 0
+          },
+          "unit_cost": {
+            "type": "number",
+            "default": 0
+          },
+          "tax_exempt": {
+            "type": "boolean",
+            "default": false
+          },
+          "service_exempt": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "name",
+          "quantity"
+        ]
+      }
+    },
+    "extra_items": {
+      "type": "array",
+      "description": "Optional add-ons visitors can tick on the public landing page when requesting this package.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number",
+            "default": 0
+          },
+          "scaling": {
+            "type": "string",
+            "enum": [
+              "per_guest",
+              "fixed"
+            ],
+            "default": "fixed"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    },
+    "equipment_requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "equipment_id": {
+            "type": "string"
+          },
+          "equipment_name": {
+            "type": "string"
+          },
+          "scaling_mode": {
+            "type": "string",
+            "enum": [
+              "flat",
+              "per_guest"
+            ],
+            "default": "flat"
+          },
+          "quantity": {
+            "type": "number",
+            "default": 1
+          },
+          "per_guest_divisor": {
+            "type": "number",
+            "default": 1
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "equipment_id",
+          "scaling_mode",
+          "quantity"
+        ]
+      }
+    },
+    "material_requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "inventory_item_id": {
+            "type": "string"
+          },
+          "inventory_item_name": {
+            "type": "string"
+          },
+          "scaling_mode": {
+            "type": "string",
+            "enum": [
+              "flat",
+              "per_guest"
+            ],
+            "default": "flat"
+          },
+          "quantity": {
+            "type": "number",
+            "default": 1
+          },
+          "per_guest_divisor": {
+            "type": "number",
+            "default": 1
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "inventory_item_id",
+          "scaling_mode",
+          "quantity"
+        ]
+      }
+    },
+    "times_used": {
+      "type": "number",
+      "default": 0
+    },
+    "last_used_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_support_customization": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

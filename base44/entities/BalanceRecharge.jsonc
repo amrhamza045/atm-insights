@@ -1,0 +1,184 @@
+{
+  "name": "BalanceRecharge",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch where this recharge was processed"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch where this recharge was processed"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "ID of the client recharging"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Name of the client"
+    },
+    "client_email": {
+      "type": "string",
+      "description": "Email of the client"
+    },
+    "amount_paid": {
+      "type": "number",
+      "description": "Amount paid by client"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "cash",
+        "visa",
+        "bank_transfer",
+        "instapay"
+      ],
+      "description": "Payment method used"
+    },
+    "payment_receipt_url": {
+      "type": "string",
+      "description": "URL to payment receipt/proof"
+    },
+    "cashback_percentage": {
+      "type": "number",
+      "description": "Cashback percentage applied"
+    },
+    "cashback_amount": {
+      "type": "number",
+      "description": "Cashback amount calculated"
+    },
+    "total_credited": {
+      "type": "number",
+      "description": "Total amount credited (amount_paid + cashback_amount)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Approval status"
+    },
+    "approved_by": {
+      "type": "string",
+      "description": "Admin who approved/rejected"
+    },
+    "rejection_reason": {
+      "type": "string",
+      "description": "Reason for rejection if applicable"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "client_id",
+    "amount_paid",
+    "payment_method"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_actions": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_recharge_approve": true
+          }
+        },
+        {
+          "data.client_id": "{{user.data.perm_client_id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_actions": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_actions": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_recharge_approve": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    }
+  }
+}

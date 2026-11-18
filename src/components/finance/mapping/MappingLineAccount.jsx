@@ -1,0 +1,7 @@
+import MappingKeyPicker from '@/components/finance/mapping/MappingKeyPicker';
+import FinanceAccountPicker from '@/components/finance/FinanceAccountPicker';
+export default function MappingLineAccount({company,catalogue,line,onChange,disabled}){
+ const dynamic=!!line.account_key;
+ return <div className="space-y-2"><label className="text-xs block">Account resolution<select className="w-full border rounded-md bg-background p-2" value={dynamic?'key':'direct'} disabled={disabled} onChange={e=>onChange(e.target.value==='key'?{account_key:line.role||'ACCOUNT_KEY',account_id:'',account_code:'',account_name:''}:{account_key:'',account_id:'',account_code:'',account_name:''})}><option value="key">Dynamic mapping key</option><option value="direct">Selected chart account</option></select></label>
+ {dynamic?<div className="text-xs"><MappingKeyPicker label="Semantic key" companyId={company.id} keys={catalogue.blueprint_keys} value={line.account_key} disabled={disabled} onChange={account_key=>onChange({account_key})}/><span className="text-muted-foreground">Resolved using section 1 and the transaction context.</span></div>:<div className="text-xs">Chart account<FinanceAccountPicker companyId={company.id} value={line} disabled={disabled} onChange={onChange}/></div>}</div>;
+}

@@ -1,0 +1,51 @@
+{
+  "name": "Finance Automatic Posting on Operational Journal",
+  "description": "After a posted operational journal settles, post it once into its enabled production finance company using saved account mappings. Exceptions remain visible in Finance.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "JournalEntry",
+      "events": [
+        "create",
+        "update"
+      ]
+    },
+    "condition": "${ .trigger.data.posted == true }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "finance_automatic_on_operational_journal",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "settle_source": {
+          "wait": "PT30S",
+          "then": "post_source",
+          "x-base44": {
+            "title": "Let the transaction finish",
+            "description": "Avoid posting temporary rollback journals"
+          }
+        }
+      },
+      {
+        "post_source": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeAutoPost",
+            "args": {
+              "source_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Post to the company ledger",
+            "description": "Validate mappings, balance and open period"
+          }
+        }
+      }
+    ]
+  }
+}

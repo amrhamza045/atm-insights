@@ -1,0 +1,183 @@
+{
+  "name": "RestaurantInfo",
+  "type": "object",
+  "description": "Public brand and contact details shown to every visitor (logo, name, colours, social links), so read stays open. Only staff with settings access change it.",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this restaurant info belongs to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this restaurant info belongs to"
+    },
+    "website": {
+      "type": "string",
+      "description": "Restaurant website URL"
+    },
+    "email": {
+      "type": "string",
+      "description": "Restaurant contact email"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Restaurant contact phone number"
+    },
+    "whatsapp": {
+      "type": "string",
+      "description": "WhatsApp number"
+    },
+    "landline": {
+      "type": "string",
+      "description": "Landline number"
+    },
+    "hotline": {
+      "type": "string",
+      "description": "Hotline number"
+    },
+    "location": {
+      "type": "string",
+      "description": "Location/Map URL"
+    },
+    "facebook": {
+      "type": "string",
+      "description": "Facebook page URL"
+    },
+    "instagram": {
+      "type": "string",
+      "description": "Instagram profile URL"
+    },
+    "tiktok": {
+      "type": "string",
+      "description": "TikTok profile URL"
+    },
+    "address": {
+      "type": "string",
+      "description": "Physical address"
+    },
+    "partnership_marketing_text": {
+      "type": "string",
+      "description": "Marketing text for the partnership program displayed to clients"
+    },
+    "guest_loyalty_program_text": {
+      "type": "string",
+      "description": "Loyalty program description shown to unregistered guests in Menu page"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "Uploaded brand logo image URL shown in the top navigation bar"
+    },
+    "landing_logo_url": {
+      "type": "string",
+      "description": "Logo shown on the blue public landing page; falls back to logo_url when empty"
+    },
+    "brand_name": {
+      "type": "string",
+      "description": "Business display name shown next to the logo and as the browser tab title"
+    },
+    "theme_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, the saved brand and status palettes override the app defaults"
+    },
+    "primary_color": {
+      "type": "string",
+      "description": "Primary brand hex color (buttons, active nav, focus rings)"
+    },
+    "secondary_color": {
+      "type": "string",
+      "description": "Secondary brand hex color (secondary buttons and badges)"
+    },
+    "accent_color": {
+      "type": "string",
+      "description": "Accent brand hex color (highlights, accent badges)"
+    },
+    "success_color": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Optional success status base hex color; null preserves the system default ramp"
+    },
+    "warning_color": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Optional warning status base hex color; null preserves the system default ramp"
+    },
+    "danger_color": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Optional danger status base hex color; null preserves the system default ramp"
+    }
+  },
+  "required": [],
+  "rls": {
+    "read": {},
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    }
+  }
+}

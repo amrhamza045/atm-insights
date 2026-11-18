@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { healthSupplierReturn } from './financeHealthSupplierReturns.js';
+const c={id:'c',branch_ids:['b'],currency:'EGP',currency_decimals:2};
+const lines=[{account_id:'ap',account_code:'210100',debit:10,credit:0,cost_center:'b'},{account_id:'asset',account_code:'112100',debit:0,credit:10,cost_center:'b'}],plan={items:[{quantity:2,stock_quantity:2,credit:10,stock_cost:10}],lines,credit:10,original_journal_id:'original'};
+const s={id:'return',company_id:'c',branch_id:'b',currency:'EGP',supplier_id:'supplier',invoice_id:'invoice',delta:-10,status:'posted',account_snapshot:plan};
+const j={id:'journal',branch_id:'b',currency:'EGP',entry_date:'2026-11-08',total_debit:10,total_credit:10,lines,ledger_ready:true,analytics_version:1,source_summary:{supplier_id:'supplier',invoice_id:'invoice',return_snapshot:plan}};
+const evidence={ledger:lines.map((l,i)=>({journal_id:'journal',line_key:`journal:${i}`,branch_id:'b',entry_date:'2026-11-08',account_code:l.account_code,debit_units:l.debit*100,credit_units:l.credit*100}))},links={journals:[j],issues:[],proposals:[]};
+test('supplier-return health verifies saved stock/credit evidence against GL and reporting',()=>assert.equal(healthSupplierReturn(c,s,links,evidence).status,'matched'));
+test('supplier-return health identifies incomplete operations and changed financial evidence',()=>{assert.equal(healthSupplierReturn(c,{...s,status:'pending'},links,evidence).status,'pending');assert.equal(healthSupplierReturn(c,{...s,delta:-11},links,evidence).status,'amount_mismatch');assert.equal(healthSupplierReturn(c,s,{...links,journals:[]},evidence).status,'missing');assert.equal(healthSupplierReturn(c,s,{...links,journals:[j,j]},evidence).status,'duplicate');assert.equal(healthSupplierReturn(c,s,links,{ledger:[]}).status,'reporting');});

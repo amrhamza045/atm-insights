@@ -1,0 +1,189 @@
+{
+  "name": "VeraKit360ManualSection",
+  "type": "object",
+  "properties": {
+    "module_name": {
+      "type": "string",
+      "description": "Name of the module"
+    },
+    "category": {
+      "type": "string",
+      "description": "Domain label (kept for older readers): Catering, Operations, Analytics, Admin, Customer-Facing, Help"
+    },
+    "domain": {
+      "type": "string",
+      "description": "Top-level domain of the manual, following the top navigation bar"
+    },
+    "chapter": {
+      "type": "string",
+      "description": "Chapter inside the domain"
+    },
+    "chapter_code": {
+      "type": "string",
+      "description": "Chapter number, e.g. 2.3"
+    },
+    "nav_path": {
+      "type": "string",
+      "description": "Where to find the module in the app"
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "en",
+        "ar"
+      ],
+      "default": "en",
+      "description": "Language of this manual section (en = English, ar = Arabic)"
+    },
+    "description": {
+      "type": "string",
+      "description": "What this module does and its purpose in the restaurant ecosystem"
+    },
+    "benefits_and_features": {
+      "type": "string",
+      "description": "Benefits and features explicitly linked to business outcomes"
+    },
+    "max_benefit_strategy": {
+      "type": "string",
+      "description": "Strategies and best practices to extract maximum value from this module"
+    },
+    "cautions": {
+      "type": "string",
+      "description": "Critical warnings, common mistakes, and operational pitfalls to avoid"
+    },
+    "required_accurate_data": {
+      "type": "string",
+      "description": "Which data fields must be accurate and from which entities, and why"
+    },
+    "usage_guide": {
+      "type": "string",
+      "description": "Complete step-by-step instructions on how to use this module"
+    },
+    "finance_integration": {
+      "type": "string",
+      "description": "How the module connects to Finance: link status, money events, ledger postings, controls"
+    },
+    "finance_status": {
+      "type": "string",
+      "enum": [
+        "posts",
+        "reported",
+        "not_linked",
+        "none"
+      ],
+      "description": "posts = posts to Finance automatically; reported = read by Finance reports; not_linked = money events not yet posted; none = no direct financial impact"
+    },
+    "linked_modules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Names of related manual modules"
+    },
+    "related_entities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Entity names related to this module"
+    },
+    "screenshot_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "URLs of app screenshots captured for this module (for PDF/PPT embedding)"
+    },
+    "order": {
+      "type": "number",
+      "default": 0,
+      "description": "Display order within the manual"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this section was last generated"
+    }
+  },
+  "required": [
+    "module_name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_systems": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_systems": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_systems": true
+          }
+        }
+      ]
+    }
+  }
+}

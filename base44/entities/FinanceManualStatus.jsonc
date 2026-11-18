@@ -1,0 +1,57 @@
+{
+  "name": "FinanceManualStatus",
+  "type": "object",
+  "description": "System-maintained verification metadata for the deployed Finance guide; contains no financial records.",
+  "properties": {
+    "manual_key": {
+      "type": "string"
+    },
+    "content_version": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_checked_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "section_count": {
+      "type": "integer"
+    },
+    "report_count": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "manual_key",
+    "content_version",
+    "generated_at",
+    "last_checked_at",
+    "section_count",
+    "report_count"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

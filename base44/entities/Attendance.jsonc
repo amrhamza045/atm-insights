@@ -1,0 +1,502 @@
+{
+  "name": "Attendance",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch where the attendance was recorded"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch where the attendance was recorded"
+    },
+    "employee_id": {
+      "type": "string",
+      "description": "ID of the employee"
+    },
+    "employee_name": {
+      "type": "string",
+      "description": "Name of the employee"
+    },
+    "shift_id": {
+      "type": "string",
+      "description": "ID of the scheduled shift (if any)"
+    },
+    "attendance_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of attendance"
+    },
+    "sign_in_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Actual sign in timestamp"
+    },
+    "sign_out_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Actual sign out timestamp"
+    },
+    "sign_in_photo_url": {
+      "type": "string",
+      "description": "URL to the photo taken at sign in"
+    },
+    "sign_out_photo_url": {
+      "type": "string",
+      "description": "URL to the photo taken at sign out"
+    },
+    "sign_in_location_verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether location was verified at sign in"
+    },
+    "sign_in_latitude": {
+      "type": "number",
+      "description": "Latitude of sign in location"
+    },
+    "sign_in_longitude": {
+      "type": "number",
+      "description": "Longitude of sign in location"
+    },
+    "sign_out_location_verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether location was verified at sign out"
+    },
+    "sign_out_latitude": {
+      "type": "number",
+      "description": "Latitude of sign out location"
+    },
+    "sign_out_longitude": {
+      "type": "number",
+      "description": "Longitude of sign out location"
+    },
+    "face_scan_verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether face was verified"
+    },
+    "manual_request_note": {
+      "type": "string",
+      "description": "Optional employee note submitted with an HR-confirmed manual check-in request"
+    },
+    "manual_location_captured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether optional device coordinates were attached to the manual check-in request"
+    },
+    "hr_confirmed_by": {
+      "type": "string",
+      "description": "Email of the HR reviewer who confirmed presence"
+    },
+    "hr_confirmed_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When HR confirmed presence"
+    },
+    "hr_rejection_reason": {
+      "type": "string",
+      "description": "Required reason when HR rejects a manual check-in request"
+    },
+    "hr_rejected_by": {
+      "type": "string",
+      "description": "Email of the HR reviewer who rejected the manual check-in request"
+    },
+    "hr_rejected_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When HR rejected the manual check-in request"
+    },
+    "hours_worked": {
+      "type": "number",
+      "description": "Total hours worked (calculated at sign-out)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "present",
+        "absent",
+        "late",
+        "early_leave",
+        "completed",
+        "no_show",
+        "pending_hr_confirmation",
+        "rejected_hr_confirmation"
+      ],
+      "default": "present",
+      "description": "Attendance status"
+    },
+    "admin_approved": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether admin has reviewed and approved this record"
+    },
+    "review_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Approval workflow status"
+    },
+    "approved_by": {
+      "type": "string",
+      "description": "Email of admin who approved"
+    },
+    "approved_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the record was approved"
+    },
+    "assigned_shift_label": {
+      "type": "string",
+      "description": "Label of the assigned shift preset"
+    },
+    "assigned_shift_start": {
+      "type": "string",
+      "description": "Assigned shift start time HH:MM (24h)"
+    },
+    "assigned_shift_end": {
+      "type": "string",
+      "description": "Assigned shift end time HH:MM (24h)"
+    },
+    "shift_expected_hours": {
+      "type": "number",
+      "description": "Expected hours for the assigned shift"
+    },
+    "late_minutes": {
+      "type": "number",
+      "default": 0,
+      "description": "Minutes late beyond grace period"
+    },
+    "early_leave_minutes": {
+      "type": "number",
+      "default": 0,
+      "description": "Minutes left early before shift end"
+    },
+    "overtime_hours": {
+      "type": "number",
+      "default": 0,
+      "description": "Hours worked beyond shift end"
+    },
+    "regular_hours": {
+      "type": "number",
+      "default": 0,
+      "description": "Regular hours within the shift (excluding overtime)"
+    },
+    "overtime_earnings": {
+      "type": "number",
+      "default": 0,
+      "description": "Earnings from overtime hours"
+    },
+    "regular_earnings": {
+      "type": "number",
+      "default": 0,
+      "description": "Earnings from regular hours"
+    },
+    "deduction_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Total deduction applied (late + early leave)"
+    },
+    "deduction_breakdown": {
+      "type": "string",
+      "description": "Human-readable breakdown of deductions"
+    },
+    "calculated_earnings": {
+      "type": "number",
+      "default": 0,
+      "description": "Net earnings for the day (regular + overtime - deductions)"
+    },
+    "reviewer_notes": {
+      "type": "string",
+      "description": "Admin notes during review"
+    },
+    "exception_waived": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when HR waived this incident's penalty; payroll then sees deduction_amount = 0"
+    },
+    "exception_reason": {
+      "type": "string",
+      "description": "Preset reason chosen when the penalty was waived"
+    },
+    "exception_by": {
+      "type": "string",
+      "description": "Email of the reviewer who waived the penalty"
+    },
+    "exception_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the penalty was waived"
+    },
+    "waived_deduction_amount": {
+      "type": "number",
+      "description": "Original deduction amount that was waived (audit)"
+    },
+    "waived_deduction_breakdown": {
+      "type": "string",
+      "description": "Original deduction breakdown that was waived (audit)"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "employee_id",
+    "attendance_date"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "data.employee_id": "{{user.data.perm_employee_id}}"
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_approve": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_catering_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_approve": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_approve": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

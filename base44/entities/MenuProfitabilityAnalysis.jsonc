@@ -1,0 +1,220 @@
+{
+  "name": "MenuProfitabilityAnalysis",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this analysis belongs to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this analysis belongs to"
+    },
+    "menu_item_id": {
+      "type": "string",
+      "description": "ID of menu item"
+    },
+    "menu_item_name": {
+      "type": "string",
+      "description": "Name of menu item"
+    },
+    "category": {
+      "type": "string",
+      "description": "Menu category"
+    },
+    "item_type": {
+      "type": "string",
+      "enum": [
+        "food",
+        "beverage",
+        "dessert",
+        "appetizer",
+        "main",
+        "side"
+      ],
+      "description": "Type of menu item"
+    },
+    "analysis_period_start": {
+      "type": "string",
+      "format": "date",
+      "description": "Start date of analysis period"
+    },
+    "analysis_period_end": {
+      "type": "string",
+      "format": "date",
+      "description": "End date of analysis period"
+    },
+    "units_sold": {
+      "type": "number",
+      "description": "Total units sold in period"
+    },
+    "selling_price": {
+      "type": "number",
+      "description": "Current menu item price"
+    },
+    "average_unit_food_cost": {
+      "type": "number",
+      "description": "Average food cost per unit"
+    },
+    "total_revenue": {
+      "type": "number",
+      "description": "Total revenue from this item"
+    },
+    "total_food_cost": {
+      "type": "number",
+      "description": "Total food cost for this item"
+    },
+    "total_contribution": {
+      "type": "number",
+      "description": "Total revenue - Total food cost"
+    },
+    "average_food_cost_percentage": {
+      "type": "number",
+      "description": "Average food cost as % of revenue"
+    },
+    "average_contribution_margin_percentage": {
+      "type": "number",
+      "description": "Average contribution margin percentage"
+    },
+    "profitability_status": {
+      "type": "string",
+      "enum": [
+        "high_profit",
+        "medium_profit",
+        "low_profit",
+        "loss",
+        "untracked"
+      ],
+      "description": "Profitability classification"
+    },
+    "menu_mix_percentage": {
+      "type": "number",
+      "description": "% of total items sold in period"
+    },
+    "recommended_action": {
+      "type": "string",
+      "description": "Recommended pricing or menu action"
+    }
+  },
+  "required": [
+    "menu_item_id",
+    "menu_item_name",
+    "analysis_period_start",
+    "analysis_period_end",
+    "units_sold",
+    "selling_price"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

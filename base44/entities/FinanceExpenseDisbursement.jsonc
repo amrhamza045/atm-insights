@@ -1,0 +1,200 @@
+{
+  "name": "FinanceExpenseDisbursement",
+  "type": "object",
+  "description": "Operating expense or direct vendor payment disbursed from an active Staff Custody or Payment Method after System Role Group approval.",
+  "properties": {
+    "company_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "disbursement_kind": {
+      "type": "string",
+      "enum": [
+        "operating_expense",
+        "vendor_payment"
+      ],
+      "enumColors": [
+        "blue",
+        "purple"
+      ],
+      "default": "operating_expense"
+    },
+    "entry_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "expense_type_id": {
+      "type": "string"
+    },
+    "expense_type_code": {
+      "type": "string"
+    },
+    "expense_type_name": {
+      "type": "string"
+    },
+    "expense_account_id": {
+      "type": "string"
+    },
+    "expense_account_code": {
+      "type": "string"
+    },
+    "expense_account_name": {
+      "type": "string"
+    },
+    "recipient": {
+      "type": "string"
+    },
+    "supplier_id": {
+      "type": "string"
+    },
+    "supplier_name": {
+      "type": "string"
+    },
+    "invoice_id": {
+      "type": "string"
+    },
+    "invoice_number": {
+      "type": "string"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "custody",
+        "payment_method"
+      ],
+      "enumColors": [
+        "purple",
+        "blue"
+      ]
+    },
+    "custody_id": {
+      "type": "string"
+    },
+    "custody_holder_name": {
+      "type": "string"
+    },
+    "payment_method": {
+      "type": "string"
+    },
+    "payment_method_name": {
+      "type": "string"
+    },
+    "reference": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "enumColors": [
+        "yellow",
+        "green",
+        "red"
+      ],
+      "default": "pending"
+    },
+    "requested_by": {
+      "type": "string"
+    },
+    "requested_by_id": {
+      "type": "string"
+    },
+    "decided_by": {
+      "type": "string"
+    },
+    "decided_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rejection_reason": {
+      "type": "string"
+    },
+    "journal_id": {
+      "type": "string"
+    },
+    "custody_entry_id": {
+      "type": "string"
+    },
+    "supplier_entry_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "company_id",
+    "branch_id",
+    "disbursement_kind",
+    "entry_date",
+    "amount",
+    "currency",
+    "source_type",
+    "description",
+    "status",
+    "requested_by"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_expense_approve": true
+          }
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    }
+  }
+}

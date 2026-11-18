@@ -1,39 +1,76 @@
-**Welcome to your Base44 project** 
+# Rosemary Catering & Restaurant ERP
 
-**About**
+A comprehensive, enterprise-grade Catering & Restaurant ERP application ported from Base44 to a standalone React + Vite + Supabase architecture, optimized for local development and cloud hosting (e.g. Bolt.new, Vercel, Netlify).
 
-View and Edit  your app on [Base44.com](http://Base44.com) 
+---
 
-This project contains everything you need to run your app locally.
+## Overview & Architecture
 
-**Edit the code in your local development environment**
+* **Frontend:** React 18, Vite, Tailwind CSS, Radix UI / shadcn/ui, Lucide Icons, Recharts, TanStack Query.
+* **Backend / Database:** Supabase (PostgreSQL with RLS, Auth, Storage, and Edge Functions).
+* **Scale:**
+  * **179 Database Tables** defined with dual timestamps, UUID primary keys, foreign key performance indexes, and Row-Level Security.
+  * **146 Supabase Edge Functions** ported to modern Deno runtime with CORS headers and Supabase service-role client.
+  * **60 Frontend Pages & Modules** spanning Catering Management, POS, Inventory, Manufacturing, CRM, Butchery, HR & Attendance, and Executive Analytics.
 
-Any change pushed to the repo will also be reflected in the Base44 Builder.
+---
 
-**Prerequisites:** 
+## Getting Started
 
-1. Clone the repository using the project's Git URL 
-2. Navigate to the project directory
-3. Install dependencies: `npm install`
-4. Create an `.env.local` file and set the right environment variables
+### 1. Prerequisites
+* Node.js 18+ (or Bun)
+* npm or pnpm or bun
 
+### 2. Environment Variables
+Copy `.env.example` to `.env.local`:
+```bash
+cp .env.example .env.local
 ```
-VITE_BASE44_APP_ID=your_app_id
-VITE_BASE44_APP_BASE_URL=your_backend_url
 
-e.g.
-VITE_BASE44_APP_ID=cbef744a8545c389ef439ea6
-VITE_BASE44_APP_BASE_URL=https://my-to-do-list-81bfaad7.base44.app
+Configure your Supabase credentials:
+```env
+VITE_SUPABASE_URL=https://<your-project-ref>.supabase.co
+VITE_SUPABASE_ANON_KEY=<your-anon-or-publishable-key>
+VITE_SUPABASE_PUBLISHABLE_KEY=<your-anon-or-publishable-key>
 ```
 
-Run the app: `npm run dev`
+### 3. Install Dependencies
+```bash
+npm install
+```
 
-**Publish your changes**
+### 4. Database Setup
+Apply the full database migration located at:
+```bash
+supabase/migrations/20261118000000_rosemary_schema.sql
+```
+You can execute this SQL directly in your **Supabase Dashboard -> SQL Editor** or via the Supabase CLI (`supabase db push`).
 
-Open [Base44.com](http://Base44.com) and click on Publish.
+### 5. Edge Functions
+Edge Functions are located in:
+```bash
+supabase/functions/
+```
+Deploy functions using the Supabase CLI:
+```bash
+supabase functions deploy
+```
 
-**Docs & Support**
+### 6. Development & Build
+* Start local dev server:
+  ```bash
+  npm run dev
+  ```
+* Production build:
+  ```bash
+  npm run build
+  ```
+* Preview production build:
+  ```bash
+  npm run preview
+  ```
 
-Documentation: [https://docs.base44.com/Integrations/Using-GitHub](https://docs.base44.com/Integrations/Using-GitHub)
+---
 
-Support: [https://app.base44.com/support](https://app.base44.com/support)
+## License & Attribution
+Rosemary Catering & Restaurant ERP

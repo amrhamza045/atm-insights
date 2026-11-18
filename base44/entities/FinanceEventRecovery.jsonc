@@ -1,0 +1,131 @@
+{
+  "name": "FinanceEventRecovery",
+  "type": "object",
+  "description": "Company-scoped durable rehearsal queue for verified catering advances. Never publishes a journal or changes a payment. Source revisions are retained independently; retries revalidate the source. Access is mediated by the Finance service.",
+  "properties": {
+    "company_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "P01"
+      ]
+    },
+    "source_entity": {
+      "type": "string",
+      "enum": [
+        "CateringPayment"
+      ]
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "source_version": {
+      "type": "string"
+    },
+    "source_fingerprint": {
+      "type": "string"
+    },
+    "capture_key": {
+      "type": "string"
+    },
+    "source_description": {
+      "type": "string"
+    },
+    "sample": {
+      "type": "object"
+    },
+    "currency_evidence": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "captured",
+        "checking",
+        "ready",
+        "blocked",
+        "stale"
+      ],
+      "enumColors": [
+        "gray",
+        "blue",
+        "green",
+        "red",
+        "yellow"
+      ]
+    },
+    "attempt_count": {
+      "type": "integer",
+      "default": 0
+    },
+    "captured_by": {
+      "type": "string"
+    },
+    "captured_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_attempt_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_attempt_by": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "mapping_id": {
+      "type": "string"
+    },
+    "mapping_version": {
+      "type": "integer"
+    },
+    "preview": {
+      "type": "object"
+    },
+    "posting_enabled": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "company_id",
+    "branch_id",
+    "event_type",
+    "source_entity",
+    "source_id",
+    "source_version",
+    "source_fingerprint",
+    "capture_key",
+    "sample",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    }
+  }
+}

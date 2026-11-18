@@ -1,0 +1,137 @@
+{
+  "name": "Role",
+  "type": "object",
+  "properties": {
+    "role_key": {
+      "type": "string",
+      "description": "Unique slug identifying this role (e.g. cashier, call_centre)",
+      "unique": true
+    },
+    "role_label": {
+      "type": "string",
+      "description": "Human-friendly display name shown in dropdowns and the admin UI"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description of what this role is for"
+    },
+    "permissions": {
+      "type": "object",
+      "description": "Object mapping permission keys (e.g. pos_view) to boolean values",
+      "additionalProperties": {
+        "type": "boolean"
+      }
+    },
+    "disabled_modules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Modules denied for this role (keys from the module list in Admin \u203a Modules). Read live for every user on the role; a user's module_overrides adjust it. Other action permissions and administrator restrictions still apply."
+    },
+    "disabled_tabs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Tabs and sub-tabs closed for this role, stored as '<Screen>:<tab key>' like SystemSettings.disabled_tabs (e.g. 'Catering:planning', 'Admin:leads'). Read live for every user on the role; a user's tab_overrides adjust it."
+    },
+    "home_page": {
+      "type": "string",
+      "default": "",
+      "description": "Screen (page name, e.g. 'Catering' or 'POS') that users on this role open at '/': after signing in and from the app's Home links. Chosen with the Home Page button in Admin \u203a Role Management, which offers only screens the role can open. Empty = the public website home page. Skipped for anyone who can't open that screen."
+    },
+    "catering_hidden_tabs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Retired. Catering tab closures now live in disabled_tabs ('Catering:<tab key>'); nothing reads this field."
+    },
+    "is_system": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this is a built-in role migrated from the code presets (protected from deletion)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this role is active and selectable for users"
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0,
+      "description": "Display order (lower = first)"
+    }
+  },
+  "required": [
+    "role_key",
+    "role_label"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_has_role": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    }
+  }
+}

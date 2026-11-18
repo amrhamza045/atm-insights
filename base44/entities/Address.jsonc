@@ -1,0 +1,163 @@
+{
+  "name": "Address",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "ID of the client who owns this address"
+    },
+    "address_name": {
+      "type": "string",
+      "description": "Name for this address (e.g., Home, Work, Office)"
+    },
+    "street_address": {
+      "type": "string",
+      "description": "Full street address"
+    },
+    "city": {
+      "type": "string",
+      "description": "City"
+    },
+    "area": {
+      "type": "string",
+      "description": "Area or district"
+    },
+    "building": {
+      "type": "string",
+      "description": "Building name or number"
+    },
+    "floor": {
+      "type": "string",
+      "description": "Floor number"
+    },
+    "apartment": {
+      "type": "string",
+      "description": "Apartment or unit number"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Contact phone for delivery"
+    },
+    "location_url": {
+      "type": "string",
+      "description": "Google Maps or location URL (or decoded QR code content)"
+    },
+    "qr_code_image_url": {
+      "type": "string",
+      "description": "URL of the cropped QR code image (e.g., from Talabat receipt)"
+    },
+    "is_default": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is the default address"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Delivery instructions or notes"
+    }
+  },
+  "required": [
+    "client_id",
+    "address_name",
+    "street_address"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.client_id": "{{user.data.perm_client_id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        },
+        {
+          "data.client_id": "{{user.data.perm_client_id}}"
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.client_id": "{{user.data.perm_client_id}}"
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.client_id": "{{user.data.perm_client_id}}"
+        }
+      ]
+    }
+  }
+}

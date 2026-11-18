@@ -1,0 +1,228 @@
+{
+  "name": "CateringEquipment",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Equipment name (e.g. Folding Chair, 5kVA Generator, Chafing Dish)"
+    },
+    "category": {
+      "type": "string",
+      "description": "Equipment category (Cooking, Furniture, Power, Serving, Decoration, Shelter, Transport, Other)"
+    },
+    "tracking_mode": {
+      "type": "string",
+      "enum": [
+        "bulk",
+        "unit"
+      ],
+      "default": "bulk",
+      "description": "bulk = interchangeable countable stock (chairs, plates); unit = individually tracked units with their own status and location (generators, ovens)"
+    },
+    "total_quantity": {
+      "type": "number",
+      "default": 0,
+      "description": "Owned quantity for bulk items (unit-mode items derive their count from their unit records)"
+    },
+    "unit_label": {
+      "type": "string",
+      "default": "pcs",
+      "description": "Counting label for bulk items (pcs, sets, rolls)"
+    },
+    "purchase_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date this equipment was purchased"
+    },
+    "purchase_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Purchase price of one piece (EGP) \u2014 the depreciable base used for depreciation calculations"
+    },
+    "useful_life_years": {
+      "type": "number",
+      "default": 0,
+      "description": "Expected useful life in years. 0 = not depreciated."
+    },
+    "salvage_value_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Expected residual value at the end of the useful life, as a percentage of purchase cost"
+    },
+    "home_branch_id": {
+      "type": "string",
+      "description": "Branch that owns/stores this equipment (empty = shared pool)"
+    },
+    "home_branch_name": {
+      "type": "string",
+      "description": "Name of the owning branch"
+    },
+    "storage_location": {
+      "type": "string",
+      "description": "Where it normally lives (e.g. Main warehouse, Kitchen store B)"
+    },
+    "requires_vehicle": {
+      "type": "boolean",
+      "default": false,
+      "description": "Needs a vehicle/special transport to move \u2014 used by logistics"
+    },
+    "usage_cost_per_event": {
+      "type": "number",
+      "default": 0,
+      "description": "Cost of using one piece of this equipment on one event (own-fleet wear/cleaning charge, or the rental fee per event when hired in)."
+    },
+    "cost_source": {
+      "type": "string",
+      "enum": [
+        "owned",
+        "rented"
+      ],
+      "default": "owned",
+      "description": "owned = the cost is an internal wear/handling charge; rented = the cost is a third-party rental fee per event"
+    },
+    "replacement_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Cost to replace one unit \u2014 used when charging lost/damaged equipment to an event"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Retired catalog items stay on history but are hidden from new reservations"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

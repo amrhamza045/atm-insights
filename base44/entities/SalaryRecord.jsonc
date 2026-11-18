@@ -1,0 +1,314 @@
+{
+  "name": "SalaryRecord",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this salary record belongs to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this salary record belongs to"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "employee_name": {
+      "type": "string"
+    },
+    "month": {
+      "type": "string",
+      "format": "date",
+      "description": "YYYY-MM-01"
+    },
+    "base_salary": {
+      "type": "number",
+      "default": 0
+    },
+    "hourly_earnings": {
+      "type": "number",
+      "default": 0
+    },
+    "total_hours": {
+      "type": "number",
+      "default": 0
+    },
+    "regular_hours": {
+      "type": "number",
+      "default": 0,
+      "description": "Regular (non-overtime) hours from approved attendance"
+    },
+    "overtime_hours": {
+      "type": "number",
+      "default": 0,
+      "description": "Hours worked beyond scheduled hours"
+    },
+    "overtime_earnings": {
+      "type": "number",
+      "default": 0,
+      "description": "Earnings from overtime (1.5x rate)"
+    },
+    "attendance_deductions": {
+      "type": "number",
+      "default": 0,
+      "description": "Deductions from approved attendance (late arrivals + early leaves)"
+    },
+    "approved_days": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of approved attendance days in this pay period"
+    },
+    "bonus": {
+      "type": "number",
+      "default": 0
+    },
+    "deductions": {
+      "type": "number",
+      "default": 0,
+      "description": "Manual deductions"
+    },
+    "penalty_deductions": {
+      "type": "number",
+      "default": 0,
+      "description": "Total penalty deductions applied"
+    },
+    "borrowing_deductions": {
+      "type": "number",
+      "default": 0,
+      "description": "Borrowing installment deducted this month"
+    },
+    "gross_salary": {
+      "type": "number",
+      "description": "base + hourly + overtime + bonus - attendance_deductions"
+    },
+    "net_salary": {
+      "type": "number",
+      "description": "gross - manual deductions - penalties - borrowings"
+    },
+    "tax_withheld_amount": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1000000000000,
+      "description": "EGP income tax already withheld and already accounted for in payroll; reporting only, never subtracted again from net salary. Missing/null means unknown, explicit zero means confirmed no withholding."
+    },
+    "tax_withholding_note": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Evidence or reference supporting recorded payroll tax withholding."
+    },
+    "payment_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "paid",
+        "partial"
+      ],
+      "default": "pending"
+    },
+    "payment_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "employee_id",
+    "month"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "data.employee_id": "{{user.data.perm_employee_id}}"
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_view": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_view": true
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

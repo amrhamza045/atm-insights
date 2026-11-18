@@ -1,0 +1,4 @@
+export default function PaymentDecisionDetails({payment}){
+ const rejected=payment.status==='rejected';
+ return <div className="text-xs text-muted-foreground space-y-1">{payment.approved_by&&<p>{rejected?'Rejected':'Approved'} by {payment.approved_by}{payment.approved_date?` · ${new Date(payment.approved_date).toLocaleString()}`:''}</p>}{rejected&&payment.rejection_reason&&<p className="text-destructive">Reason: {payment.rejection_reason}</p>}{payment.status==='voided'&&<p>Voided by {payment.voided_by||'Not recorded'}{payment.voided_date?` · ${new Date(payment.voided_date).toLocaleString()}`:''}{payment.void_reason?` · ${payment.void_reason}`:''}</p>}</div>;
+}

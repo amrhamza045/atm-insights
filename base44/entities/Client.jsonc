@@ -1,0 +1,1115 @@
+{
+  "name": "Client",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Client's full name"
+    },
+    "client_type": {
+      "type": "string",
+      "enum": [
+        "individual",
+        "corporate"
+      ],
+      "default": "individual",
+      "description": "Whether this client is a private individual or a company/organisation. Set manually by staff at registration or on edit \u2014 never inferred. Corporate clients are the ones that need billing terms, tax details and higher catering credit limits.",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "email": {
+      "type": "string",
+      "description": "Client's email address. Staff-set (customer profiles get their account email from the registerClient backend function).",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "phone": {
+      "type": "string",
+      "description": "Client's phone number"
+    },
+    "address": {
+      "type": "string",
+      "description": "Client's delivery/home address"
+    },
+    "location_lat": {
+      "type": "number",
+      "description": "Latitude of client's location (optional)"
+    },
+    "location_lng": {
+      "type": "number",
+      "description": "Longitude of client's location (optional)"
+    },
+    "client_source": {
+      "type": "string",
+      "enum": [
+        "web",
+        "pos"
+      ],
+      "default": "pos",
+      "description": "How the client was registered: web (self-registration online) or pos (created at point of sale)",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "national_id_url": {
+      "type": "string",
+      "description": "URL to scanned national ID or passport"
+    },
+    "referred_by": {
+      "type": "string",
+      "description": "ID of the client who referred this person",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "total_spent": {
+      "type": "number",
+      "default": 0,
+      "description": "Total amount spent at restaurant",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "cashback_earned": {
+      "type": "number",
+      "default": 0,
+      "description": "Total cashback earned from referrals",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "cashback_consumed": {
+      "type": "number",
+      "default": 0,
+      "description": "Total cashback consumed (manually editable by admin)",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "welcome_cashback_balance": {
+      "type": "number",
+      "default": 0,
+      "description": "Welcome cashback balance that must be consumed before submitting purchases",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "available_payout": {
+      "type": "number",
+      "default": 0,
+      "description": "Available payout balance ready for withdrawal",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "consumed_payout": {
+      "type": "number",
+      "default": 0,
+      "description": "Total payout amount already withdrawn (manually editable by admin)",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "payout_earned": {
+      "type": "number",
+      "default": 0,
+      "description": "Total payout earned in lifetime",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "total_payout": {
+      "type": "number",
+      "default": 0,
+      "description": "Total payout earned (available + consumed)",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "visits_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of restaurant visits",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "pending"
+      ],
+      "default": "pending",
+      "description": "Client status",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "referral_code": {
+      "type": "string",
+      "description": "Unique referral code for this client",
+      "unique": true,
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes about the client",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "current_tier_id": {
+      "type": "string",
+      "description": "ID of the current cashback tier",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "current_tier_name": {
+      "type": "string",
+      "description": "Name of the current tier",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "onboarding_completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the client has completed onboarding"
+    },
+    "daily_withdrawal_limit": {
+      "type": "number",
+      "description": "Maximum amount client can withdraw per day",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "weekly_withdrawal_limit": {
+      "type": "number",
+      "description": "Maximum amount client can withdraw per week",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "monthly_withdrawal_limit": {
+      "type": "number",
+      "description": "Maximum amount client can withdraw per month",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "loyalty_tier_id": {
+      "type": "string",
+      "description": "ID of the current loyalty tier",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "loyalty_tier_name": {
+      "type": "string",
+      "description": "Name of the current loyalty tier",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "registration_level_id": {
+      "type": "string",
+      "description": "ID of the registration level",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "registration_level_name": {
+      "type": "string",
+      "description": "Name of the registration level",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "wallet_balance": {
+      "type": "number",
+      "default": 0,
+      "description": "Prepaid wallet balance for recharge users",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "total_recharged": {
+      "type": "number",
+      "default": 0,
+      "description": "Total amount recharged lifetime (for tier calculation)",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "is_recharge_user": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this client uses the recharge/prepaid system",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "loyalty_program_enrolled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether client is enrolled in loyalty program and eligible for cashback/payout (false for POS-only customers)",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "last_balance_reminder_sent": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of when the last balance reminder email was sent",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "owner_employee_id": {
+      "type": "string",
+      "description": "Employee record ID of the staff member who owns this client relationship. Optional for all clients; recommended for corporate and top-spend clients. Assigned manually by staff with clients_edit.",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "owner_name": {
+      "type": "string",
+      "description": "Snapshot of the owning employee's name at assignment time",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "catering_credit_limit": {
+      "type": "number",
+      "default": 0,
+      "description": "Maximum catering credit exposure allowed for this client (0 = no limit enforced)",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "is_merged": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when this record was merged into another client record. Merged records are never deleted \u2014 they are kept, excluded from CRM lists and reporting, and remain recoverable if the merge turns out wrong.",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "merged_into_id": {
+      "type": "string",
+      "description": "ID of the surviving Client record this one was merged into",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "merged_into_name": {
+      "type": "string",
+      "description": "Snapshot of the surviving client's name at merge time",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "merged_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the merge was performed",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    "merged_by_email": {
+      "type": "string",
+      "description": "Email of the staff member who performed the merge",
+      "rls": {
+        "write": {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_central_admin": true
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_is_staff": true
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        },
+        {
+          "data.email": "{{user.email}}"
+        },
+        {
+          "id": "{{user.data.perm_client_id}}"
+        },
+        {
+          "id": "{{user.data.portal_client_id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        },
+        {
+          "data.email": "{{user.email}}"
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        },
+        {
+          "data.email": "{{user.email}}"
+        }
+      ]
+    }
+  }
+}

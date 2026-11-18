@@ -1,0 +1,144 @@
+{
+  "description": "Checks the owner\u2019s saved, authorized production branch selection each Monday at 9 AM Cairo time and emails only when net margin or operating-cost ratio crosses a 10-percentage-point adverse variance against selected peers.",
+  "name": "Weekly Selected-Branch Variance Alerts",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "weekly_selected_branch_variance_alerts",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "prepare_variance": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeVarianceAlerts",
+            "args": {
+              "action": "evaluate"
+            }
+          },
+          "then": "check_variance",
+          "x-base44": {
+            "title": "Check selected branches",
+            "description": "Recheck access and compare the completed week"
+          }
+        }
+      },
+      {
+        "check_variance": {
+          "switch": [
+            {
+              "when": "${ .prepare_variance.should_send == true }",
+              "then": "send_variance_email"
+            },
+            {
+              "when": "${ true }",
+              "then": "end"
+            }
+          ],
+          "x-base44": {
+            "title": "Significant adverse variance?",
+            "description": "Skip paused, incomplete or below-threshold checks"
+          }
+        }
+      },
+      {
+        "send_variance_email": {
+          "call": "send_email",
+          "with": {
+            "template_name": "FinanceBranchVariance",
+            "to": "${ .prepare_variance.to }",
+            "description": "Shows branch margin and operating-cost variances against selected peers",
+            "variables": {
+              "alert_count": "${ .prepare_variance.variables.alert_count }",
+              "from": "${ .prepare_variance.variables.from }",
+              "to": "${ .prepare_variance.variables.to }",
+              "findings": "${ .prepare_variance.variables.findings }"
+            }
+          },
+          "then": "check_delivery",
+          "x-base44": {
+            "title": "Email branch variance findings",
+            "description": "Only the registered alert owner receives the figures"
+          }
+        }
+      },
+      {
+        "check_delivery": {
+          "switch": [
+            {
+              "when": "${ .send_variance_email.sent == true }",
+              "then": "record_delivery"
+            },
+            {
+              "when": "${ .send_variance_email.dry_run == true }",
+              "then": "release_dry_run"
+            },
+            {
+              "when": "${ true }",
+              "then": "end"
+            }
+          ],
+          "x-base44": {
+            "title": "Email delivery outcome",
+            "description": "Separate successful sends from workflow dry runs"
+          }
+        }
+      },
+      {
+        "record_delivery": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeVarianceAlerts",
+            "args": {
+              "action": "finish",
+              "token": "${ .prepare_variance.token }",
+              "week": "${ .prepare_variance.week }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Record successful delivery",
+            "description": "Update the owner\u2019s weekly alert status"
+          }
+        }
+      },
+      {
+        "release_dry_run": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeVarianceAlerts",
+            "args": {
+              "action": "release",
+              "token": "${ .prepare_variance.token }",
+              "week": "${ .prepare_variance.week }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Release dry-run delivery slot",
+            "description": "Do not consume a real weekly alert"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 9 * * 1",
+      "one_time_date": null,
+      "timezone": "Africa/Cairo",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  }
+}

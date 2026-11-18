@@ -1,0 +1,6 @@
+import { financeAmount } from '@/components/finance/financeApi';
+export default function FinanceDashboardCards({data,company}){
+ const value=(rows,label)=>rows.find(r=>r.label===label)?.amount;
+ const cards=[['Net revenue',value(data.profit_loss,'Net revenue')],['Cost of sales',value(data.profit_loss,'Cost of sales')],['Gross profit',value(data.profit_loss,'Gross profit')],['Net profit / loss',value(data.profit_loss,'Net profit / loss')],['Assets',value(data.balance_sheet,'Assets')],['Liabilities',value(data.balance_sheet,'Liabilities')],['Total equity',value(data.balance_sheet,'Total equity')],['Cash and equivalents',value(data.cash_flow,'Closing cash and cash equivalents')]];
+ return <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">{cards.map(([label,amount],i)=><div key={label} className="border rounded-lg bg-card p-4"><p className="text-xs text-muted-foreground">{label}</p><p className="text-xl font-semibold tabular-nums mt-2 break-words">{financeAmount(amount,company)}</p><p className="text-xs text-muted-foreground mt-1">{company.currency} · {i<4?'Selected period':`As of ${data.to}`}</p></div>)}</div>;
+}

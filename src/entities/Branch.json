@@ -1,0 +1,134 @@
+{
+  "name": "Branch",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Branch name (e.g., Branch 1 - Rehab Avenue Mall)"
+    },
+    "branch_code": {
+      "type": "string",
+      "description": "Short unique code for this branch (e.g., BR1)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this branch is currently operational"
+    },
+    "is_default": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is the default branch shown on first load"
+    },
+    "address": {
+      "type": "string",
+      "description": "Physical address of this branch"
+    },
+    "landline": {
+      "type": "string",
+      "description": "Landline phone number"
+    },
+    "hotline": {
+      "type": "string",
+      "description": "Hotline number"
+    },
+    "whatsapp": {
+      "type": "string",
+      "description": "WhatsApp number"
+    },
+    "website": {
+      "type": "string",
+      "description": "Website URL"
+    },
+    "location": {
+      "type": "string",
+      "description": "Google Maps URL for this branch"
+    },
+    "latitude": {
+      "type": "number",
+      "description": "Latitude for attendance geolocation verification"
+    },
+    "longitude": {
+      "type": "number",
+      "description": "Longitude for attendance geolocation verification"
+    },
+    "radius_meters": {
+      "type": "number",
+      "default": 20,
+      "description": "Allowed radius in meters for attendance verification at this branch"
+    },
+    "facebook": {
+      "type": "string",
+      "description": "Facebook page URL"
+    },
+    "instagram": {
+      "type": "string",
+      "description": "Instagram profile URL"
+    },
+    "tiktok": {
+      "type": "string",
+      "description": "TikTok profile URL"
+    },
+    "dine_in_tax_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Tax percentage for dine-in orders at this branch"
+    },
+    "dine_in_service_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Service charge percentage for dine-in orders at this branch"
+    },
+    "delivery_tax_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Tax percentage for delivery orders at this branch"
+    },
+    "delivery_service_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Service charge percentage for delivery orders at this branch"
+    },
+    "takeaway_tax_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Tax percentage for takeaway orders at this branch"
+    },
+    "takeaway_service_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Service charge percentage for takeaway orders at this branch"
+    },
+    "partnership_marketing_text": {
+      "type": "string",
+      "description": "Marketing text for the partnership program displayed to clients at this branch"
+    },
+    "guest_loyalty_program_text": {
+      "type": "string",
+      "description": "Loyalty program description shown to unregistered guests at this branch"
+    },
+    "restaurant_logo_url": {
+      "type": "string",
+      "description": "Logo URL for this branch (for receipts, etc.)"
+    },
+    "receipt_header": {
+      "type": "string",
+      "description": "Custom receipt header text for this branch"
+    },
+    "receipt_footer": {
+      "type": "string",
+      "description": "Custom receipt footer text for this branch"
+    },
+    "commercial_registration": {
+      "type": "string",
+      "description": "Commercial registration number for this branch"
+    },
+    "tax_card": {
+      "type": "string",
+      "description": "Tax card number for this branch"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

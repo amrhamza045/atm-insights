@@ -1,0 +1,232 @@
+{
+  "name": "PayrollDisbursement",
+  "type": "object",
+  "description": "One employee's salary or external event labor payout handed from HR to Finance. After Finance approves the accrual journal, Finance selects a payment method or active staff custody to disburse it.",
+  "properties": {
+    "month": {
+      "type": "string",
+      "format": "date",
+      "description": "YYYY-MM-01"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "employee_name": {
+      "type": "string"
+    },
+    "employment_type": {
+      "type": "string",
+      "description": "regular, temporary or freelance snapshot from Employee"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "salary_record_id": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "paid"
+      ],
+      "enumColors": [
+        "yellow",
+        "green"
+      ],
+      "default": "pending"
+    },
+    "payout_source_type": {
+      "type": "string",
+      "enum": [
+        "payment_method",
+        "custody"
+      ],
+      "enumColors": [
+        "blue",
+        "purple"
+      ],
+      "description": "Chosen in Finance Payouts after the accrual journal is approved: payment_method or custody."
+    },
+    "payment_method": {
+      "type": "string",
+      "description": "Code of the payment method (Finance \u203a Payment methods) when paid from cash or bank."
+    },
+    "payment_method_name": {
+      "type": "string"
+    },
+    "custody_id": {
+      "type": "string",
+      "description": "FinanceCustody ID when paid from an active staff custody."
+    },
+    "custody_holder_name": {
+      "type": "string"
+    },
+    "journal_id": {
+      "type": "string",
+      "description": "Posted settlement FinanceJournal created when Finance confirms the payout."
+    },
+    "submitted_by": {
+      "type": "string"
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "confirmed_by": {
+      "type": "string"
+    },
+    "confirmed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "month",
+    "employee_id",
+    "amount"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_hr_edit": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    }
+  }
+}

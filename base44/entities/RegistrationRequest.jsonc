@@ -1,0 +1,161 @@
+{
+  "name": "RegistrationRequest",
+  "type": "object",
+  "properties": {
+    "full_name": {
+      "type": "string",
+      "description": "Full name of the person registering"
+    },
+    "email": {
+      "type": "string",
+      "description": "Email address"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Phone number"
+    },
+    "referral_code": {
+      "type": "string",
+      "description": "Referral code used for registration"
+    },
+    "referrer_id": {
+      "type": "string",
+      "description": "ID of the client who owns the referral code"
+    },
+    "referrer_name": {
+      "type": "string",
+      "description": "Name of the referrer"
+    },
+    "payment_scan_url": {
+      "type": "string",
+      "description": "URL to uploaded payment document"
+    },
+    "registration_level_id": {
+      "type": "string",
+      "description": "ID of the selected registration level"
+    },
+    "registration_level_name": {
+      "type": "string",
+      "description": "Name of the selected registration level"
+    },
+    "registration_amount": {
+      "type": "number",
+      "description": "Registration fee amount"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending_admin",
+        "approved",
+        "rejected_admin"
+      ],
+      "default": "pending_admin",
+      "description": "Current status of the request"
+    },
+    "admin_approved": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether admin has approved"
+    },
+    "rejection_reason": {
+      "type": "string",
+      "description": "Reason for rejection if applicable"
+    }
+  },
+  "required": [
+    "full_name",
+    "email",
+    "phone",
+    "referral_code"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_registrations_approve": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_registrations_view": true
+          }
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.email": "{{user.email}}"
+        },
+        {
+          "data.referrer_id": "{{user.data.perm_client_id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_registrations_approve": true
+          }
+        },
+        {
+          "data.referrer_id": "{{user.data.perm_client_id}}"
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    }
+  }
+}

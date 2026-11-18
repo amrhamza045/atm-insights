@@ -1,0 +1,237 @@
+{
+  "name": "CateringEquipmentReservation",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string"
+    },
+    "branch_name": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string"
+    },
+    "event_name": {
+      "type": "string"
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "equipment_id": {
+      "type": "string"
+    },
+    "equipment_name": {
+      "type": "string"
+    },
+    "tracking_mode": {
+      "type": "string",
+      "enum": [
+        "bulk",
+        "unit"
+      ],
+      "default": "bulk"
+    },
+    "unit_id": {
+      "type": "string"
+    },
+    "unit_code": {
+      "type": "string"
+    },
+    "quantity": {
+      "type": "number",
+      "default": 1
+    },
+    "unit_label": {
+      "type": "string"
+    },
+    "usage_cost_per_event": {
+      "type": "number",
+      "default": 0,
+      "description": "Per-piece event usage override, separate from damage/loss actuals."
+    },
+    "cost_overridden": {
+      "type": "boolean",
+      "default": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "requested",
+        "reserved",
+        "dispatched",
+        "returned",
+        "released"
+      ],
+      "default": "reserved"
+    },
+    "had_conflict": {
+      "type": "boolean",
+      "default": false
+    },
+    "conflict_detail": {
+      "type": "string"
+    },
+    "override_by": {
+      "type": "string"
+    },
+    "override_reason": {
+      "type": "string"
+    },
+    "dispatched_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "returned_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "returned_by": {
+      "type": "string"
+    },
+    "returned_quantity": {
+      "type": "number",
+      "default": 0
+    },
+    "damaged_quantity": {
+      "type": "number",
+      "default": 0
+    },
+    "missing_quantity": {
+      "type": "number",
+      "default": 0
+    },
+    "missing_cost": {
+      "type": "number",
+      "description": "Persisted missing_quantity \u00d7 replacement_unit_cost_snapshot, EGP. Recomputed by actual-cost service, not added again as damage."
+    },
+    "replacement_unit_cost_snapshot": {
+      "type": "number",
+      "description": "Catalog replacement_cost per piece, frozen at check-in or explicitly marked historical backfill."
+    },
+    "replacement_cost_basis": {
+      "type": "string",
+      "enum": [
+        "checkin_snapshot",
+        "catalog_at_backfill"
+      ],
+      "description": "Historical backfill uses current catalog only when no check-in snapshot exists and remains flagged."
+    },
+    "return_notes": {
+      "type": "string"
+    },
+    "reserved_by": {
+      "type": "string"
+    },
+    "released_by": {
+      "type": "string"
+    },
+    "released_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "release_reason": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id",
+    "equipment_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_catering_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

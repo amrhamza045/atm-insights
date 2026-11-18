@@ -1,11 +1,14 @@
-#env
+# env files
 .env
+.env.local
 .env.*
+!.env.example
 
 # Logs
 logs
 *.log
 npm-debug.log*
+bun.lock*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
@@ -29,3 +32,11 @@ dist-ssr
 
 .env
 base44/.app.jsonc
+
+# Large recordings, presentations, and extra assets
+Extras/
+*.mp4
+*.xlsx
+*.pptx
+*.pdf
+notes.txt

@@ -1,0 +1,47 @@
+{
+  "description": "Hourly tick; runs only at the hour set in Admin \u2192 Settings \u2192 Schedules (company timezone). Flags uncovered catering material shortfalls as at-risk.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 * * * *",
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Escalate Catering Shortfalls",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "escalate_catering_shortfalls",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "escalate": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "escalateCateringShortfalls",
+            "args": {
+              "scheduled_tick": true
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Flag at-risk shortfalls",
+            "description": "At the scheduled hour"
+          }
+        }
+      }
+    ]
+  }
+}

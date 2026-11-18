@@ -1,0 +1,8 @@
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import { Button } from '@/components/ui/button';
+export default function ConfiguredPaymentMethodSelect({eventId,value,onChange,disabled=false}){
+ const query=useInfiniteQuery({queryKey:['catering-payment-methods',eventId],enabled:!!eventId,initialPageParam:undefined,queryFn:async({pageParam})=>(await base44.functions.invoke('recordCateringPayment',{action:'payment_methods',event_id:eventId,cursor:pageParam})).data,getNextPageParam:p=>p.has_more?p.next_cursor:undefined});
+ const methods=query.data?.pages.flatMap(p=>p.items)||[];
+ return <div className="space-y-1"><select aria-label="Payment method" className="w-full rounded-md border border-input bg-background p-2 text-sm" disabled={disabled||query.isPending||!!query.error} value={value||''} onChange={e=>onChange(e.target.value)}><option value="">Select a payment method</option>{value&&!methods.some(m=>m.code===value)&&<option value={value} disabled>{value} (not in active choices)</option>}{methods.map(m=><option key={m.id} value={m.code}>{m.name}</option>)}</select>{query.isPending?<p role="status" className="text-xs text-muted-foreground">Loading payment methods…</p>:query.error?<p role="alert" className="text-xs text-destructive">{query.error.response?.data?.error||query.error.message} <Button type="button" variant="link" onClick={()=>query.refetch()}>Retry</Button></p>:!methods.length?<p className="text-xs text-muted-foreground">No active payment methods. Configure them in Finance › Mapping Accounts › Payment methods.</p>:null}{query.hasNextPage&&<Button type="button" variant="link" disabled={query.isFetchingNextPage} onClick={()=>query.fetchNextPage()}>Load more methods</Button>}</div>;
+}

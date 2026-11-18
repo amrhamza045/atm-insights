@@ -1,0 +1,160 @@
+{
+  "name": "FinanceHealthFinding",
+  "type": "object",
+  "properties": {
+    "analysis_id": {
+      "type": "string"
+    },
+    "company_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "control_id": {
+      "type": "string"
+    },
+    "domain": {
+      "type": "integer"
+    },
+    "domain_name": {
+      "type": "string"
+    },
+    "requirement": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "control",
+        "test",
+        "reference",
+        "automatic"
+      ]
+    },
+    "initial_status": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Pass",
+        "Fail",
+        "Partially Implemented",
+        "Not Tested",
+        "Not Accessible",
+        "Not Applicable"
+      ]
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "Critical",
+        "High",
+        "Medium",
+        "Low"
+      ]
+    },
+    "expected": {
+      "type": "string"
+    },
+    "actual": {
+      "type": "string"
+    },
+    "evidence": {
+      "type": "object"
+    },
+    "root_cause": {
+      "type": "string"
+    },
+    "impact": {
+      "type": "string"
+    },
+    "recommendation": {
+      "type": "string"
+    },
+    "ai_recommendation": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "dependency": {
+      "type": "string"
+    },
+    "effort": {
+      "type": "string"
+    },
+    "retest": {
+      "type": "string"
+    },
+    "closure_status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "awaiting_verification",
+        "closed",
+        "reference"
+      ]
+    },
+    "pending_review_id": {
+      "type": "string"
+    },
+    "possible_points": {
+      "type": "number"
+    },
+    "earned_points": {
+      "type": "number"
+    },
+    "reviewed_points": {
+      "type": "number"
+    },
+    "test_required": {
+      "type": "number"
+    },
+    "test_executed": {
+      "type": "number"
+    },
+    "reconciliation_required": {
+      "type": "number"
+    },
+    "reconciliation_verified": {
+      "type": "number"
+    },
+    "reviewed_by_id": {
+      "type": "string"
+    },
+    "reviewed_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "analysis_id",
+    "company_id",
+    "control_id",
+    "requirement",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

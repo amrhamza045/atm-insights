@@ -1,0 +1,263 @@
+{
+  "name": "ButcheryRawMaterial",
+  "type": "object",
+  "properties": {
+    "sku_name": {
+      "type": "string",
+      "description": "Auto-generated SKU number/code (e.g. SKU-450004-AB1)"
+    },
+    "item_name": {
+      "type": "string",
+      "description": "Human-readable product name (cut/by-product/rework output name) \u2014 used as the Inventory item name"
+    },
+    "lot_number": {
+      "type": "string",
+      "description": "Lot/batch number \u2014 persists from slaughter event through rework for traceability"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "primal_cut",
+        "by_product",
+        "rework"
+      ],
+      "default": "primal_cut",
+      "description": "What this SKU originated from"
+    },
+    "primal_cut_id": {
+      "type": "string",
+      "description": "ID of source primal cut"
+    },
+    "waste_byproduct_id": {
+      "type": "string",
+      "description": "ID of source by-product"
+    },
+    "rework_event_id": {
+      "type": "string",
+      "description": "ID of rework event that created this"
+    },
+    "slaughter_event_id": {
+      "type": "string",
+      "description": "Originating slaughter event"
+    },
+    "animal_id": {
+      "type": "string",
+      "description": "Originating animal"
+    },
+    "animal_tag": {
+      "type": "string",
+      "description": "Originating animal tag"
+    },
+    "supplier_id": {
+      "type": "string",
+      "description": "Originating supplier"
+    },
+    "supplier_name": {
+      "type": "string",
+      "description": "Originating supplier name"
+    },
+    "quantity": {
+      "type": "number",
+      "description": "Quantity/weight"
+    },
+    "unit": {
+      "type": "string",
+      "default": "kg",
+      "description": "Unit of measure"
+    },
+    "packaging_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Packaging date"
+    },
+    "quality_grade": {
+      "type": "string",
+      "enum": [
+        "prime",
+        "choice",
+        "standard",
+        "utility",
+        "ungraded"
+      ],
+      "default": "ungraded",
+      "description": "Quality grade"
+    },
+    "allocation_method": {
+      "type": "string",
+      "enum": [
+        "weight",
+        "value"
+      ],
+      "default": "weight",
+      "description": "Cost allocation method"
+    },
+    "allocated_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Calculated allocated cost (not manual)"
+    },
+    "unit_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "allocated_cost / quantity \u2014 becomes Inventory unit cost"
+    },
+    "market_price_per_unit": {
+      "type": "number",
+      "default": 0,
+      "description": "Market price (value-based allocation)"
+    },
+    "inventory_item_id": {
+      "type": "string",
+      "description": "Linked InventoryItem ID pushed on packaging"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "in_stock",
+        "reworked",
+        "sold"
+      ],
+      "default": "in_stock",
+      "description": "SKU status"
+    },
+    "sale_price": {
+      "type": "number",
+      "default": 0,
+      "description": "Sale price"
+    },
+    "sale_quantity": {
+      "type": "number",
+      "default": 0,
+      "description": "Quantity sold"
+    },
+    "sale_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Sale date"
+    },
+    "actual_margin": {
+      "type": "number",
+      "default": 0,
+      "description": "Sale price - allocated cost"
+    },
+    "margin_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Margin / sale price"
+    },
+    "rework_parent_lot_chain": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Lot chain inherited from source SKUs through rework"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "sku_name",
+    "quantity",
+    "unit"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

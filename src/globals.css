@@ -1,0 +1,165 @@
+/* Base Tailwind layers (@tailwind base/components/utilities) are compiled once in src/index.css.
+   Keeping globals.css as plain CSS avoids running a second full Tailwind scan on every edit/build. */
+:root {
+    color-scheme: light;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  .dark {
+    color-scheme: dark;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+
+* {
+  border-color: hsl(var(--border));
+}
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  overscroll-behavior-y: none;
+}
+button, [role="button"], svg, [data-interactive] {
+  user-select: none !important;
+}
+
+.user-select-none {
+  -webkit-user-select: none;
+  user-select: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+@supports (padding: max(0px)) {
+  header {
+    padding-top: max(0px, env(safe-area-inset-top));
+  }
+  nav[role="navigation"]:last-of-type {
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Printing the manual: strip the site chrome so the sticky header / bottom nav
+   never get sliced across the printed pages. */
+@media print {
+  header.sticky,
+  nav.fixed,
+  footer,
+  aside {
+    display: none !important;
+  }
+  main { padding: 0 !important; }
+}
+
+/* Print styles for marketing brochure */
+@media print {
+  body { background: white !important; }
+  .print\:hidden { display: none !important; }
+  .print\:break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
+  .print\:px-0 { padding-left: 0 !important; padding-right: 0 !important; }
+  .print\:py-0 { padding-top: 0 !important; padding-bottom: 0 !important; }
+  .print\:mb-6 { margin-bottom: 1.5rem !important; }
+  .print\:mb-4 { margin-bottom: 1rem !important; }
+  .print\:mt-6 { margin-top: 1.5rem !important; }
+  main { padding: 0 !important; }
+  .max-w-5xl { max-width: 100% !important; }
+}
+
+/* Global scale/overflow safety: prevent any element from pushing the layout off-screen.
+   Use overflow-x: clip (NOT hidden) — "hidden" turns <body> into a scroll container,
+   which combined with overscroll-behavior traps mouse-wheel events and breaks
+   wheel scrolling while the scrollbar still works. "clip" clips without creating
+   a scroll container, so wheel events chain up to the page normally. */
+html, body {
+  overflow-x: clip;
+  max-width: 100%;
+  /* Light theme only — prevents OS dark mode from auto-inverting the UI. */
+  color-scheme: light;
+}
+
+/* Allow grid/flex children (inputs, selects, cards) to shrink instead of overflowing */
+.grid > *,
+.flex > * {
+  min-width: 0;
+}
+
+input, select, textarea {
+  max-width: 100%;
+}
+
+/* ============================================
+   System dark mode — our own controlled palette.
+   Because most of the app uses fixed light utility
+   classes (bg-white, bg-slate-50, text-slate-900...),
+   we remap just those neutrals to dark equivalents so
+   the UI stays readable and consistent. Accent colors
+   (amber, red, green, blue) are left untouched.
+   ============================================ */
+/* Dark mode disabled — app is light theme only. */
+
+/* ============================================
+   Top header bar — background and text are set
+   together per scheme so they can never diverge
+   (which was making the nav labels nearly invisible).
+   ============================================ */
+header.sticky {
+  background-color: #ffffff;
+  border-bottom-color: #e2e8f0;
+}
+header.sticky nav button:not([class*="text-"]),
+header.sticky nav a:not([class*="text-"]) { color: #334155; }
+header.sticky h1 { color: #0f172a; }
+
+/* Header dark overrides removed — light theme only.
+   Full RTL mirroring lives in src/rtl.css (loaded immediately after globals.css). */

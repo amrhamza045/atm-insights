@@ -1,0 +1,160 @@
+{
+  "name": "CateringReceiptSettings",
+  "type": "object",
+  "description": "Catering \u203a Settings \u203a Client Receipt: the PDF payment receipt emailed to clients and its email text. One record; read and written only through the cateringReceipt backend function.",
+  "properties": {
+    "auto_send": {
+      "type": "boolean",
+      "default": false,
+      "description": "Email the receipt by itself when Finance approves a payment"
+    },
+    "auto_send_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "deposit",
+          "final_balance",
+          "additional"
+        ]
+      },
+      "description": "Payment types that get an automatic receipt"
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "en",
+        "ar",
+        "both"
+      ],
+      "enumColors": [
+        "blue",
+        "green",
+        "purple"
+      ],
+      "default": "en"
+    },
+    "from_name": {
+      "type": "string",
+      "description": "Sender name; empty uses the brand name"
+    },
+    "email_subject_en": {
+      "type": "string"
+    },
+    "email_body_en": {
+      "type": "string"
+    },
+    "email_subject_ar": {
+      "type": "string"
+    },
+    "email_body_ar": {
+      "type": "string"
+    },
+    "pdf_title_en": {
+      "type": "string"
+    },
+    "pdf_title_ar": {
+      "type": "string"
+    },
+    "logo_position": {
+      "type": "string",
+      "enum": [
+        "left",
+        "right"
+      ],
+      "enumColors": [
+        "blue",
+        "purple"
+      ],
+      "default": "left"
+    },
+    "show_logo": {
+      "type": "boolean",
+      "default": true
+    },
+    "show_brand_name": {
+      "type": "boolean",
+      "default": true
+    },
+    "show_business_contact": {
+      "type": "boolean",
+      "default": true
+    },
+    "accent_color": {
+      "type": "string",
+      "description": "Hex colour; empty uses the brand colour"
+    },
+    "header_details_en": {
+      "type": "string"
+    },
+    "header_details_ar": {
+      "type": "string"
+    },
+    "show_client_contact": {
+      "type": "boolean",
+      "default": true
+    },
+    "show_event_details": {
+      "type": "boolean",
+      "default": true
+    },
+    "show_payment_details": {
+      "type": "boolean",
+      "default": true
+    },
+    "show_approval": {
+      "type": "boolean",
+      "default": true
+    },
+    "show_balance_summary": {
+      "type": "boolean",
+      "default": true
+    },
+    "show_payment_history": {
+      "type": "boolean",
+      "default": true
+    },
+    "show_signature": {
+      "type": "boolean",
+      "default": false
+    },
+    "signature_label_en": {
+      "type": "string"
+    },
+    "signature_label_ar": {
+      "type": "string"
+    },
+    "notes_en": {
+      "type": "string"
+    },
+    "notes_ar": {
+      "type": "string"
+    },
+    "footer_en": {
+      "type": "string"
+    },
+    "footer_ar": {
+      "type": "string"
+    },
+    "updated_by": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

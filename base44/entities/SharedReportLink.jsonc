@@ -1,0 +1,54 @@
+{
+  "name": "SharedReportLink",
+  "type": "object",
+  "properties": {
+    "token": {
+      "type": "string",
+      "description": "Random unguessable token used in the share URL"
+    },
+    "file_uri": {
+      "type": "string",
+      "description": "Private file reference of the shared report"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "After this moment the link stops working"
+    },
+    "report_type": {
+      "type": "string",
+      "description": "e.g. cashier_session"
+    },
+    "reference_id": {
+      "type": "string",
+      "description": "ID of the source record (e.g. CashierSession)"
+    },
+    "shared_by": {
+      "type": "string",
+      "description": "Email of the user who created the link"
+    },
+    "open_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "token",
+    "file_uri",
+    "expires_at"
+  ],
+  "rls": {
+    "read": {
+      "id": "__service_role_only__"
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

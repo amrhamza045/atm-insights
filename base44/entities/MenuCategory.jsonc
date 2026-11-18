@@ -1,0 +1,160 @@
+{
+  "name": "MenuCategory",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this category belongs to (null = shared)"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this category belongs to"
+    },
+    "name": {
+      "type": "string",
+      "description": "Category name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Category description"
+    },
+    "section_id": {
+      "type": "string",
+      "description": "ID of the menu section this category belongs to"
+    },
+    "section_name": {
+      "type": "string",
+      "description": "Name of the menu section"
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0,
+      "description": "Order for display"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this category is active"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Category image URL"
+    },
+    "visible_website": {
+      "type": "boolean",
+      "default": true,
+      "description": "Visible on customer website menu"
+    },
+    "visible_pos": {
+      "type": "boolean",
+      "default": true,
+      "description": "Visible in POS system"
+    },
+    "tax_exempt": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether items in this category are exempt from tax"
+    },
+    "service_exempt": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether items in this category are exempt from service charge"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        }
+      ]
+    }
+  }
+}

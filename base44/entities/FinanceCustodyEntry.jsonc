@@ -1,0 +1,136 @@
+{
+  "name": "FinanceCustodyEntry",
+  "type": "object",
+  "description": "Audited movement on a staff financial custody account: funding, replenishment, post-approval HR/payroll payout, approved expense disbursement, vendor payment, or return to treasury.",
+  "properties": {
+    "entry_key": {
+      "type": "string"
+    },
+    "company_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "custody_id": {
+      "type": "string"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "employee_name": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "issue",
+        "replenishment",
+        "hr_payout",
+        "expense_disbursement",
+        "vendor_payment",
+        "return"
+      ],
+      "enumColors": [
+        "blue",
+        "green",
+        "purple",
+        "red",
+        "yellow",
+        "gray"
+      ]
+    },
+    "entry_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "delta": {
+      "type": "number",
+      "description": "Positive when custody is funded; negative when used for an HR payout, expense disbursement, vendor payment, or returned."
+    },
+    "balance_after": {
+      "type": "number"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "source_entity": {
+      "type": "string"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "payment_method": {
+      "type": "string"
+    },
+    "payment_method_name": {
+      "type": "string"
+    },
+    "journal_id": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "actor_email": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "entry_key",
+    "company_id",
+    "branch_id",
+    "custody_id",
+    "employee_id",
+    "kind",
+    "entry_date",
+    "delta",
+    "balance_after",
+    "currency",
+    "actor_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        },
+        {
+          "data.employee_id": "{{user.data.perm_employee_id}}"
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    }
+  }
+}

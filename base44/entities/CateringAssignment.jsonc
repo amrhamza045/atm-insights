@@ -1,0 +1,332 @@
+{
+  "name": "CateringAssignment",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "CateringEvent this person is staffed on"
+    },
+    "event_name": {
+      "type": "string",
+      "description": "Name of the event"
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the person is needed"
+    },
+    "role_name": {
+      "type": "string",
+      "description": "Role being filled (from CateringStaffingRole)"
+    },
+    "role_id": {
+      "type": "string",
+      "description": "ID of the staffing role"
+    },
+    "is_critical_role": {
+      "type": "boolean",
+      "default": false,
+      "description": "Snapshot of whether this role is critical for the event"
+    },
+    "check_in_location_type": {
+      "type": "string",
+      "enum": [
+        "branch",
+        "event_site"
+      ],
+      "default": "branch",
+      "description": "Where this person is expected to clock in: at the branch, or at the event venue. Mixing the two across assignments is what makes an event's attendance 'hybrid'."
+    },
+    "employee_id": {
+      "type": "string",
+      "description": "Assigned Employee record ID (regular, temporary or freelance)"
+    },
+    "employee_name": {
+      "type": "string",
+      "description": "Name of the assigned person"
+    },
+    "employment_type": {
+      "type": "string",
+      "enum": [
+        "regular",
+        "temporary",
+        "freelance"
+      ],
+      "default": "regular",
+      "description": "Snapshot of the assignee's employment type at assignment time"
+    },
+    "start_time": {
+      "type": "string",
+      "description": "Call time (HH:MM) \u2014 defaults to the event start minus setup time"
+    },
+    "end_time": {
+      "type": "string",
+      "description": "Release time (HH:MM)"
+    },
+    "expected_hours": {
+      "type": "number",
+      "default": 0,
+      "description": "Hours the assignment is expected to run"
+    },
+    "hourly_rate": {
+      "type": "number",
+      "default": 0,
+      "description": "Rate used for the labor estimate (employee rate, or role fallback for freelancers)"
+    },
+    "estimated_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "expected_hours \u00d7 hourly_rate"
+    },
+    "shift_id": {
+      "type": "string",
+      "description": "Shift record created on confirmation \u2014 attendance, clock-in/out and payroll all run through it"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "confirmed",
+        "released"
+      ],
+      "default": "confirmed",
+      "description": "Only confirmed assignments count towards coverage and block double-booking"
+    },
+    "assignment_notified": {
+      "type": "boolean",
+      "default": false,
+      "description": "True once the assignee has been processed by the confirmation notification pass \u2014 never re-notified on later re-confirms. A released-then-re-added staffer is a fresh row (false again), so they are notified again as intended. Set true even when the employee has no app login (unmatched staff are a future WhatsApp channel, not an in-app retry)."
+    },
+    "availability_conflict": {
+      "type": "boolean",
+      "default": false,
+      "description": "True when the person was already booked and a manager overrode the conflict"
+    },
+    "conflict_detail": {
+      "type": "string",
+      "description": "What the person was already booked on"
+    },
+    "override_by": {
+      "type": "string",
+      "description": "Email of the user who overrode the double-booking block"
+    },
+    "override_reason": {
+      "type": "string",
+      "description": "Why the double-booking was allowed"
+    },
+    "match_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Skill/experience match score at assignment time (surfaced as guidance only)"
+    },
+    "assigned_by": {
+      "type": "string",
+      "description": "Email of the user who made the assignment"
+    },
+    "released_by": {
+      "type": "string",
+      "description": "Email of the user who released the assignment"
+    },
+    "released_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the assignment was released"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id",
+    "role_name",
+    "employee_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_catering_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_analytics_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_finance_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_hr_view": true
+                  }
+                },
+                {
+                  "user_condition": {
+                    "data.perm_kds_view": true
+                  }
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "data.employee_id": "{{user.data.perm_employee_id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_catering_edit": true
+                  }
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_catering_edit": true
+                  }
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_catering_edit": true
+                  }
+                }
+              ]
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

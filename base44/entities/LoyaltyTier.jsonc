@@ -1,0 +1,148 @@
+{
+  "name": "LoyaltyTier",
+  "type": "object",
+  "properties": {
+    "tier_name": {
+      "type": "string",
+      "description": "Name of the loyalty tier (e.g., Bronze, Silver, Gold, Platinum)"
+    },
+    "tier_level": {
+      "type": "number",
+      "description": "Numerical level for ordering (1=Bronze, 2=Silver, etc.)"
+    },
+    "min_cashback_earned": {
+      "type": "number",
+      "default": 0,
+      "description": "Minimum total cashback earned to reach this tier"
+    },
+    "min_successful_payouts": {
+      "type": "number",
+      "default": 0,
+      "description": "Minimum number of successful payouts to reach this tier"
+    },
+    "payout_percentage_bonus": {
+      "type": "number",
+      "default": 0,
+      "description": "Additional percentage added to base payout percentage"
+    },
+    "min_payout_reduction": {
+      "type": "number",
+      "default": 0,
+      "description": "Reduction in minimum payout amount (in dollars)"
+    },
+    "priority_support": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this tier gets priority support"
+    },
+    "exclusive_promotions": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this tier gets exclusive promotions"
+    },
+    "color": {
+      "type": "string",
+      "description": "Color code for UI display"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Icon name for the tier"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of tier benefits"
+    }
+  },
+  "required": [
+    "tier_name",
+    "tier_level"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        }
+      ]
+    }
+  }
+}

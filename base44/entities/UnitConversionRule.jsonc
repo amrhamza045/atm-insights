@@ -1,0 +1,173 @@
+{
+  "name": "UnitConversionRule",
+  "type": "object",
+  "description": "System-wide and inventory-item-specific unit conversion rules used across inventory, recipes, production, purchasing, requisitions, and catering costing.",
+  "properties": {
+    "scope": {
+      "type": "string",
+      "enum": [
+        "global",
+        "item"
+      ],
+      "default": "global",
+      "description": "global = applies to all items for compatible dimensions; item = applies to a specific InventoryItem (supports cross-dimension and custom packaging)."
+    },
+    "inventory_item_id": {
+      "type": "string",
+      "description": "ID of the InventoryItem when scope = 'item'"
+    },
+    "inventory_item_name": {
+      "type": "string",
+      "description": "Name of the InventoryItem when scope = 'item'"
+    },
+    "from_unit": {
+      "type": "string",
+      "description": "Normalized source unit code (1 from_unit = factor to_unit)"
+    },
+    "to_unit": {
+      "type": "string",
+      "description": "Normalized target unit code"
+    },
+    "factor": {
+      "type": "number",
+      "description": "Positive multiplier such that 1 from_unit = factor * to_unit"
+    },
+    "dimension_mode": {
+      "type": "string",
+      "enum": [
+        "same_dimension",
+        "cross_dimension"
+      ],
+      "default": "same_dimension"
+    },
+    "bidirectional": {
+      "type": "boolean",
+      "default": true,
+      "description": "When true, also converts to_unit -> from_unit using 1 / factor"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "notes": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "scope",
+    "from_unit",
+    "to_unit",
+    "factor"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

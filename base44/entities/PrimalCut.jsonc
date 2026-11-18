@@ -1,0 +1,170 @@
+{
+  "name": "PrimalCut",
+  "type": "object",
+  "properties": {
+    "slaughter_event_id": {
+      "type": "string",
+      "description": "ID of slaughter event"
+    },
+    "animal_tag": {
+      "type": "string",
+      "description": "Animal tag number"
+    },
+    "cut_name": {
+      "type": "string",
+      "description": "Cut name"
+    },
+    "weight": {
+      "type": "number",
+      "description": "Cut weight"
+    },
+    "weight_unit": {
+      "type": "string",
+      "default": "kg",
+      "description": "Weight unit"
+    },
+    "yield_percentage": {
+      "type": "number",
+      "default": 0,
+      "description": "Weight / carcass weight"
+    },
+    "quality_grade": {
+      "type": "string",
+      "enum": [
+        "prime",
+        "choice",
+        "standard",
+        "utility",
+        "ungraded"
+      ],
+      "default": "ungraded",
+      "description": "Quality grade"
+    },
+    "market_price_per_unit": {
+      "type": "number",
+      "default": 0,
+      "description": "Market price per unit (value-based allocation)"
+    },
+    "allocation_method": {
+      "type": "string",
+      "enum": [
+        "weight",
+        "value"
+      ],
+      "default": "weight",
+      "description": "Allocation method"
+    },
+    "allocated_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Calculated allocated cost"
+    },
+    "is_condemned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this cut is condemned (partial condemnation)"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "slaughter_event_id",
+    "cut_name",
+    "weight"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_butchery_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

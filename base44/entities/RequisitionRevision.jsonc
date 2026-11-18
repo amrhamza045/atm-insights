@@ -1,0 +1,316 @@
+{
+  "name": "RequisitionRevision",
+  "type": "object",
+  "description": "Append-only Permit Trail entry for a Requisition. Never updated or deleted: every client write is refused by the data rules, and backend code only ever creates.",
+  "properties": {
+    "requisition_id": {
+      "type": "string"
+    },
+    "event_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string",
+      "description": "Copied from the requisition so reads can be branch-scoped."
+    },
+    "revision_number": {
+      "type": "number",
+      "description": "Claimed from Requisition.current_revision by a compare-and-swap update: never duplicated; a failed write can leave a gap."
+    },
+    "side": {
+      "type": "string",
+      "enum": [
+        "chef",
+        "inventory",
+        "approver",
+        "system"
+      ]
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "created",
+        "submitted",
+        "replied",
+        "countered",
+        "accepted",
+        "approval_requested",
+        "approved",
+        "rejected",
+        "replanned",
+        "cancelled",
+        "reopened",
+        "deduplicated",
+        "scheduled",
+        "split_proposed",
+        "split_accepted",
+        "split_declined",
+        "split_withdrawn",
+        "split_cancelled",
+        "batch_released",
+        "batch_received",
+        "batches_voided",
+        "closeout_note"
+      ],
+      "description": "deduplicated = system deactivated extra active planned lines that pointed at the same reservation (one line kept per reservation). approval_requested / approved / rejected = the extra-items limit check and the approver's decision. scheduled = batch 1 created when the requisition was confirmed. split_* = a batch plan (split / date) proposal and its answer; current_plan and proposed_plan hold both plans; split_cancelled = the system cancelled an open proposal (a batch was released, or event closeout). batch_released = Inventory issued a batch's stock (line_snapshots: batch qty \u2192 actual). batch_received = the chef confirmed receipt. batches_voided = unreleased batches voided by 'close anyway' at closeout (reason in comment). closeout_note = a released batch was not received at closeout."
+    },
+    "actor_user_id": {
+      "type": "string"
+    },
+    "actor_name": {
+      "type": "string"
+    },
+    "actor_role": {
+      "type": "string"
+    },
+    "action_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "comment": {
+      "type": "string"
+    },
+    "approval_reason": {
+      "type": "string",
+      "description": "Why the extra-items check asked for approval (empty when it didn't)."
+    },
+    "limit_percent_applied": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Extra items limit % read from Catering settings at this check (empty setting = 0)."
+    },
+    "limit_amount_applied": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "planned_food_cost_applied \u00d7 limit_percent_applied \u00f7 100."
+    },
+    "planned_food_cost_applied": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Base of the %: the event's current active quote planned food cost, else the requisition's planned estimate."
+    },
+    "planned_food_cost_source": {
+      "type": "string",
+      "enum": [
+        "quote_food_cost",
+        "requisition_planned_estimate"
+      ]
+    },
+    "extras_total_applied": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Estimated cost of active, not-declined extra lines (requested qty when open, agreed qty when agreed)."
+    },
+    "uncosted_extras_count": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "allowance_configured_at_check": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "allowance_remaining_before": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "allowance_deducted_amount": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "current_plan": {
+      "type": "array",
+      "default": [],
+      "description": "Batch plan in force when this entry was written (scheduled / split_* entries; batch_released: the released batch).",
+      "items": {
+        "type": "object",
+        "properties": {
+          "batch_number": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "slip_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slip_number": {
+            "type": "string"
+          },
+          "needed_by_date": {
+            "type": "string"
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "line_id": {
+                  "type": "string"
+                },
+                "inventory_item_name": {
+                  "type": "string"
+                },
+                "unit": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "proposed_plan": {
+      "type": "array",
+      "default": [],
+      "description": "Batch plan proposed, accepted, declined, withdrawn or cancelled by this entry (scheduled: batch 1 as created).",
+      "items": {
+        "type": "object",
+        "properties": {
+          "batch_number": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "slip_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slip_number": {
+            "type": "string"
+          },
+          "needed_by_date": {
+            "type": "string"
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "line_id": {
+                  "type": "string"
+                },
+                "inventory_item_name": {
+                  "type": "string"
+                },
+                "unit": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "line_snapshots": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "properties": {
+          "line_id": {
+            "type": "string"
+          },
+          "inventory_item_name": {
+            "type": "string"
+          },
+          "line_type": {
+            "type": "string",
+            "enum": [
+              "planned",
+              "extra"
+            ]
+          },
+          "quantity_before": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "quantity_after": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "decision": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "comment": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "requisition_id",
+    "branch_id",
+    "revision_number",
+    "side",
+    "action",
+    "action_date"
+  ],
+  "rls": {
+    "read": {
+      "$and": [
+        {
+          "user_condition": {
+            "data.perm_requisition_view": true
+          }
+        },
+        {
+          "$or": [
+            {
+              "user_condition": {
+                "data.perm_has_branch": false
+              }
+            },
+            {
+              "data.branch_id": "{{user.data.perm_branch_id}}"
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

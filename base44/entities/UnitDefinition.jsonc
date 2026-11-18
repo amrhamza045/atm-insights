@@ -1,0 +1,168 @@
+{
+  "name": "UnitDefinition",
+  "type": "object",
+  "description": "System-wide canonical unit catalog (Unit Table) managed in Admin \u203a Unit Conversions. Maps alternative wording and aliases (such as 'pieces', 'piece', 'pc') to a single canonical unit label across inventory, manufacturing, KDS, purchasing, and unit conversions.",
+  "properties": {
+    "canonical_label": {
+      "type": "string",
+      "description": "Required canonical unit label used across the system (e.g. 'pcs', 'kg', 'box')"
+    },
+    "symbol": {
+      "type": "string",
+      "description": "Optional short symbol or code (defaults to canonical_label)"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Optional human-friendly display name (e.g. 'Piece (pcs)', 'Kilogram')"
+    },
+    "arabic_label": {
+      "type": "string",
+      "description": "Optional Arabic label for bilingual documents and displays"
+    },
+    "dimension": {
+      "type": "string",
+      "enum": [
+        "mass",
+        "volume",
+        "count",
+        "custom"
+      ],
+      "default": "custom",
+      "enumColors": [
+        "green",
+        "blue",
+        "purple",
+        "gray"
+      ],
+      "description": "Optional physical dimension category for compatible global conversions"
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Optional alternative labels/spellings that resolve to this canonical unit (e.g. ['pieces', 'piece', 'pc', 'each'])"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional usage notes"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this unit is active for new selections without altering historical records or existing conversion rules"
+    }
+  },
+  "required": [
+    "canonical_label"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_inventory_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

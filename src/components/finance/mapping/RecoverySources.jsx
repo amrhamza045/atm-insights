@@ -1,0 +1,12 @@
+import { useState } from 'react';
+import { useMutation,useQueryClient } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
+import useFinanceList from '@/components/finance/useFinanceList';
+import FinanceListState from '@/components/finance/FinanceListState';
+import { financeCall,financeError,financeAmount } from '@/components/finance/financeApi';
+export default function RecoverySources({company,can}){
+ const [currencyConfirmed,setCurrencyConfirmed]=useState(false),qc=useQueryClient();
+ const sources=useFinanceList({action:'mapping_recovery_sources',company_id:company.id});
+ const capture=useMutation({mutationFn:source_id=>financeCall({action:'mapping_recovery_capture',company_id:company.id,source_id,source_currency:company.currency,currency_confirmed:currencyConfirmed}),onSuccess:()=>qc.invalidateQueries({queryKey:['finance']})});
+ return <section className="space-y-3"><h3 className="font-semibold">Capture completed catering advances</h3><p className="text-sm text-muted-foreground">P01 is the first recovery rehearsal source. Capture reads the real payment and its revision on the server; repeated capture of an unchanged source returns its existing queue entry. Payments do not store currency, so confirm it from the source evidence.</p><label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={currencyConfirmed} onChange={e=>setCurrencyConfirmed(e.target.checked)}/>I verified that the advances I capture are denominated in {company.currency}.</label>{sources.items.map(p=><article className="border rounded-lg p-3 flex flex-wrap justify-between gap-3" key={p.id}><div><p className="text-sm font-medium">{p.event_name||'Catering advance'} · {financeAmount(p.amount,company)}</p><p className="text-xs text-muted-foreground">{String(p.payment_date||'').slice(0,10)} · {p.payment_method} · {p.id}</p></div>{can('finance_accounts_manage')&&<Button size="sm" variant="outline" disabled={!currencyConfirmed||capture.isPending} onClick={()=>capture.mutate(p.id)}>Capture for rehearsal</Button>}</article>)}<FinanceListState query={sources}/>{capture.error&&<p role="alert" className="text-destructive text-sm">{financeError(capture.error)}</p>}{capture.data&&<p role="status" className="text-sm">{capture.data.replayed?'Already captured; existing entry retained.':'Captured. Open the recovery queue to validate and retry.'}</p>}</section>;
+}

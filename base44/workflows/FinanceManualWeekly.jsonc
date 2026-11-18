@@ -1,0 +1,45 @@
+{
+  "description": "Validate and refresh the Finance guide verification record every Sunday at 03:00 Cairo time. No accounting data is modified.",
+  "name": "Finance Manual Weekly Verification",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "finance_manual_weekly",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "refresh_manual": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "refreshFinanceManual",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Refresh Finance manual",
+            "description": "Validate coverage and record current version"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 3 * * 0",
+      "one_time_date": null,
+      "timezone": "Africa/Cairo",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  }
+}

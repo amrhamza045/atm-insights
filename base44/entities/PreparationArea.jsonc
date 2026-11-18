@@ -1,0 +1,144 @@
+{
+  "name": "PreparationArea",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Display name (e.g., Kitchen, Bar, Shisha Station, Grill)"
+    },
+    "key": {
+      "type": "string",
+      "description": "Unique slug stored in MenuItem.preparation_station and Printer.type (e.g., kitchen, bar, shisha)",
+      "unique": true
+    },
+    "icon_name": {
+      "type": "string",
+      "default": "ChefHat",
+      "description": "Lucide icon name for this area (e.g., ChefHat, Wine, Flame, Coffee)"
+    },
+    "color": {
+      "type": "string",
+      "default": "#f59e0b",
+      "description": "Hex color for UI tabs, badges, and KDS display"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this preparation area is active and visible"
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0,
+      "description": "Display order (lower = first)"
+    },
+    "printer_id": {
+      "type": "string",
+      "description": "Default printer ID for this preparation area"
+    },
+    "header_text": {
+      "type": "string",
+      "description": "Header text printed on preparation order tickets"
+    },
+    "footer_text": {
+      "type": "string",
+      "description": "Footer text printed on preparation order tickets"
+    },
+    "font_size": {
+      "type": "number",
+      "default": 14,
+      "description": "Font size (px) for printed preparation orders"
+    }
+  },
+  "required": [
+    "name",
+    "key"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        }
+      ]
+    }
+  }
+}

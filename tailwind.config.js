@@ -1,9 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     darkMode: ["class"],
-    content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
+    content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}", "!./src/**/*.test.{ts,tsx,js,jsx}"],
   theme: {
   	extend: {
+  		fontFamily: {
+  			display: ['var(--font-display)'],
+  			heading: ['var(--font-heading)'],
+  		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
@@ -36,10 +40,23 @@ module.exports = {
   				DEFAULT: 'hsl(var(--accent))',
   				foreground: 'hsl(var(--accent-foreground))'
   			},
+			success: {
+				50: 'hsl(var(--success-50))', 100: 'hsl(var(--success-100))', 200: 'hsl(var(--success-200))', 300: 'hsl(var(--success-300))', 400: 'hsl(var(--success-400))', 500: 'hsl(var(--success-500))', 600: 'hsl(var(--success-600))', 700: 'hsl(var(--success-700))', 800: 'hsl(var(--success-800))', 900: 'hsl(var(--success-900))', 950: 'hsl(var(--success-950))'
+			},
+			warning: {
+				50: 'hsl(var(--warning-50))', 100: 'hsl(var(--warning-100))', 200: 'hsl(var(--warning-200))', 300: 'hsl(var(--warning-300))', 400: 'hsl(var(--warning-400))', 500: 'hsl(var(--warning-500))', 600: 'hsl(var(--warning-600))', 700: 'hsl(var(--warning-700))', 800: 'hsl(var(--warning-800))', 900: 'hsl(var(--warning-900))', 950: 'hsl(var(--warning-950))'
+			},
+			danger: {
+				50: 'hsl(var(--danger-50))', 100: 'hsl(var(--danger-100))', 200: 'hsl(var(--danger-200))', 300: 'hsl(var(--danger-300))', 400: 'hsl(var(--danger-400))', 500: 'hsl(var(--danger-500))', 600: 'hsl(var(--danger-600))', 700: 'hsl(var(--danger-700))', 800: 'hsl(var(--danger-800))', 900: 'hsl(var(--danger-900))', 950: 'hsl(var(--danger-950))'
+			},
   			destructive: {
   				DEFAULT: 'hsl(var(--destructive))',
   				foreground: 'hsl(var(--destructive-foreground))'
   			},
+  			cream: 'hsl(var(--landing-cream))',
+  			ivory: 'hsl(var(--landing-ivory))',
+  			navy: 'hsl(var(--landing-navy))',
+  			gold: 'hsl(var(--landing-gold))',
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',
@@ -77,11 +94,16 @@ module.exports = {
   				to: {
   					height: '0'
   				}
+  			},
+  			marquee: {
+  				from: { transform: 'translateX(0)' },
+  				to: { transform: 'translateX(-50%)' }
   			}
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
+  			'accordion-up': 'accordion-up 0.2s ease-out',
+  			marquee: 'marquee 40s linear infinite'
   		}
   	}
   },

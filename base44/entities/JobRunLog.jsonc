@@ -1,0 +1,67 @@
+{
+  "name": "JobRunLog",
+  "type": "object",
+  "properties": {
+    "job_key": {
+      "type": "string",
+      "description": "Which job ran (e.g. escalateCateringShortfalls)"
+    },
+    "slot_key": {
+      "type": "string",
+      "description": "Slot identifier: company-local date+hour for scheduled jobs, or record id for record-change jobs"
+    },
+    "caller": {
+      "type": "string",
+      "enum": [
+        "schedule",
+        "no_user",
+        "user"
+      ],
+      "description": "How the run was started"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "done",
+        "skipped"
+      ]
+    },
+    "reason": {
+      "type": "string"
+    },
+    "ran_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "job_key",
+    "slot_key",
+    "outcome"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

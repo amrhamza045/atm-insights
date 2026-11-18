@@ -1,0 +1,4 @@
+import { financeAmount } from '@/components/finance/financeApi';
+export default function FinanceTrialBalance({rows,company}) {
+ return <section className="border rounded-lg bg-card p-4"><h3 className="font-semibold mb-3">Trial balance</h3><div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr>{['Account','Opening balance (Dr − Cr)','Period debit','Period credit','Closing debit','Closing credit'].map(h=><th className="p-2 text-left" key={h}>{h}</th>)}</tr></thead><tbody>{rows.map((r,i)=><tr key={i} className="border-t"><td className="p-2">{r.code} · {r.name}</td>{['opening','debit','credit','closing_debit','closing_credit'].map(k=><td key={k} className="p-2 text-right tabular-nums">{financeAmount(r[k],company)}</td>)}</tr>)}</tbody></table>{!rows.length&&<p className="text-sm text-muted-foreground py-3">No posted ledger entries through this end date.</p>}</div></section>;
+}

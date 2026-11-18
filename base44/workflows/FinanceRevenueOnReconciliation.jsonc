@@ -1,0 +1,95 @@
+{
+  "name": "Finance Revenue on Reconciliation",
+  "description": "When an event reconciliation is finalized, post its final invoice once: customer advances held for the event are applied, any unpaid balance becomes a receivable, and event revenue is credited. Gaps open a Posting Issue instead of being skipped.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "CateringReconciliation",
+      "events": [
+        "create",
+        "update"
+      ]
+    },
+    "condition": "${ .trigger.data.status == \"finalized\" and (.trigger.event_type == \"create\" or .trigger.old_data.status != \"finalized\") }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "finance_revenue_on_reconciliation",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "settle": {
+          "wait": "PT20S",
+          "then": "post",
+          "x-base44": {
+            "title": "Let the event close finish"
+          }
+        }
+      },
+      {
+        "post": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeAutoPost",
+            "args": {
+              "revenue_entity": "CateringReconciliation",
+              "source_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "retry_check",
+          "x-base44": {
+            "title": "Post the event invoice once"
+          }
+        }
+      },
+      {
+        "retry_check": {
+          "switch": [
+            {
+              "when": "${ .post.retry == true }",
+              "then": "retry_delay",
+              "x-base44": {
+                "title": "Accounting lock was busy"
+              }
+            },
+            {
+              "when": "${ true }",
+              "then": "end"
+            }
+          ],
+          "x-base44": {
+            "title": "Retry temporary posting contention?"
+          }
+        }
+      },
+      {
+        "retry_delay": {
+          "wait": "PT15S",
+          "then": "retry",
+          "x-base44": {
+            "title": "Wait for accounting lock"
+          }
+        }
+      },
+      {
+        "retry": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeAutoPost",
+            "args": {
+              "revenue_entity": "CateringReconciliation",
+              "source_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Retry the invoice posting once"
+          }
+        }
+      }
+    ]
+  }
+}

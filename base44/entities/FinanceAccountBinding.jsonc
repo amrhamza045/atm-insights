@@ -1,0 +1,80 @@
+{
+  "name": "FinanceAccountBinding",
+  "type": "object",
+  "description": "Company-scoped dated semantic account mappings. Used stock and journal bindings are immutable; revisions use new dated priority rules.",
+  "properties": {
+    "company_id": {
+      "type": "string"
+    },
+    "mapping_key": {
+      "type": "string"
+    },
+    "account_id": {
+      "type": "string"
+    },
+    "account_code": {
+      "type": "string"
+    },
+    "account_name": {
+      "type": "string"
+    },
+    "inventory_stage": {
+      "type": "string",
+      "enum": [
+        "raw",
+        "semi_finished",
+        "finished"
+      ],
+      "enumColors": [
+        "blue",
+        "yellow",
+        "green"
+      ]
+    },
+    "conditions": {
+      "type": "object"
+    },
+    "priority": {
+      "type": "integer"
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date"
+    },
+    "effective_to": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "company_id",
+    "mapping_key",
+    "account_id",
+    "priority",
+    "effective_from"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    }
+  }
+}

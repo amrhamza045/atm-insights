@@ -1,0 +1,1644 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "portal_client_id": {
+      "type": "string",
+      "description": "Catering customer portal link: the Client record this account may see catering data for. Set only on external customer accounts, by staff invitation. Written only by admin/server functions.",
+      "rls": {
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
+    },
+    "portal_client_name": {
+      "type": "string",
+      "description": "Name of the linked client, for display",
+      "rls": {
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
+    },
+    "is_catering_staff": {
+      "type": "boolean",
+      "default": false,
+      "description": "True for internal staff who work the Catering module. Written only by admin/server functions.",
+      "rls": {
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
+    },
+    "catering_branch_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Branch IDs a staff member may see catering records for. Written only by admin/server functions.",
+      "rls": {
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
+    },
+    "is_staff": {
+      "type": "boolean",
+      "description": "Legacy flag on existing accounts; not read by app code. Admin-write only.",
+      "rls": {
+        "write": {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      }
+    },
+    "perm_flags": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "description": "Synced copy of effective permissions. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_role": {
+      "type": "string",
+      "description": "Synced copy of the assigned role key. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_is_central_admin": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced: admin under the central rule. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_is_safety_valve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced: true only for the account named in the SAFETY_VALVE_EMAIL app secret. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_branch_id": {
+      "type": "string",
+      "description": "Synced permission-record branch (empty = all branches). Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_synced_at": {
+      "type": "string",
+      "description": "When the permission copy was last synced. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_catering_view": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced catering_view. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_catering_edit": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced catering_edit. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_catering_finance": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced catering_finance. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_catering_approve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced catering_approve. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_has_branch": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced: permission record has a branch. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_has_role": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced: account holds a role key. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_hr_view": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced hr_view_all. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_hr_edit": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced hr_edit. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_hr_approve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced hr_attendance_approve. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_finance_view": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced financial_view. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_finance_edit": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced finance_edit. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_cashier_view": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced cashier_view. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_cashier_edit": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced cashier_edit OR pos_view. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_cashier_audit": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced cashier_audit_view. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_settings_edit": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced settings_edit. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_users_manage": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced users_manage. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_admin_operations": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced admin_operations. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_admin_actions": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced admin_actions. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_admin_systems": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced admin_systems. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_purchases_approve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced purchases_approve. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_butchery_view": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced butchery_view. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_butchery_edit": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced butchery_edit. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_requisition_view": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced kds_view OR inventory_view OR requisition_approve: read access to requisitions. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_requisition_submit": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced requisition_submit (chef side). Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_requisition_respond": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced requisition_respond (inventory side). Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_requisition_approve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced requisition_approve (over-limit requisition approvals). Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_catering_settings_edit": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced catering_settings_edit: write Catering settings. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_expense_approve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced expense_approve. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_cashier_purchase_approve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced cashier_purchase_approve. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_payouts_approve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced payouts_approve. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_purchase_submission_approve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced purchase_submission_approve. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_recharge_approve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced recharge_approve. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_registrations_approve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced registrations_approve. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_registrations_view": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced registrations_view. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_level_upgrade_approve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced level_upgrade_approve. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_redemptions_approve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced redemptions_approve. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_redemptions_view": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced redemptions_view. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_return_approve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced return_approve. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_cashback_dist_approve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced cashback_dist_approve. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_purchase_approve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced purchase_approve. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_purchase_view": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced purchase_view. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_purchase_edit": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced purchase_edit. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_supplier_payment_record": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced supplier_payment_record. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_inventory_view": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced inventory_view. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_inventory_edit": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced inventory_edit. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_waste_approve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced waste_approve. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_expiry_manage": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced expiry_manage. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_delivery_bonus_approve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced delivery_bonus_approve. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_cashier_session_approve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced cashier_session_approve. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_purchases_view": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced purchases_view. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_clients_view": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced clients_view. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_kds_view": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced kds_view OR kds_bar_view (kitchen display). Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_is_staff": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced: holds at least one staff permission (customers and ex-employees: false). Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_manufacturing_view": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced manufacturing_view OR manufacturing_edit. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_manufacturing_edit": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced manufacturing_edit. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_menu_edit": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced menu_create OR menu_edit OR menu_delete. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_delivery_view": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced delivery_view. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_clients_edit": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced clients_edit. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_analytics_view": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced analytics_view OR financial_view OR sales_view (reports). Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_marketing_view": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced marketing_view_segments OR social_media_view. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_rewards_manage": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced rewards_manage. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_review_moderate": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced review_moderate. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_admin_settings": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced admin_settings. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_catering_quote_approve": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced catering_quote_approve. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_support_customization": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced support_customization. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_order_taking": {
+      "type": "boolean",
+      "default": false,
+      "description": "Synced pos_call_center OR pos_captain: may stage pending orders for cashier approval. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_employee_id": {
+      "type": "string",
+      "default": "__none__",
+      "description": "Synced matching Employee id, or __none__. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_delivery_person_id": {
+      "type": "string",
+      "default": "__none__",
+      "description": "Synced matching DeliveryPerson id, or __none__. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "perm_client_id": {
+      "type": "string",
+      "default": "__none__",
+      "description": "Synced matching Client id, or __none__. Server-sync only.",
+      "rls": {
+        "write": {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "required": [
+    "portal_client_id",
+    "portal_client_name",
+    "catering_branch_ids"
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "name": "Finance Review on Catering Return",
+  "description": "When a returned catering item gets a disposition, value it at its original release cost and prepare the journal for Finance review. Stock is restored only on approval.",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "finance_review_on_catering_return",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "settle": {
+          "wait": "PT20S",
+          "then": "prepare",
+          "x-base44": {
+            "title": "Let the return save finish"
+          }
+        }
+      },
+      {
+        "prepare": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "financeAutoPost",
+            "args": {
+              "operational_entity": "CateringReturnedItem",
+              "source_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Prepare return journal for review"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create",
+        "update"
+      ],
+      "entity_name": "CateringReturnedItem"
+    }
+  }
+}

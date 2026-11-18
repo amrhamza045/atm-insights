@@ -1,0 +1,3 @@
+export const TAX_STATUSES=[{value:'untracked',label:'Unknown / untracked'},{value:'not_submitted',label:'Not submitted (manually confirmed)'},...['Submitted','Valid','Invalid','Rejected','Cancelled'].map(value=>({value,label:value}))];
+export const TAX_TYPES=[{value:'i',label:'Invoice'},{value:'c',label:'Credit note'},{value:'d',label:'Debit note'},{value:'ii',label:'Import invoice'},{value:'ei',label:'Export invoice'},{value:'ec',label:'Export credit note'},{value:'ed',label:'Export debit note'}];
+export const taxChoices={statuses:TAX_STATUSES,types:TAX_TYPES};

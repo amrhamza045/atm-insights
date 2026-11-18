@@ -1,0 +1,9 @@
+import { useMutation,useQueryClient } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
+import { financeCall,financeError } from '@/components/finance/financeApi';
+import MappingPreview from '@/components/finance/mapping/MappingPreview';
+export default function RecoveryEventCard({company,event,can}){
+ const qc=useQueryClient();
+ const retry=useMutation({mutationFn:()=>financeCall({action:'mapping_recovery_retry',company_id:company.id,id:event.id}),onSuccess:()=>qc.invalidateQueries({queryKey:['finance']})});
+ return <article className="border rounded-lg p-4 space-y-3"><div className="flex flex-wrap justify-between gap-3"><h3 className="font-semibold">{event.event_type} · {event.source_description}</h3><span className="text-sm">{event.status.replaceAll('_',' ')}</span></div><p className="text-sm">{event.message}</p><p className="text-xs text-muted-foreground">Source: {event.source_entity} · {event.source_id} · Captured revision: {event.source_version}</p><p className="text-xs text-muted-foreground">Captured by {event.captured_by} · {event.attempt_count||0} attempts{event.last_attempt_at?` · Last checked ${event.last_attempt_at}`:''}</p><p className="text-xs text-muted-foreground">{event.currency_evidence}</p>{can('finance_accounts_manage')&&<Button variant="outline" disabled={retry.isPending||event.status==='stale'} onClick={()=>retry.mutate()}>{retry.isPending?'Revalidating…':'Revalidate source & retry rehearsal'}</Button>}{event.status==='stale'&&<p className="text-xs text-muted-foreground">Capture the current payment again from Sources; this historical capture is not overwritten.</p>}{retry.error&&<p role="alert" className="text-sm text-destructive">{financeError(retry.error)}</p>}{event.preview?.balanced&&<MappingPreview company={company} result={event.preview}/>}</article>;
+}

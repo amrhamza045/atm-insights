@@ -1,0 +1,16 @@
+import { useMutation } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
+import { financeError,financeAmount } from '@/components/finance/financeApi';
+import financePreparedCall from '@/components/finance/financePreparedCall';
+import downloadIntegrityReport from '@/components/finance/downloadIntegrityReport';
+export default function FinanceIntegrityReport({company,filters}) {
+ const generate=useMutation({mutationFn:()=>financePreparedCall({action:'integrity',company_id:company.id,...filters})}),report=generate.data;
+ const label={pass:'Pass',fail:'Difference found',warning:'Review required',review:'Review required'};
+ return <section className="space-y-4"><div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-semibold">Ledger integrity reconciliation</h2><p className="text-sm text-muted-foreground">Generate whenever needed, using the date and branch filters above; defaults to year-to-date.</p></div><div className="flex gap-2"><Button disabled={generate.isPending} onClick={()=>generate.mutate()}>{generate.isPending?'Generating report…':'Generate report'}</Button>{report?.ready&&<Button variant="outline" disabled={generate.isPending} onClick={()=>downloadIntegrityReport(report,company.currency_decimals)}>Download CSV</Button>}</div></div>
+ {generate.error&&<p role="alert" className="text-sm text-destructive">{financeError(generate.error)}</p>}{report?.ready===false&&<p className="text-sm">{report.remaining} journals still need reporting preparation. Generate again to continue; no partial reconciliation is shown.</p>}
+ {!report&&!generate.isPending&&!generate.error&&<p className="border rounded-lg p-4 text-sm text-muted-foreground">No report generated yet. Checks cover ledger balance, balance-sheet equality, cash-flow reconciliation, journal reporting totals and known posting exceptions.</p>}
+ {report?.ready&&<><div className="border rounded-lg p-4 space-y-1"><h3 className="font-semibold">{label[report.status]} · {report.company_name}</h3><p className="text-sm">{report.from} to {report.to} · {report.currency} · {report.branch_id?'Authorized branch':'All authorized company branches'}</p><p className="text-xs text-muted-foreground">Snapshot generated {new Date(report.generated_at).toLocaleString()}; generate again after ledger changes.</p></div>
+ <div className="space-y-2">{report.checks.map(check=><div className="border rounded-lg p-3" key={check.label}><div className="flex flex-wrap justify-between gap-2"><h4 className="font-medium text-sm">{check.label}</h4><strong className={check.status==='fail'?'text-sm text-destructive':'text-sm'}>{label[check.status]}</strong></div><p className="text-sm text-muted-foreground mt-1">{check.detail}</p>{check.difference_units!==undefined&&<p className="text-sm">Difference: {financeAmount(check.difference_units/(10**company.currency_decimals),company)} {company.currency}</p>}</div>)}</div>
+ {report.discrepancy_count>0&&<section className="border rounded-lg p-4 space-y-2"><h3 className="font-semibold">Journal discrepancies ({report.discrepancy_count})</h3>{report.discrepancies.map(d=><p className="text-sm" key={d.journal_id}>{d.journal_id} · {d.reason}</p>)}</section>}<div className="space-y-1 text-xs text-muted-foreground">{report.notes.map(note=><p key={note}>{note}</p>)}</div></>}
+ </section>;
+}

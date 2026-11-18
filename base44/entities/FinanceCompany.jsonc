@@ -1,0 +1,184 @@
+{
+  "name": "FinanceCompany",
+  "type": "object",
+  "description": "Company record shared by Admin \u203a Companies (where companies and their branches are created) and the Finance workspace (which reads these same records).",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "company_code": {
+      "type": "string",
+      "description": "Automatic company code (CO-0001\u2026), assigned when the company is created in Admin \u203a Companies."
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Turned on/off from Admin \u203a Companies. Turning a company off keeps its branches and accounting history."
+    },
+    "registration_number": {
+      "type": "string"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "currency_decimals": {
+      "type": "integer",
+      "enum": [
+        0,
+        2,
+        3
+      ],
+      "default": 2
+    },
+    "edition": {
+      "type": "string",
+      "enum": [
+        "fnb",
+        "central_kitchen",
+        "supermarket",
+        "pharmacy"
+      ]
+    },
+    "branch_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "member_emails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "parent_company_id": {
+      "type": "string",
+      "description": "Optional parent legal company. Relationships do not merge ledgers or grant access; group reports are uneliminated management totals."
+    },
+    "closed_through": {
+      "type": "string"
+    },
+    "lock_reason": {
+      "type": "string"
+    },
+    "locked_by": {
+      "type": "string"
+    },
+    "locked_at": {
+      "type": "string"
+    },
+    "write_token": {
+      "type": "string",
+      "default": ""
+    },
+    "write_started_at": {
+      "type": "string"
+    },
+    "is_test": {
+      "type": "boolean",
+      "default": false
+    },
+    "history_status": {
+      "type": "string",
+      "enum": [
+        "reconstruction_in_progress"
+      ],
+      "default": "reconstruction_in_progress"
+    },
+    "auto_post_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "auto_post_from": {
+      "type": "string"
+    },
+    "auto_account_map": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "auto_source_currency": {
+      "type": "string"
+    },
+    "auto_configured_by": {
+      "type": "string"
+    },
+    "auto_configured_at": {
+      "type": "string"
+    },
+    "module_policy": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "from": {
+          "type": "string",
+          "format": "date"
+        },
+        "map": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "configured_by": {
+          "type": "string"
+        },
+        "configured_at": {
+          "type": "string"
+        },
+        "inventory": {
+          "type": "object",
+          "description": "Stock accounting (Finance \u203a Mapping Accounts \u203a Inventory): on/off, start date and POS delivery cost-of-sales timing. Catering cost of sales is always recognized when the event's reconciliation is finalized. Saved only through the finance service.",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "from": {
+              "type": "string",
+              "format": "date"
+            },
+            "cogs_trigger": {
+              "type": "string",
+              "enum": [
+                "sale",
+                "delivery"
+              ]
+            },
+            "configured_by": {
+              "type": "string"
+            },
+            "configured_at": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "name",
+    "currency",
+    "currency_decimals",
+    "edition",
+    "branch_ids"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "id": "__service_role_only__"
+    },
+    "update": {
+      "id": "__service_role_only__"
+    },
+    "delete": {
+      "id": "__service_role_only__"
+    }
+  }
+}

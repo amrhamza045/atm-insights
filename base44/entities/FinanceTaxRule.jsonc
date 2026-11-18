@@ -1,0 +1,126 @@
+{
+  "name": "FinanceTaxRule",
+  "type": "object",
+  "description": "Accountant-configured effective-dated tax profiles; assessments keep immutable calculation snapshots. No statutory rates are assumed.",
+  "properties": {
+    "company_id": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "vat",
+        "withholding",
+        "payroll",
+        "corporate"
+      ]
+    },
+    "code": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "version": {
+      "type": "integer"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "sales",
+        "purchases",
+        "both"
+      ]
+    },
+    "effective_from": {
+      "type": "string",
+      "format": "date"
+    },
+    "effective_to": {
+      "type": "string"
+    },
+    "rate": {
+      "type": "number"
+    },
+    "annual_relief_units": {
+      "type": "integer"
+    },
+    "annual_income_min_units": {
+      "type": "integer"
+    },
+    "annual_income_max_units": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "brackets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "up_to_units": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "rate": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "up_to_units",
+          "rate"
+        ]
+      }
+    },
+    "legal_reference": {
+      "type": "string"
+    },
+    "exemption_reason": {
+      "type": "string"
+    },
+    "configured_by": {
+      "type": "string"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "request_signature": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "company_id",
+    "kind",
+    "code",
+    "name",
+    "version",
+    "direction",
+    "effective_from",
+    "legal_reference"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,246 @@
+{
+  "name": "MarketingCampaign",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Campaign name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Campaign description"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "email",
+        "notification",
+        "sms"
+      ],
+      "description": "Campaign delivery type"
+    },
+    "trigger_type": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "onboarding",
+        "tier_upgrade",
+        "milestone",
+        "inactivity",
+        "top_referrer",
+        "custom"
+      ],
+      "description": "What triggers this campaign"
+    },
+    "target_audience": {
+      "type": "string",
+      "enum": [
+        "all",
+        "active",
+        "inactive",
+        "tier_specific",
+        "top_referrers",
+        "custom"
+      ],
+      "description": "Who receives this campaign"
+    },
+    "tier_filter": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tier IDs if tier_specific targeting"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Email subject or notification title"
+    },
+    "message": {
+      "type": "string",
+      "description": "Campaign message body"
+    },
+    "cta_text": {
+      "type": "string",
+      "description": "Call to action button text"
+    },
+    "cta_url": {
+      "type": "string",
+      "description": "Call to action URL"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether campaign is active"
+    },
+    "is_automated": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether campaign runs automatically"
+    },
+    "delay_days": {
+      "type": "number",
+      "default": 0,
+      "description": "Days to wait before sending (for automated campaigns)"
+    },
+    "recipients_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of recipients"
+    },
+    "sent_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number actually sent"
+    },
+    "last_sent_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time campaign was sent"
+    }
+  },
+  "required": [
+    "name",
+    "type",
+    "trigger_type",
+    "target_audience",
+    "message"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_marketing_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_actions": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_systems": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_actions": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_systems": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_actions": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_clients_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_operations": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_systems": true
+          }
+        }
+      ]
+    }
+  }
+}

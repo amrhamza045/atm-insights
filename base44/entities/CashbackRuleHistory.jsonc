@@ -1,0 +1,169 @@
+{
+  "name": "CashbackRuleHistory",
+  "type": "object",
+  "properties": {
+    "order_id": {
+      "type": "string",
+      "description": "ID of the order this rule was applied to"
+    },
+    "customer_id": {
+      "type": "string",
+      "description": "ID of the customer"
+    },
+    "customer_name": {
+      "type": "string",
+      "description": "Name of the customer"
+    },
+    "rule_id": {
+      "type": "string",
+      "description": "ID of the cashback rule that was applied"
+    },
+    "rule_name": {
+      "type": "string",
+      "description": "Name of the cashback rule that was applied"
+    },
+    "rule_type": {
+      "type": "string",
+      "enum": [
+        "order_type",
+        "customer_tier",
+        "promotional"
+      ],
+      "description": "Type of rule applied"
+    },
+    "order_type": {
+      "type": "string",
+      "description": "Type of the order"
+    },
+    "order_total": {
+      "type": "number",
+      "description": "Total amount of the order"
+    },
+    "self_cashback_rate": {
+      "type": "number",
+      "description": "Cashback rate applied for customer"
+    },
+    "self_cashback_amount": {
+      "type": "number",
+      "description": "Actual cashback amount for customer"
+    },
+    "level1_rate": {
+      "type": "number",
+      "description": "Cashback rate for level 1"
+    },
+    "level2_rate": {
+      "type": "number",
+      "description": "Cashback rate for level 2"
+    },
+    "level3_rate": {
+      "type": "number",
+      "description": "Cashback rate for level 3"
+    },
+    "total_cashback_applied": {
+      "type": "number",
+      "description": "Total cashback distributed (all levels)"
+    },
+    "total_payout_applied": {
+      "type": "number",
+      "description": "Total payout distributed"
+    },
+    "applied_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the rule was applied"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notes about the rule application"
+    }
+  },
+  "required": [
+    "order_id",
+    "customer_id",
+    "rule_id",
+    "rule_name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    }
+  }
+}

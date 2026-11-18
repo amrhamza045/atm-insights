@@ -1,66 +1,57 @@
-/**
- * pages.config.js - Page routing configuration
- * 
- * This file is AUTO-GENERATED. Do not add imports or modify PAGES manually.
- * Pages are auto-registered when you create files in the ./pages/ folder.
- * 
- * THE ONLY EDITABLE VALUE: mainPage
- * This controls which page is the landing page (shown when users visit the app).
- * 
- * Example file structure:
- * 
- *   import HomePage from './pages/HomePage';
- *   import Dashboard from './pages/Dashboard';
- *   import Settings from './pages/Settings';
- *   
- *   export const PAGES = {
- *       "HomePage": HomePage,
- *       "Dashboard": Dashboard,
- *       "Settings": Settings,
- *   }
- *   
- *   export const pagesConfig = {
- *       mainPage: "HomePage",
- *       Pages: PAGES,
- *   };
- * 
- * Example with Layout (wraps all pages):
- *
- *   import Home from './pages/Home';
- *   import Settings from './pages/Settings';
- *   import __Layout from './Layout.jsx';
- *
- *   export const PAGES = {
- *       "Home": Home,
- *       "Settings": Settings,
- *   }
- *
- *   export const pagesConfig = {
- *       mainPage: "Home",
- *       Pages: PAGES,
- *       Layout: __Layout,
- *   };
- *
- * To change the main page from HomePage to Dashboard, use find_replace:
- *   Old: mainPage: "HomePage",
- *   New: mainPage: "Dashboard",
- *
- * The mainPage value must match a key in the PAGES object exactly.
- */
-import Dashboard from './pages/Dashboard';
-import Logs from './pages/Logs';
-import Upload from './pages/Upload';
-import __Layout from './Layout.jsx';
+import { lazyWithRetry as lazy } from '@/lib/lazyWithRetry';
 
+// Lazy-load every page so Vite code-splits each into its own chunk.
+// This dramatically reduces initial bundle size and load time.
+const Admin = lazy(() => import('./pages/Admin'));
+const Approvals = lazy(() => import('./pages/Approvals'));
+const BulkDeleteTestData = lazy(() => import('./pages/BulkDeleteTestData'));
+const CashbackHistory = lazy(() => import('./pages/CashbackHistory'));
+const DeliveryDriverDashboard = lazy(() => import('./pages/DeliveryDriverDashboard'));
+const EmployeeAttendance = lazy(() => import('./pages/EmployeeAttendance'));
+const GoLiveCleanup = lazy(() => import('./pages/GoLiveCleanup'));
+const InventoryManagement = lazy(() => import('./pages/InventoryManagement'));
+const KitchenDisplay = lazy(() => import('./pages/KitchenDisplay'));
+const LoyaltyProgramInfo = lazy(() => import('./pages/LoyaltyProgramInfo'));
+const Packages = lazy(() => import('./pages/Packages'));
+const MenuEngineering = lazy(() => import('./pages/MenuEngineering'));
+const MenuManagement = lazy(() => import('./pages/MenuManagement'));
+const MyProfile = lazy(() => import('./pages/MyProfile'));
+const OrderHistory = lazy(() => import('./pages/OrderHistory'));
+const POS = lazy(() => import('./pages/POS'));
+const ReferralLeaderboard = lazy(() => import('./pages/ReferralLeaderboard'));
+const ReferralTree = lazy(() => import('./pages/ReferralTree'));
+const Register = lazy(() => import('./pages/Register'));
+const Rewards = lazy(() => import('./pages/Rewards'));
+const SupplierHub = lazy(() => import('./pages/SupplierHub'));
+const SupportBot = lazy(() => import('./pages/SupportBot'));
+const __Layout = lazy(() => import('./Layout.jsx'));
 
 export const PAGES = {
-    "Dashboard": Dashboard,
-    "Logs": Logs,
-    "Upload": Upload,
+    "Admin": Admin,
+    "Approvals": Approvals,
+    "BulkDeleteTestData": BulkDeleteTestData,
+    "CashbackHistory": CashbackHistory,
+    "DeliveryDriverDashboard": DeliveryDriverDashboard,
+    "EmployeeAttendance": EmployeeAttendance,
+    "GoLiveCleanup": GoLiveCleanup,
+    "InventoryManagement": InventoryManagement,
+    "KitchenDisplay": KitchenDisplay,
+    "LoyaltyProgramInfo": LoyaltyProgramInfo,
+    "Packages": Packages,
+    "MenuEngineering": MenuEngineering,
+    "MenuManagement": MenuManagement,
+    "MyProfile": MyProfile,
+    "OrderHistory": OrderHistory,
+    "POS": POS,
+    "ReferralLeaderboard": ReferralLeaderboard,
+    "Register": Register,
+    "Rewards": Rewards,
+    "SupplierHub": SupplierHub,
+    "SupportBot": SupportBot,
 }
 
 export const pagesConfig = {
-    mainPage: "Dashboard",
+    mainPage: "Packages",
     Pages: PAGES,
     Layout: __Layout,
 };

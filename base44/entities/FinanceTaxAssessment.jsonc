@@ -1,0 +1,224 @@
+{
+  "name": "FinanceTaxAssessment",
+  "type": "object",
+  "description": "Reviewed internal tax calculation snapshots, linked to each original sales/purchase line, payroll record or company-ledger period. Does not change operational totals, salary payments or ledger postings; not a filed tax return.",
+  "properties": {
+    "company_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "invoice",
+        "payroll",
+        "corporate"
+      ]
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "sales",
+        "purchases",
+        "company"
+      ]
+    },
+    "assessment_key": {
+      "type": "string"
+    },
+    "source_entity": {
+      "type": "string"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "source_version": {
+      "type": "string"
+    },
+    "source_label": {
+      "type": "string"
+    },
+    "entry_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "period_start": {
+      "type": "string"
+    },
+    "period_end": {
+      "type": "string"
+    },
+    "currency": {
+      "type": "string"
+    },
+    "revision": {
+      "type": "integer"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "request_signature": {
+      "type": "string"
+    },
+    "rule_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "counterparty_name": {
+      "type": "string"
+    },
+    "counterparty_tax_id": {
+      "type": "string"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "lines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "line_index": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "tax_details": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "tax_type": {
+                  "type": "string"
+                },
+                "code": {
+                  "type": "string"
+                },
+                "rule_id": {
+                  "type": "string"
+                },
+                "rule_version": {
+                  "type": "integer"
+                },
+                "base_units": {
+                  "type": "integer"
+                },
+                "rate": {
+                  "type": "number"
+                },
+                "amount_units": {
+                  "type": "integer"
+                },
+                "exemption_reason": {
+                  "type": "string"
+                },
+                "recoverable_units": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "legal_reference": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "tax_type",
+                "code",
+                "base_units",
+                "rate",
+                "amount_units",
+                "exemption_reason"
+              ]
+            }
+          }
+        },
+        "required": [
+          "line_index",
+          "name",
+          "tax_details"
+        ]
+      }
+    },
+    "base_units": {
+      "type": "integer"
+    },
+    "vat_units": {
+      "type": "integer"
+    },
+    "recoverable_units": {
+      "type": "integer"
+    },
+    "tax_units": {
+      "type": "integer"
+    },
+    "recorded_tax_units": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "recorded_tax_known": {
+      "type": "boolean"
+    },
+    "missing_counterparty_id": {
+      "type": "boolean"
+    },
+    "calculation": {
+      "type": "object"
+    },
+    "evidence_note": {
+      "type": "string"
+    },
+    "prepared_by": {
+      "type": "string"
+    },
+    "prepared_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "company_id",
+    "kind",
+    "assessment_key",
+    "source_entity",
+    "source_id",
+    "entry_date",
+    "currency",
+    "revision",
+    "base_units",
+    "tax_units",
+    "recorded_tax_known",
+    "evidence_note"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

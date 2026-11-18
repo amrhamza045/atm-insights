@@ -1,0 +1,100 @@
+{
+  "name": "FinanceExpenseType",
+  "type": "object",
+  "description": "Configurable expense names and their GL account mappings owned by the dedicated Expenses module. Deactivated types stay for historical records.",
+  "properties": {
+    "company_id": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "category_group": {
+      "type": "string",
+      "enum": [
+        "utilities",
+        "supplies",
+        "maintenance",
+        "rent",
+        "delivery",
+        "marketing",
+        "administrative",
+        "other"
+      ],
+      "enumColors": [
+        "blue",
+        "green",
+        "yellow",
+        "purple",
+        "pink",
+        "red",
+        "gray",
+        "gray"
+      ],
+      "default": "other"
+    },
+    "account_id": {
+      "type": "string"
+    },
+    "account_code": {
+      "type": "string"
+    },
+    "account_name": {
+      "type": "string"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "company_id",
+    "code",
+    "name",
+    "category_group",
+    "account_id",
+    "is_active"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "collaborator_role": "editor"
+      }
+    }
+  }
+}

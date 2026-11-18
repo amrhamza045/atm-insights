@@ -1,0 +1,127 @@
+{
+  "name": "RecommendationEvent",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "ID of the client"
+    },
+    "recommended_item_id": {
+      "type": "string",
+      "description": "ID of the recommended menu item"
+    },
+    "recommended_item_name": {
+      "type": "string",
+      "description": "Name of the recommended item"
+    },
+    "recommendation_type": {
+      "type": "string",
+      "enum": [
+        "personalized",
+        "popular",
+        "combo",
+        "upsell"
+      ],
+      "description": "Type of recommendation"
+    },
+    "context": {
+      "type": "string",
+      "enum": [
+        "menu",
+        "cart",
+        "checkout"
+      ],
+      "description": "Where the recommendation was shown"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "view",
+        "click",
+        "add_to_cart"
+      ],
+      "description": "User interaction with recommendation"
+    },
+    "order_id": {
+      "type": "string",
+      "description": "Order ID if recommendation led to purchase"
+    }
+  },
+  "required": [
+    "recommended_item_id",
+    "recommendation_type",
+    "context",
+    "event_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_analytics_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_marketing_view": true
+          }
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "user"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        }
+      ]
+    }
+  }
+}

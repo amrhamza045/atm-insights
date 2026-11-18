@@ -1,0 +1,176 @@
+{
+  "name": "Deposit",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this deposit belongs to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this deposit belongs to"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "ID of the cashier session"
+    },
+    "deposit_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date and time of deposit"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Deposit amount"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "cash",
+        "check",
+        "transfer",
+        "other"
+      ],
+      "default": "cash",
+      "description": "Payment method for the deposit"
+    },
+    "source": {
+      "type": "string",
+      "description": "Source or reason for deposit (e.g., owner contribution, loan)"
+    },
+    "reference_number": {
+      "type": "string",
+      "description": "Check number, transfer reference, etc."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes about the deposit"
+    }
+  },
+  "required": [
+    "session_id",
+    "deposit_date",
+    "amount",
+    "source"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_finance_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "data.perm_cashier_view": true
+              }
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "data.perm_has_branch": false
+                  }
+                },
+                {
+                  "data.branch_id": "{{user.data.perm_branch_id}}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_cashier_edit": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

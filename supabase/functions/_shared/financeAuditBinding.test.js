@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { saveAuditBinding } from './financeAuditBinding.js';
+const company={id:'company',branch_ids:['branch']};
+const data={mapping_key:'Cancellation_Customer',account_id:'revenue',effective_from:'2026-11-04',effective_to:'',priority:102,conditions:{branch_id:'branch'}};
+const binding={id:'existing',company_id:'company',...data,priority:101};
+function fixture(bindings){let creates=0;return {ctx:{admin:true,permissions:{},svc:{entities:{FinanceAccountBinding:{filter:async()=>({items:bindings}),create:async d=>{creates++;return {id:'new',...d};}},FinanceAccount:{get:async()=>({id:'revenue',company_id:'company',active:true,posting:true,management_mapping:'revenue'})}}}},creates:()=>creates};}
+test('saving an existing route twice reuses it without creating another priority',async()=>{const f=fixture([binding]);for(let i=0;i<2;i++){const r=await saveAuditBinding(f.ctx,company,data);assert.equal(r.reused,true);assert.equal(r.binding.id,'existing');}assert.equal(f.creates(),0);});
+test('company-wide routing covering the branch is reused',async()=>{const f=fixture([{...binding,conditions:{},effective_from:'2026-11-03'}]);assert.equal((await saveAuditBinding(f.ctx,company,data)).reused,true);assert.equal(f.creates(),0);});
+test('an uncovered earlier date cannot silently duplicate an existing same-account route',async()=>{const f=fixture([{...binding,effective_from:'2026-11-05'}]);await assert.rejects(()=>saveAuditBinding(f.ctx,company,data),/already exists/);assert.equal(f.creates(),0);});
+test('a different existing destination cannot be silently overridden',async()=>{const f=fixture([{...binding,account_id:'other'}]);await assert.rejects(()=>saveAuditBinding(f.ctx,company,data),/already exists/);assert.equal(f.creates(),0);});
+test('future higher-priority destination prevents unsafe reuse',async()=>{const f=fixture([binding,{...binding,id:'future',account_id:'other',priority:200,effective_from:'2027-01-01'}]);await assert.rejects(()=>saveAuditBinding(f.ctx,company,data),/already exists/);assert.equal(f.creates(),0);});
+test('unrelated branch routing does not prevent creation',async()=>{const f=fixture([{...binding,conditions:{branch_id:'other'}}]);assert.equal((await saveAuditBinding(f.ctx,company,data)).binding.id,'new');assert.equal(f.creates(),1);});
+test('invalid account and closed period still block reuse',async()=>{const f=fixture([binding]);await assert.rejects(()=>saveAuditBinding(f.ctx,{...company,closed_through:'2026-11-04'},data),/closed period/);f.ctx.svc.entities.FinanceAccount.get=async()=>({company_id:'other'});await assert.rejects(()=>saveAuditBinding(f.ctx,company,data),/active posting account/);assert.equal(f.creates(),0);});

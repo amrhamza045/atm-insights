@@ -1,0 +1,128 @@
+{
+  "name": "ReferralMilestone",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the milestone"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of what the milestone offers"
+    },
+    "required_referrals": {
+      "type": "number",
+      "description": "Number of successful referrals required"
+    },
+    "bonus_amount": {
+      "type": "number",
+      "description": "Cashback bonus amount awarded"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this milestone is currently active"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Icon name for the milestone"
+    },
+    "color": {
+      "type": "string",
+      "description": "Color code for UI display"
+    }
+  },
+  "required": [
+    "name",
+    "required_referrals",
+    "bonus_amount"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        }
+      ]
+    }
+  }
+}

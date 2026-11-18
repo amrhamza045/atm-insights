@@ -1,0 +1,280 @@
+{
+  "name": "Printer",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string",
+      "description": "ID of the branch this printer belongs to"
+    },
+    "branch_name": {
+      "type": "string",
+      "description": "Name of the branch this printer belongs to"
+    },
+    "name": {
+      "type": "string",
+      "description": "Printer name (must match Windows/PrintNode printer name exactly)"
+    },
+    "printer_ip": {
+      "type": "string",
+      "description": "Printer IP address or identifier (e.g., 192.168.1.110)"
+    },
+    "type": {
+      "type": "string",
+      "description": "Printer type: 'cashier' or a PreparationArea key (e.g., kitchen, bar, shisha, grill)"
+    },
+    "use_printnode": {
+      "type": "boolean",
+      "default": true,
+      "description": "Use PrintNode for silent printing (requires PRINTNODE_API_KEY)"
+    },
+    "is_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this printer is enabled"
+    },
+    "auto_print_on_order": {
+      "type": "boolean",
+      "default": false,
+      "description": "Auto-print when order is created"
+    },
+    "receipt_width": {
+      "type": "number",
+      "default": 80,
+      "description": "Receipt width in mm"
+    },
+    "font_size": {
+      "type": "number",
+      "default": 12,
+      "description": "Font size in px"
+    },
+    "font_name": {
+      "type": "string",
+      "enum": [
+        "Consolas",
+        "Monaco",
+        "Courier New",
+        "Lucida Console",
+        "Monospace"
+      ],
+      "default": "Consolas",
+      "description": "Font family for receipt"
+    },
+    "print_kitchen_items": {
+      "type": "boolean",
+      "default": false,
+      "description": "Print kitchen category items"
+    },
+    "print_bar_items": {
+      "type": "boolean",
+      "default": false,
+      "description": "Print bar category items"
+    },
+    "restaurant_logo_url": {
+      "type": "string",
+      "description": "Restaurant logo URL"
+    },
+    "receipt_header": {
+      "type": "string",
+      "description": "Receipt header text"
+    },
+    "receipt_footer": {
+      "type": "string",
+      "description": "Receipt footer text"
+    },
+    "restaurant_address": {
+      "type": "string",
+      "description": "Restaurant address"
+    },
+    "restaurant_phone": {
+      "type": "string",
+      "description": "Restaurant landline phone"
+    },
+    "restaurant_whatsapp": {
+      "type": "string",
+      "description": "Restaurant WhatsApp number"
+    },
+    "restaurant_hotline": {
+      "type": "string",
+      "description": "Restaurant hotline number"
+    },
+    "restaurant_website": {
+      "type": "string",
+      "description": "Restaurant website"
+    },
+    "commercial_registration": {
+      "type": "string",
+      "description": "Commercial registration number"
+    },
+    "tax_card": {
+      "type": "string",
+      "description": "Tax card number"
+    },
+    "show_logo": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show restaurant logo"
+    },
+    "show_address": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show restaurant address"
+    },
+    "show_phone": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show phone number"
+    },
+    "show_whatsapp": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show WhatsApp"
+    },
+    "show_hotline": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show hotline"
+    },
+    "show_website": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show website"
+    },
+    "show_order_number": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show order number"
+    },
+    "show_date_time": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show date and time"
+    },
+    "show_cashier": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show cashier name"
+    },
+    "show_table_number": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show table number"
+    },
+    "show_customer_name": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show customer name"
+    },
+    "show_payment_method": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show payment method"
+    },
+    "show_tax_breakdown": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show tax breakdown"
+    },
+    "show_service_breakdown": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show service charge"
+    }
+  },
+  "required": [
+    "name",
+    "type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_admin_settings": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_settings_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

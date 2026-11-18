@@ -1,0 +1,172 @@
+{
+  "name": "ReferralCommission",
+  "type": "object",
+  "description": "Commission owed to a guest who referred someone from their event pass, recorded per catering event the referred client books. Recorded in CRM \u203a Referrals by staff with financial access. Tracking only: the app moves no money and posts nothing to the ledger.",
+  "properties": {
+    "lead_id": {
+      "type": "string",
+      "description": "The referral (Lead with campaign 'Event pass referral') that earned this commission"
+    },
+    "referred_name": {
+      "type": "string",
+      "description": "Snapshot of the referred person's name"
+    },
+    "referrer_key": {
+      "type": "string",
+      "description": "Groups commissions per referrer: the referrer's phone digits, else email, else name (lower case)"
+    },
+    "referrer_name": {
+      "type": "string",
+      "description": "Snapshot of the referring guest's name"
+    },
+    "referrer_phone": {
+      "type": "string",
+      "description": "Snapshot of the referring guest's phone, used to pay them"
+    },
+    "referrer_email": {
+      "type": "string",
+      "description": "Snapshot of the referring guest's email"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "Catering event booked by the referred client that earns this commission (one commission per referral and event)"
+    },
+    "event_name": {
+      "type": "string",
+      "description": "Snapshot of the event name"
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Snapshot of the event date"
+    },
+    "amount": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Commission amount owed to the referrer for this event"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "unpaid",
+        "paid"
+      ],
+      "enumColors": [
+        "yellow",
+        "green"
+      ],
+      "default": "unpaid",
+      "description": "Whether the commission has been paid to the referrer"
+    },
+    "paid_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date",
+      "description": "When the commission was paid"
+    },
+    "paid_by": {
+      "type": "string",
+      "description": "Email of the staff member who marked it paid"
+    },
+    "payment_reference": {
+      "type": "string",
+      "description": "How it was paid, e.g. an InstaPay or bank transfer reference"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal notes"
+    }
+  },
+  "required": [
+    "lead_id",
+    "referrer_key",
+    "event_id",
+    "amount",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_view": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_finance_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

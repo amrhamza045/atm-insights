@@ -1,0 +1,76 @@
+// Operations › Finance & Accounting modules of the VeraKit360 module manual.
+// These describe the Finance hub every other module's "Finance link" points to.
+import { mod } from './manualStructure.js';
+
+export const FINANCE_MODULES = [
+  mod("operations", "finance", {
+    name: "Finance Workspace (Accounting)",
+    nav: "Operations › Finance",
+    screens: ["Company and branch selector with date filters", "Sections: Financial dashboard, Entity comparisons, Channel profitability, Recipe cost changes, VAT reconciliation, E-invoice status, Tax details & returns, Chart of accounts, Pending review, Journal ledger, Historical reconstruction, Financial statements, Budget & forecast, Ledger reconciliation, Automatic posting, Company controls, Finance audit history, Finance manual", "Payroll payouts button opening a side panel"],
+    workflows: ["Set up: create the finance company (currency, decimals) → chart of accounts → map sales, purchase and operational GL accounts in Automatic posting → choose the start date → enable", "Manual entry: journal proposal → Pending review → independent approval (finance_journal_approve) → posted", "Automatic: paid orders, posted purchase invoices and posted operational journals (catering payments) post once each; failures become posting issues that can be retried", "Historical reconstruction: import past paid sales and posted invoices one by one, with confirmation", "Period close (finance_period_close) locks dates"],
+    features: ["Double-entry company ledger with branch cost centres and channel dimensions (service type, order origin, delivery partner)", "Financial statements, dashboard and budget versus actual", "Tax system: VAT, withholding, payroll tax and corporate tax positions; e-invoice status", "Ledger reconciliation and integrity report", "Full audit history of every finance action"],
+    access: ["financial_view to open; finance_edit; finance_company_manage; finance_accounts_manage; finance_journal_create; finance_journal_approve; finance_period_close; finance_reconstruct; finance_audit_view"],
+    entities: [
+      { name: "FinanceCompany", description: "currency, decimals, module_policy account map, auto_post_enabled, start date, is_test" },
+      { name: "FinanceAccount", description: "company chart of accounts" },
+      { name: "FinanceJournal", description: "posted journals with source_entity / source_id, kind (manual, module, automatic), status" },
+      { name: "FinanceLedgerLine", description: "ledger lines with branch, channel and classification" },
+      { name: "FinanceProposal", description: "journals pending review" },
+      { name: "FinancePostingIssue", description: "blocked automatic postings" },
+      { name: "FinanceBudget", description: "budgets" },
+      { name: "FinanceTaxRule", description: "tax rules" },
+      { name: "FinanceAuditEvent", description: "audit trail" },
+    ],
+    links: ["POS - Point of Sale", "Purchasing & Invoices", "Deposits, Payments & Financial Controls", "Financial System (Operational GL)", "Payroll, Penalties & Borrowings"],
+    finance: {
+      status: "posts",
+      summary: "This is the Finance hub. Three sources post automatically today: paid sales (Order), posted purchase invoices (PurchaseInvoice) and posted operational journals (JournalEntry, written today by catering payments). Payroll is read for tax and reconciliation. Every other module listed in this manual as 'Not yet linked' is a candidate source.",
+      events: ["Order paid", "PurchaseInvoice posted", "JournalEntry posted (catering payments, credit notes, withdrawals, voids)"],
+      postings: ["Sales: Dr Cash / Bank, Cr Net sales, Tax, Service, Delivery revenue.", "Purchases: Dr Inventory / Cr Supplier payables.", "Operational journals: copied line by line through the GL-to-company account map."],
+      controls: ["Do not import the same transaction twice (through operational journals and historical reconstruction).", "Loyalty-funded sales, guest split checks and ambiguous payment methods are left as exceptions.", "Enabled automation is not proof that every source posted: review posting issues and the integrity report.", "Currency of sources must equal the company currency; no conversion is done."],
+    },
+  }),
+  mod("operations", "finance", {
+    name: "Financial System (Operational GL)",
+    nav: "No screen of its own: linked modules write operational journals in the background; accounts are mapped in Finance › Automatic posting",
+    screens: ["No screen of its own: operational journals from linked modules arrive automatically", "Finance › Automatic posting maps each operational GL account to a company account", "Daily financial summaries in the Executive Dashboard"],
+    workflows: ["Catering payment approved → operational journal written to the operational GL (accounts 1000, 2300, 4200 created if missing) → Finance › Automatic posting copies it into the company ledger when operational posting is enabled"],
+    features: ["Bridge between operational modules and the company ledger", "The place where new module journals should be written as more modules are linked"],
+    access: ["financial_view; finance_edit / finance_accounts_manage to change accounts"],
+    entities: [
+      { name: "GLAccount", description: "account_number, account_name, category, account_type, sub_category" },
+      { name: "JournalEntry", description: "lines (gl_account_id, debit, credit), reference_type, reference_id, revenue_source, total_debit, total_credit, posted" },
+      { name: "DailyFinancialSummary", description: "daily revenue, expenses, profit and payment-method breakdown (emailed daily)" },
+    ],
+    links: ["Finance Workspace (Accounting)", "Deposits, Payments & Financial Controls"],
+    finance: {
+      status: "posts",
+      summary: "Operational journals are the integration point: any module that writes a balanced, posted JournalEntry reaches the company ledger through the account map, without changing Finance itself.",
+      events: ["JournalEntry posted"],
+      postings: ["Mirrored into FinanceJournal (kind automatic) using company account mappings."],
+      controls: ["Every operational GL account used must be mapped in Finance › Automatic posting, or the posting becomes an exception.", "Daily financial summaries are operational figures, not the posted ledger."],
+    },
+  }),
+  mod("operations", "finance", {
+    name: "Payment Methods & Gateway",
+    nav: "Admin › Settings › Restaurant Info (payment numbers); payment method toggles; Stripe settings",
+    screens: ["Payment method switches: bank transfer, PayPal, cash, InstaPay, wallet, Stripe", "InstaPay and wallet numbers shown to customers", "Stripe publishable key (the secret key is stored as an app secret)"],
+    workflows: ["Website card payment: Stripe payment intent → status succeeded → order paid → posts to Finance"],
+    features: ["Online card payments", "Clear transfer instructions for customers"],
+    access: ["settings_edit / admin_settings"],
+    entities: [{ name: "SystemSettings", description: "*_enabled flags, instapay_number, wallet_number, stripe_public_key" }, { name: "Order", description: "payment_method, stripe_payment_intent_id, stripe_payment_status" }],
+    links: ["POS - Point of Sale", "Online Menu & Ordering", "Finance Workspace (Accounting)"],
+    finance: { status: "reported", summary: "The payment method decides which ledger account receives the money: cash to Cash, visa / instapay / wallet / stripe to Bank.", events: [], postings: ["See POS - Point of Sale."], controls: ["Stripe orders post only when stripe_payment_status is succeeded."] },
+  }),
+  mod("operations", "finance", {
+    name: "Food Cost & Recipe Costing",
+    nav: "Menu Management › Food Cost Analysis; Inventory › Cost Analysis; Finance › Recipe cost changes",
+    screens: ["Food cost per menu item from recipe quantities × current ingredient costs", "Cost analysis of inventory", "Finance › Recipe cost changes: saved food cost of items sold versus current recipe cost"],
+    workflows: ["Purchase price changes → average price updates → calculateFoodCosts recalculates → margins and recipe cost changes update"],
+    features: ["Live food cost % per item", "Early warning when ingredient prices erode margin"],
+    access: ["menu_view, inventory_view, financial_view"],
+    entities: [{ name: "FoodCostCalculation", description: "menu_item_id, quantity_ordered, total_food_cost, order_date, branch" }, { name: "MenuItem", description: "recipe, total_cost" }, { name: "InventoryItem", description: "cost per unit" }],
+    links: ["Menu Management & Engineering", "Inventory Management", "Finance Workspace (Accounting)"],
+    finance: { status: "reported", summary: "Finance reads FoodCostCalculation in Recipe cost changes (EGP only). These food costs are the natural base for posting cost of sales.", events: ["Food cost calculated per sold item"], postings: ["Not built yet: Dr Cost of sales / Cr Inventory from FoodCostCalculation."], controls: ["Records with zero or missing quantity or cost are excluded and counted separately."] },
+  }),
+];

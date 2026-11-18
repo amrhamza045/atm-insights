@@ -1,0 +1,42 @@
+import { MODULE_ACCOUNTS } from './financeModuleRules.js';
+import { healthCheck } from './financeHealthScope.js';
+export function healthSetupTasks(ctx,company,scope){
+ const e=ctx.svc.entities,ledger={company_id:company.id,...scope.branches,status:'posted',entry_date:{$gte:scope.from,$lte:scope.to}};
+ return [
+ ['accounts',()=>e.FinanceAccount.count({company_id:company.id,active:true,posting:true})],
+ ['unmapped_accounts',()=>e.FinanceAccount.count({company_id:company.id,active:true,posting:true,$or:[{management_mapping:''},{management_mapping:{$exists:false}}]})],
+ ['mapped_accounts',()=>e.FinanceAccount.filter({company_id:company.id,id:{$in:[...new Set([...Object.values(company.module_policy?.map||{}),...Object.values(company.auto_account_map||{})])]}},{limit:200})],
+ ['rules',()=>e.FinanceMappingVersion.aggregate({query:{company_id:company.id},groupBy:['event_type','status'],limit:500})],
+ ['bindings',()=>e.FinanceAccountBinding.count({company_id:company.id})],
+ ['issues',()=>e.FinancePostingIssue.count({company_id:company.id,...scope.branches,status:'open'})],
+ ['issue_examples',()=>e.FinancePostingIssue.filter({company_id:company.id,...scope.branches,status:'open'},{sort:'-created_date',limit:10})],
+ ['pending',()=>e.FinanceProposal.count({company_id:company.id,...scope.branches,status:'pending'})],
+ ['journals',()=>e.FinanceJournal.aggregate({query:ledger,sum:['total_debit','total_credit'],limit:1})],
+ ['unindexed',()=>e.FinanceJournal.count({...ledger,$or:[{ledger_ready:{$ne:true}},{analytics_version:{$ne:1}}]})],
+ ['index_examples',()=>e.FinanceJournal.filter({...ledger,$or:[{ledger_ready:{$ne:true}},{analytics_version:{$ne:1}}]},{sort:'entry_date',limit:10})],
+ ['ledger',()=>e.FinanceLedgerLine.aggregate({query:{company_id:company.id,...scope.branches,entry_date:{$gte:scope.from,$lte:scope.to}},sum:['debit_units','credit_units'],limit:1})],
+ ['ownership',()=>e.FinanceCompany.count({id:{$ne:company.id},is_active:{$ne:false},branch_ids:{$in:company.branch_ids},$or:[{auto_post_enabled:true},{'module_policy.enabled':true}]})]
+ ];
+}
+export function healthSetupChecks(company,evidence){
+ const checks=[],add=(id,title,key,pass,test,fix,section='health')=>{const r=evidence[key];checks.push(healthCheck(id,title,r?.error?'Not Accessible':test(r?.value)?'Pass':'Fail',r?.error||pass(r?.value),fix,section));};
+ add('chart','Posting chart exists','accounts',n=>`${n} active posting accounts.`,n=>n>0,'Install or complete the company chart of accounts.','accounts');
+ add('report-map','Account reporting mappings','unmapped_accounts',n=>`${n} active posting accounts lack management reporting mappings.`,n=>n===0,'Complete reporting mappings on the company chart.','accounts');
+ checks.push(healthCheck('legacy-enabled','Operational-journal reflection',company.auto_post_enabled?'Pass':'Fail',`Mirror ${company.auto_post_enabled?'enabled':'disabled'}; starts ${company.auto_post_from||'not set'}; source currency ${company.auto_source_currency||'not confirmed'}.`,'Review Automatic posting; enable only after mappings, currency and cutover are approved.','automatic'));
+ checks.push(healthCheck('module-enabled','Sales and supplier-invoice reflection',company.module_policy?.enabled?'Pass':'Fail',`Transaction connections ${company.module_policy?.enabled?'enabled':'disabled'}; starts ${company.module_policy?.from||'not set'}.`,'Review the separate sales and purchases connection settings.','automatic'));
+ const rows=evidence.mapped_accounts?.value?.items||[],map=company.module_policy?.map||{},bad=Object.keys(MODULE_ACCOUNTS).filter(role=>{const a=rows.find(a=>a.id===map[role]);return !a||!a.active||!a.posting||!a.management_mapping||a.classification!==MODULE_ACCOUNTS[role];});
+ checks.push(healthCheck('module-accounts','Transaction mapping accounts',evidence.mapped_accounts?.error?'Not Accessible':bad.length?'Fail':'Pass',evidence.mapped_accounts?.error||(bad.length?`Missing or invalid roles: ${bad.join(', ')}.`:'All eight configured module roles reference valid company posting accounts.'),'Select active, correctly classified company accounts and recheck.','automatic'));
+ const legacyBad=Object.entries(company.auto_account_map||{}).filter(([,id])=>!rows.some(a=>a.id===id&&a.active&&a.posting&&a.management_mapping)).length;
+ checks.push(healthCheck('legacy-accounts','Operational account mapping destinations',evidence.mapped_accounts?.error?'Not Accessible':legacyBad||!Object.keys(company.auto_account_map||{}).length?'Fail':'Pass',`${legacyBad} invalid saved destinations; ${Object.keys(company.auto_account_map||{}).length} saved operational mappings. Used-source coverage is checked separately.`,'Map every operational account used by posted sources; no guessed account selection.','automatic'));
+ add('posting-issues','Open posting exceptions','issues',n=>`${n} open exceptions across the selected branch scope (all dates).`,n=>n===0,'Review each exception and its source; preview a supported retry before approving.','automatic');
+ add('report-index','Posted journals reflected in reporting index','unindexed',n=>`${n} posted journals need index preparation in this period.`,n=>n===0,'Preview and approve reporting-index preparation for each affected journal.');
+ const totals=evidence.journals?.value?.rows?.[0],indexed=evidence.ledger?.value?.rows?.[0],scale=10**company.currency_decimals,count=totals?.count||0,d=Math.round((totals?.sum_total_debit||0)*scale),c=Math.round((totals?.sum_total_credit||0)*scale),ld=indexed?.sum_debit_units||0,lc=indexed?.sum_credit_units||0;
+ checks.push(healthCheck('journal-balance','Recorded journal debit / credit totals',evidence.journals?.error?'Not Accessible':!count?'Not Tested':d===c?'Pass':'Fail',evidence.journals?.error||`${count} posted journals; debit/credit difference ${(d-c)/scale}.`,'Investigate differences with reviewed reversals; do not edit posted amounts.','integrity'));
+ checks.push(healthCheck('index-totals','Journal totals equal reporting-index totals',evidence.journals?.error||evidence.ledger?.error?'Not Accessible':!count?'Not Tested':d===ld&&c===lc?'Pass':'Fail',evidence.journals?.error||evidence.ledger?.error||`Debit difference ${(d-ld)/scale}; credit difference ${(c-lc)/scale}. Aggregate equality can hide offsetting errors.`,'Use Ledger reconciliation for journal-by-journal checks; index preparation requires approval.','integrity'));
+ checks.push(healthCheck('blueprint','Mapping patterns versus live source connections','Partially Implemented','Mapped supplier purchases, catering advances/refunds and inventory lifecycle connections exist. A saved mapping pattern does not prove every accounting treatment is implemented; review per-source evidence and pattern coverage.','Review the source connection, enablement, account mapping, journal and reporting evidence separately.','mapping'));
+ checks.push(healthCheck('inventory-enabled','Inventory lifecycle / actual-cost automation',company.module_policy?.inventory?.enabled?'Pass':'Fail',`Inventory accounting ${company.module_policy?.inventory?.enabled?'enabled':'disabled'}; cutover ${company.module_policy?.inventory?.from||'not set'}. Production, sale/delivery COGS and custody capture require immutable movements; custody alone intentionally retains the inventory asset.`,'Review Inventory accounting settings and actual-cost evidence; the scan never enables the policy.','mapping'));
+ checks.push(healthCheck('pending-review','Pending financial approvals',evidence.pending?.error?'Not Accessible':evidence.pending?.value?'Partially Implemented':'Pass',evidence.pending?.error||`${evidence.pending?.value||0} pending proposals; excluded from posted balances.`,'Review proposals through the existing independent-approval flow.','proposals'));
+ checks.push(healthCheck('production-context','Automation assurance','Partially Implemented','Test and production companies use the same configured posting rules and safeguards. Workflow definitions exist, but this scan does not establish trigger delivery or current workflow activation.','Confirm company ownership and use transaction evidence plus workflow history before cutover.','controls'));
+ add('ownership','Exclusive automatic-posting branch ownership','ownership',n=>`${n} other enabled companies share branches.`,n=>n===0,'Resolve overlapping company ownership before enabling automatic posting.','company_definition');
+ return checks;
+}

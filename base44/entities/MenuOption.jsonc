@@ -1,0 +1,150 @@
+{
+  "name": "MenuOption",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Option name (e.g., Size, Spice Level, Cooking Level)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Option description"
+    },
+    "option_type": {
+      "type": "string",
+      "enum": [
+        "single_select",
+        "multiple_select"
+      ],
+      "default": "single_select",
+      "description": "Whether customer can select one or multiple values"
+    },
+    "max_selections": {
+      "type": "number",
+      "description": "Maximum number of items allowed for multiple_select (e.g., max 4 drinks)"
+    },
+    "is_mandatory": {
+      "type": "boolean",
+      "default": true,
+      "description": "If true, option combines with item. If false, appears as separate line item."
+    },
+    "values": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "Display name for the option value"
+          },
+          "price_modifier": {
+            "type": "number",
+            "default": 0,
+            "description": "Additional price for this value (e.g., +5 EGP for Large size)"
+          }
+        },
+        "required": [
+          "label"
+        ]
+      },
+      "description": "Available values for this option"
+    },
+    "required_for_order": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether customer must select this option before adding to cart"
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0,
+      "description": "Display order"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this option is available"
+    }
+  },
+  "required": [
+    "name",
+    "values"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_menu_edit": true
+          }
+        }
+      ]
+    }
+  }
+}

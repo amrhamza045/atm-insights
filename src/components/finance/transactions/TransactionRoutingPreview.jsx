@@ -1,0 +1,17 @@
+import { useState } from 'react';
+import { useMutation,useQueryClient } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { financeCall,financeError } from '@/components/finance/financeApi';
+import TransactionJournalLines from '@/components/finance/transactions/TransactionJournalLines';
+export default function TransactionRoutingPreview({company,detail,can}){
+ const [date,setDate]=useState(detail.source_date||''),[paid,setPaid]=useState(false),[reason,setReason]=useState(''),[confirmed,setConfirmed]=useState(false),qc=useQueryClient();
+ const context={company_id:company.id,source_entity:detail.source_entity,source_id:detail.source_id};
+ const preview=useMutation({mutationFn:()=>financeCall({...context,action:'transaction_preview',entry_date:date,confirmed_paid:paid}),onSuccess:()=>setConfirmed(false)});
+ const exact=preview.data||detail.preview;
+ const apply=useMutation({mutationFn:()=>financeCall({...context,action:'transaction_recover',entry_date:date,confirmed_paid:paid,confirmed,reason,preview_token:exact.token}),onSuccess:()=>qc.invalidateQueries({queryKey:['finance']})});
+ return <section className="border rounded-lg p-4 space-y-3"><h4 className="font-semibold">Preview and recover using current routing</h4>{detail.source_entity==='Order'&&<><label className="text-sm block">Original payment accounting date<Input type="date" required value={date} onChange={e=>{setDate(e.target.value);preview.reset();}}/></label><label className="flex gap-2 text-sm"><input type="checkbox" checked={paid} onChange={e=>{setPaid(e.target.checked);preview.reset();}}/>I verified the payment evidence and its original accounting date; completed status alone is not proof of payment.</label></>}
+ <Button variant="outline" disabled={preview.isPending||apply.isPending} onClick={()=>{apply.reset();preview.mutate();}}>{preview.isPending?'Checking source and routing…':'Refresh exact journal preview'}</Button>
+ {preview.error&&<p role="alert" className="text-sm text-destructive">{financeError(preview.error)}</p>}{exact&&<><p className="text-sm text-muted-foreground">Current routing is ready for this transaction. Review the journal below, then confirm to post and verify its source link; no additional routing is needed.</p><TransactionJournalLines entry={exact} company={company}/><label className="text-sm block">Recovery reason<Input value={reason} maxLength={1000} onChange={e=>setReason(e.target.value)}/></label><label className="flex gap-2 text-sm"><input type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/>I approve this exact journal for this transaction using the displayed routing.</label>{can('finance_journal_approve')&&<Button disabled={apply.isPending||!confirmed||reason.trim().length<3} onClick={()=>apply.mutate()}>{apply.isPending?'Posting and verifying…':'Confirm and post this transaction'}</Button>}</>}
+ {apply.error&&<p role="alert" className="text-sm text-destructive">{financeError(apply.error)}</p>}{apply.data&&!apply.data.verified&&<p role="alert" className="text-sm text-destructive">No verified posting: {apply.data.message||apply.data.reason}</p>}{apply.data?.verified&&<p role="status" className="text-sm font-semibold break-all">Confirmed posted: {apply.data.journal_id}. Debit and credit totals and all ledger lines were verified.</p>}</section>;
+}

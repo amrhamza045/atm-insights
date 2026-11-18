@@ -1,0 +1,203 @@
+{
+  "name": "Notification",
+  "type": "object",
+  "properties": {
+    "recipient_type": {
+      "type": "string",
+      "enum": [
+        "client",
+        "employee",
+        "user"
+      ],
+      "default": "client",
+      "description": "Who this notification targets: a loyalty client (legacy rows, matched by client_id), a staff member (matched by employee_id) or a user account (matched by user_id; requisition notifications, whose recipients are found from permission flags)"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "ID of the client receiving the notification (recipient_type = client)"
+    },
+    "client_email": {
+      "type": "string",
+      "description": "Email of the client"
+    },
+    "employee_id": {
+      "type": "string",
+      "description": "ID of the Employee receiving the notification (recipient_type = employee)"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "ID of the User account receiving the notification (recipient_type = user)"
+    },
+    "title": {
+      "type": "string",
+      "description": "Notification title"
+    },
+    "message": {
+      "type": "string",
+      "description": "Notification message"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "milestone",
+        "registration",
+        "redemption",
+        "promotion",
+        "system",
+        "catering_assignment",
+        "requisition"
+      ],
+      "description": "Type of notification"
+    },
+    "entity_type": {
+      "type": "string",
+      "description": "Type of the record this notification refers to (e.g. catering_event, requisition) \u2014 groundwork for deep-linking"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID of the referenced record"
+    },
+    "link_url": {
+      "type": "string",
+      "description": "In-app path the notification opens (e.g. the requisition on KDS Requisitions, Requested Items or the Approvals queue)"
+    },
+    "read": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the notification has been read"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Icon for the notification"
+    }
+  },
+  "required": [
+    "title",
+    "message",
+    "type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "$and": [
+            {
+              "data.recipient_type": "user"
+            },
+            {
+              "data.user_id": "{{user.id}}"
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "data.recipient_type": "employee"
+            },
+            {
+              "data.employee_id": "{{user.data.perm_employee_id}}"
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "data.recipient_type": {
+                "$nin": [
+                  "user",
+                  "employee"
+                ]
+              }
+            },
+            {
+              "data.client_id": "{{user.data.perm_client_id}}"
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "data.recipient_type": {
+                "$nin": [
+                  "user",
+                  "employee"
+                ]
+              }
+            },
+            {
+              "user_condition": {
+                "data.perm_clients_view": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_central_admin": true
+          }
+        },
+        {
+          "user_condition": {
+            "data.perm_is_staff": true
+          }
+        },
+        {
+          "data.client_id": "{{user.data.perm_client_id}}"
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "$and": [
+            {
+              "data.recipient_type": "user"
+            },
+            {
+              "data.user_id": "{{user.id}}"
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "data.recipient_type": "employee"
+            },
+            {
+              "data.employee_id": "{{user.data.perm_employee_id}}"
+            }
+          ]
+        },
+        {
+          "$and": [
+            {
+              "data.recipient_type": {
+                "$nin": [
+                  "user",
+                  "employee"
+                ]
+              }
+            },
+            {
+              "data.client_id": "{{user.data.perm_client_id}}"
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
