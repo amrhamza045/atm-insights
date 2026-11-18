@@ -34,6 +34,22 @@ export default function Dashboard() {
     },
   });
 
+  // Query PostgreSQL RPC Backend Function (get_atm_dashboard_analytics)
+  const { data: rpcAnalytics } = useQuery({
+    queryKey: ['atm-analytics-rpc', selectedBatchId],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('get_atm_dashboard_analytics', {
+        p_batch_id: selectedBatchId
+      });
+      if (error) {
+        // Fallback gracefully if RPC is not created yet
+        return null;
+      }
+      return data;
+    },
+    staleTime: 1000 * 30,
+  });
+
   // Get unique upload batches
   const uploadBatches = [...new Set(allLogs.map(l => l.upload_batch_id).filter(Boolean))]
     .sort((a, b) => new Date(b) - new Date(a));
@@ -43,16 +59,14 @@ export default function Dashboard() {
     ? allLogs 
     : allLogs.filter(l => l.upload_batch_id === selectedBatchId);
 
-  // Calculate metrics
-  const totalLogs = logs.length;
-  const solvedLogs = logs.filter(l => l.solved_by && l.solved_by.trim() !== "").length;
-  const unsolvedLogs = totalLogs - solvedLogs;
-  const solvedRate = totalLogs > 0 
-    ? ((solvedLogs / totalLogs) * 100).toFixed(1)
-    : 0;
+  // Calculate metrics (with RPC support)
+  const totalLogs = rpcAnalytics?.total_issues ?? logs.length;
+  const solvedLogs = rpcAnalytics?.solved_issues ?? logs.filter(l => l.solved_by && l.solved_by.trim() !== "").length;
+  const unsolvedLogs = rpcAnalytics?.unsolved_issues ?? (totalLogs - solvedLogs);
+  const solvedRate = rpcAnalytics?.solved_rate ?? (totalLogs > 0 ? ((solvedLogs / totalLogs) * 100).toFixed(1) : 0);
 
   // Count unique terminals
-  const uniqueTerminals = new Set(logs.map(l => l.terminal_id)).size;
+  const uniqueTerminals = rpcAnalytics?.unique_terminals ?? new Set(logs.map(l => l.terminal_id)).size;
 
   // Fault types breakdown
   const faultTypeCounts = {};
@@ -94,7 +108,7 @@ export default function Dashboard() {
     }
     terminalStats[log.terminal_id].count++;
   });
-  const topTerminals = Object.values(terminalStats).sort((a, b) => b.count - a.count);
+  const topTerminals = rpcAnalytics?.top_terminals ?? Object.values(terminalStats).sort((a, b) => b.count - a.count);
 
   if (isLoading) {
     return (
